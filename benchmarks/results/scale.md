@@ -1,0 +1,5 @@
+| Tier | Real corpus | Files | Lines | Chunks / symbols | Cold index | Throughput | No-change re-index | 1-file incremental | Retrieval p50 / p95 | Cross-file callee recall (cloud / local budget) | Context vs whole repo | Regex alerts /KLOC | Heuristic alerts /KLOC |
+| :-: | :--- | --: | --: | --: | --: | --: | --: | --: | --: | :-: | :-: | :-: | :-: |
+| S | requests, httpx, typer, uvicorn | 97 | 28,011 | 652 / 603 | 0.18 s | 157.6 KLOC/s | 0.082 s | 0.081 s | 1.3 / 9.4 ms | 87% / 37% | ~20,594 vs ~235,818 tokens (−91.27%) | 0.321 | 0.393 |
+| M | requests, httpx, typer, uvicorn, fastapi, starlette, pydantic, rich | 384 | 137,936 | 2,780 / 2,237 | 0.87 s | 159.3 KLOC/s | 0.419 s | 0.398 s | 5.1 / 21.9 ms | 93% / 39% | ~20,026 vs ~1,213,144 tokens (−98.35%) | 0.13 | 0.245 |
+| L | requests, httpx, typer, uvicorn, fastapi, starlette, pydantic, rich, google.genai, PIL, numpy | 1,567 | 597,822 | 12,770 / 11,094 | 5.31 s | 112.5 KLOC/s | 1.991 s | 1.873 s | 29.2 / 97.2 ms | 82% / 29% | ~12,441 vs ~5,182,853 tokens (−99.76%) | 0.743 | 0.214 |
