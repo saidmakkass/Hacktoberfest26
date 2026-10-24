@@ -1,80 +1,123 @@
 # BarakaGate
 
-**Stops secrets, personal data and cross-file bugs before they leave a developer's laptop. Powered by Gemma 4.**
+**An open-weight pre-flight gate that stops secrets, multilingual PII and cross-file logic bugs before they leave a developer's laptop. Powered by Gemma 4.**
 
 Hacktoberfest26 Rabat Hack Day | Case 01: Best Open-Source AI Project | Case 02: Best Use of Gemma 4
 
-MIT license | Python 3.10+ | `gemma-4-26b-a4b-it` · `gemma-4-31b-it` · `gemma4:e4b` (Ollama) | pre-commit hook · CLI · Web Studio · Agent Skill · CI
-
-![BarakaGate Studio](docs/screenshots/studio_inspector.png)
+MIT license | Python 3.10+ | Models: `gemma-4-26b-a4b-it`, `gemma-4-31b-it`, `gemma4:e4b` (Ollama) | Interfaces: pre-commit hook, CLI, Web Studio, Agent Skill, CI
 
 ---
 
 ## Results at a glance
 
-We compared BarakaGate with a classic pattern-matching scanner (the kind Gitleaks uses) on a test set we never tuned against.
+We compared BarakaGate with a classic pattern-matching scanner (like Gitleaks) on a separate test set we never tuned against. Every number comes from a script in this repo.
 
-| What we measured | BarakaGate + Gemma 4 | Classic scanner |
+| Metric | BarakaGate + Gemma 4 | Classic scanner |
 |---|---|---|
-| Problems caught overall | **33 / 35 (94%)** | 9 / 35 (26%) |
+| Issues caught | **33 / 35 (94%)** | 9 / 35 (26%) |
 | Logic and security bugs | **12 / 13** | 0 / 13 |
-| Tricky cases (split keys, Arabic text, odd formats) | **20 / 21** | 0 / 21 |
-| Bugs that need a second file to prove | **5 / 6** | 0 / 6 |
-| Secrets found inside screenshots | **4 / 5** | 0 / 5 |
-| Real customer data sent to the cloud (hybrid mode) | **0 / 4** | n/a |
-| Code indexed (11 real open-source libraries) | **598k lines in 5.3 s** | n/a |
+| Tricky cases built to fool pattern matching | **20 / 21** | 0 / 21 |
+| Bugs that need another file to prove | **5 / 6** | 0 / 6 |
+| Secrets found in screenshots | **4 / 5** | 0 / 5 |
+| Lines of real open-source code indexed | **597,822 in 5.3 s** | n/a |
 | Prompt size vs. sending the whole repo | **99.76% smaller** | n/a |
+| Raw personal data sent to the cloud (`hybrid_smart`) | **0 / 4** | n/a |
+| End-to-end checks passing | **19 / 19** | n/a |
 
-Every problem the classic scanner caught, BarakaGate caught too. BarakaGate caught 24 more.
+BarakaGate caught everything the classic scanner caught, plus 24 more issues.
 
-## The problem
+## 1. The problem
 
-- **Secrets keep leaking.** 23.7 million new hardcoded secrets hit public GitHub in 2024, up 25% in a year ([GitGuardian 2025](https://blog.gitguardian.com/the-state-of-secrets-sprawl-2025/)).
-- **In Morocco, a leaked CIN or RIB is a legal risk.** Law 09-08 allows CNDP fines up to MAD 300,000 and prison terms of 6 months to 2 years ([CMS guide](https://cms.law/en/int/expert-guides/cms-expert-guide-to-data-protection-and-cyber-security-laws/morocco)).
-- **Developers paste real data into AI chats.** A stack trace with a customer record leaves the machine before any review sees it.
+Developers leak sensitive data in three ways, and most tools only catch the first.
 
-Classic scanners look at one line at a time, so they miss things like:
+- **Secrets in code.** 23.7 million new hardcoded secrets reached public GitHub in 2024, up 25% in a year ([GitGuardian 2025](https://blog.gitguardian.com/the-state-of-secrets-sprawl-2025/)).
+- **Personal data in logs, fixtures and tickets.** In Morocco, Law 09-08 allows CNDP fines up to MAD 300,000 and 6 months to 2 years in prison ([CMS guide](https://cms.law/en/int/expert-guides/cms-expert-guide-to-data-protection-and-cyber-security-laws/morocco)).
+- **Real data pasted into cloud AI.** A stack trace with a customer record leaves the machine before any review sees it.
 
-- logging a `customer` object whose class, defined in another file, holds a CIN and a RIB;
-- a payment webhook that marks orders as paid without checking the signature;
-- a CIN inside an Arabic-script support ticket, or an API key visible in a screenshot.
+Classic scanners read one line at a time. They miss:
 
-**Built for:** Moroccan fintech and e-commerce (CMI, Payzone, RIB, CIN, Darija logs), university and research labs (CNE/Massar, HPC tokens, notebooks), and any team that commits code or uses cloud AI.
+- a checkout file that logs a customer object whose class, in another file, holds a CIN and a RIB;
+- a payment webhook that marks orders paid without calling the signature check;
+- a CIN inside an Arabic-script support ticket, or an API key in a screenshot.
 
-## What it does
+**Who it is for:** Moroccan fintech and e-commerce teams, university and research labs, and any team that commits code or uses cloud AI.
 
-- 🔴 **Finds secrets and personal data** in code, notebooks and logs: CIN, RIB, IBAN, +212 phones, CNE, API keys, internal URLs, and free text in Darija, French or Arabic.
-- 🟣 **Finds logic bugs across files**: float money math, double-spend races, missing webhook checks, SQL injection, off-by-one, missing auth, ML train/test leakage.
-- 🖼️ **Blurs secrets in screenshots**: Gemma 4 vision draws boxes around them, you choose what to blur.
-- 🧪 **Safe-to-Prompt firewall**: replaces real data with tokens on your laptop, asks cloud Gemma 4, then puts the real values back locally.
-- 🩹 **One-click fixes**: fake-but-valid test data, move secret to `.env`, apply bug patch, or keep as is. You decide per finding.
-- 🚦 **Works where you work**: git pre-commit hook, CLI, GitHub Actions, Agent Skill for coding agents, and a web Studio.
+## 2. What BarakaGate does
 
-## How it works
+| Capability | What it covers |
+|---|---|
+| Secrets and multilingual PII | CIN, 24-digit RIB, MA IBAN, +212 phones, CNE/Massar, CMI/Stripe/OpenAI keys, JWT/AWS, internal hosts, Darija/French/Arabic text |
+| Cross-file logic bugs | Float currency, double-spend races, missing webhook HMAC, SQL injection, off-by-one, missing auth, ML train/test leakage, missing seeds |
+| Screenshots and notebook images | Gemma 4 vision finds keys and IDs, then blurs or masks them |
+| Safe-to-Prompt firewall | Replaces real data with tokens locally, asks cloud Gemma 4, restores the values locally |
+| Human-in-the-loop fixes | Fake-but-valid test data, move secret to `.env`, apply bug patch, mask, or keep |
+| Gates everywhere | Pre-commit hook, CLI, GitHub Actions, Agent Skill, Web Studio, all using one `.barakagate.yaml` policy |
 
-1. **Index** the repository (pure Python, no native dependencies).
-2. **Pull the context** for the changed code: the definitions of the functions and classes it uses, even from other files.
-3. **Analyze** with Gemma 4, plus fast rule-based checks.
-4. **Decide**: PASS, WARN or BLOCK, with a proposed fix for each finding.
+## 3. How it works
+
+1. **Collect** a git diff, files, notebooks, a screenshot or a prompt.
+2. **Index** the repository with a pure-Python symbol graph and search index.
+3. **Retrieve** the definitions the changed code uses, even from other files.
+4. **Analyze** with Gemma 4, plus fast rule-based checks.
+5. **Decide** PASS, WARN or BLOCK, with a fix proposed for each finding.
 
 ### Four engine modes
 
-| Mode | Model | Runs on | Use it for |
+| Mode | Model | Runs on | Why |
 |---|---|---|---|
-| `cloud_fast` (default) | `gemma-4-26b-a4b-it` | Gemini API | Fast everyday scans |
-| `cloud_deep` | `gemma-4-31b-it` | Gemini API | Hardest cross-file reasoning |
-| `local_edge` | `gemma4:e4b` | Ollama on your laptop | Fully offline, nothing leaves the machine |
-| `hybrid_smart` | `e4b` → `31b` | Laptop, then cloud | Remove personal data locally, then do the deep audit in the cloud |
+| `cloud_fast` (default) | `gemma-4-26b-a4b-it` | Gemini API | Fast and reliable: answered 30 / 30 live scans |
+| `cloud_deep` | `gemma-4-31b-it` | Gemini API | Deepest cross-file reasoning |
+| `local_edge` | `gemma4:e4b` | Ollama on the laptop | Fully offline, nothing leaves the machine |
+| `hybrid_smart` | `e4b` then `31b` | Local, then cloud | Remove personal data locally, then audit in the cloud |
 
-If the cloud or Ollama is down, BarakaGate falls back automatically (other model → local → cache → offline rules) and always shows which engine answered.
+If a model is down, BarakaGate falls back automatically (other cloud model → Ollama → cache → offline rules) and always shows which engine answered.
 
-## Screenshots
+## 4. Accuracy
 
-| Screenshot blur | Safe-to-Prompt firewall |
-|---|---|
-| ![Vision](docs/screenshots/studio_vision.png) | ![Firewall](docs/screenshots/studio_firewall.png) |
+**Test set:** 4 mini-projects (Flask shop, TypeScript wallet, ML lab, one clean project), 27 files, 3 screenshots, 35 labelled issues and 19 traps that look dangerous but are safe.
 
-## Quick start
+**Fair scoring:** labels were committed before any engine ran (commit `8e0758d`), and nothing was tuned against this set.
+
+| Engine | Leaks / PII | Logic bugs | Tricky cases | Cross-file | Screenshots | Recall |
+|---|---|---|---|---|---|---|
+| Classic scanner | 9 / 17 | 0 / 13 | 0 / 21 | 0 / 6 | 0 / 5 | 26% |
+| BarakaGate offline (no LLM) | 9 / 17 | 3 / 13 | 3 / 21 | 1 / 6 | 0 / 5 | 34% |
+| BarakaGate + Gemma 4 26B | **17 / 17** | **12 / 13** | **20 / 21** | **5 / 6** | **4 / 5** | **94%** |
+
+- The difference with the classic scanner is statistically significant (p ≈ 0.0000001).
+- Gemma 4 missed 2 items: one averaging bug and one name region on an ID card.
+- Precision is 69%. Most extra alerts come from the rule-based layer, not from Gemma.
+
+Full details: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md).
+
+## 5. Scale
+
+Tested on 11 real open-source libraries, with no LLM calls:
+
+- **597,822 lines indexed in 5.3 s** (over 100,000 lines per second).
+- **Search under 100 ms**, even at 600k lines.
+- **Prompt stays at about 12,000 tokens** instead of 5.2 million for the whole repo, while keeping 82% of the cross-file functions the code calls.
+
+## 6. Privacy
+
+- In `hybrid_smart` mode, **0 of 4** real values (CIN, RIB, phone, CMI key) reached the cloud in a live test.
+- The server **refuses** any prompt that still contains a real value.
+- `local_edge` only talks to `localhost:11434`.
+
+## 7. Limitations
+
+- The test set is small (35 items) and we built it ourselves.
+- The local `gemma4:e4b` and 31B models are not benchmarked yet.
+- Gemma 4 26B takes about 34 s per file through the API: fine for commits and CI, slow for a whole monorepo.
+
+## 8. Roadmap
+
+1. Let Gemma 4 remove false alarms from the rule-based layer.
+2. A bigger test set with real, anonymized commits.
+3. Benchmark local and hybrid modes on laptops; fine-tune a small model for Darija and Arabic PII.
+4. A GitHub App with shared policy packs for banks, universities and hospitals.
+
+## 9. Quick start
 
 ```bash
 git clone https://github.com/saidmakkass/Hacktoberfest26 && cd Hacktoberfest26
@@ -89,44 +132,44 @@ echo "CIN BE847291 RIB 230780123456789012345678" | barakagate sanitize -
 barakagate install-hook                 # blocks commits with CRITICAL or HIGH findings
 ```
 
-## How we tested it
-
-- **Test set:** 4 small realistic projects (Flask shop, TypeScript wallet, ML lab, and one clean project), 27 files and 3 screenshots, 35 labelled problems and 19 traps that look dangerous but are fine.
-- **Fair scoring:** labels were committed before any engine ran (commit `8e0758d`), and we never tuned against this set.
-- **Result is not luck:** the gap between BarakaGate and the classic scanner is statistically significant (p ≈ 0.0000001).
-- **Honest weak spots:** precision is 69% (some extra alerts, mostly from the rule-based layer). Gemma 4 26B takes about 34 s per file through the API. The local and 31B models were not benchmarked yet.
-
-Reproduce every number:
+Reproduce the numbers:
 
 ```bash
-python3 -m pytest -q                                          # unit tests
-python3 scripts/verify_plan.py --live                         # 19 end-to-end checks
+python3 -m pytest -q
+python3 scripts/verify_plan.py --live
 python3 benchmarks/run_realworld.py --engines regex,offline,cloud_fast
-python3 benchmarks/scale_bench.py                             # 598k-line scale test
-python3 benchmarks/firewall_bench.py                          # prompt firewall test
+python3 benchmarks/scale_bench.py
+python3 benchmarks/firewall_bench.py
 ```
 
-Full method and per-case results: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md).
+## 10. Interfaces and policy
 
-## Policy as code
+**BarakaGate Studio (4 tabs)**
 
-`.barakagate.yaml` ships with three packs you can mix: **General DevSecOps**, **Moroccan Fintech (Law 09-08)** and **University & Research Lab**. Rules can be written in plain English; they go straight into Gemma 4's instructions.
+1. Code inspector: findings, cross-file context, and one fix decision per finding.
+2. Image sanitizer: Gemma 4 boxes on screenshots, click to blur or keep.
+3. Safe-to-Prompt firewall: sanitize locally, ask the cloud, restore locally.
+4. Policy and benchmark: edit `.barakagate.yaml` and run the benchmark.
 
-## Roadmap
+**Policy as code:** `.barakagate.yaml` has three packs you can combine: General DevSecOps, Moroccan Fintech (Law 09-08), and University & Research Lab. Rules can be written in plain English.
 
-1. Let Gemma 4 veto false alarms from the rule-based layer.
-2. A bigger test set with real, anonymized commits from partner labs.
-3. Benchmark `gemma4:e4b` and hybrid mode on laptops; fine-tune a small model for Darija and Arabic PII.
-4. A GitHub App with shared policy packs for banks, universities and hospitals.
+**Agent Skill and CI:** `skills/barakagate/SKILL.md` for coding agents, `.github/workflows/barakagate.yml` as a PR gate, and `barakagate install-hook` for a local pre-commit gate.
 
-## Repository layout
+## 11. Repository layout
 
 ```
-barakagate/       scanner, indexer, Gemma 4 router, redactor, CLI, server, Studio UI
-benchmarks/       test set and benchmark scripts
-samples/          demo scenarios: fintech_morocco, research_lab_um6p, general_devsecops, screenshots
-skills/           Agent Skill (SKILL.md)
-docs/             benchmarks, verification report, commit review, pitch
+barakagate/
+  models.py          shared data contract
+  config.py          .barakagate.yaml loader
+  llm_router.py      Gemini API, Ollama, fallback chain
+  indexer.py         code chunker, symbol graph, search
+  scanner.py         rule checks + Gemma 4 analysis + verdict
+  redactor.py        fixes, .env extraction, image blur, prompt vault
+  cli.py             CLI and pre-commit hook
+  server.py          FastAPI backend
+  static/            BarakaGate Studio
+benchmarks/          test set and benchmark scripts
+samples/             demo scenarios
 ```
 
 ## License
