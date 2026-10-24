@@ -1,0 +1,151 @@
+# BarakaGate Policy-as-Code
+# Edit freely: regex rules feed the deterministic baseline, natural-language
+# rules are injected verbatim into the Gemma 4 system prompt.
+
+version: 1
+default_engine: cloud_fast
+default_preset: all
+block_on: [CRITICAL, HIGH]
+warn_on: [MEDIUM]
+
+models:
+  cloud_fast: gemma-4-26b-a4b-it
+  cloud_deep: gemma-4-31b-it
+  local_edge: gemma4:e4b
+  ollama_url: http://localhost:11434
+
+# Exact strings or regexes that must never be reported (false-positive allowlist)
+allowlist:
+  - "AB000000"
+  - "example.com"
+  - "SYNTH_"
+  - "os.getenv"
+
+ignore_paths:
+  - ".git/"
+  - ".barakagate/"
+  - "node_modules/"
+  - "__pycache__/"
+  - ".venv/"
+  - "venv/"
+
+presets:
+  general_devsecops:
+    title: "General DevSecOps"
+    regex_rules:
+      - id: gen.aws_access_key
+        category: security_leak
+        severity: CRITICAL
+        title: "AWS access key ID"
+        pattern: '\b(AKIA|ASIA)[0-9A-Z]{16}\b'
+        action: env_extract
+      - id: gen.aws_secret_key
+        category: security_leak
+        severity: CRITICAL
+        title: "AWS secret access key"
+        pattern: '(?i)aws_secret_access_key\s*[=:]\s*["'']?[A-Za-z0-9/+=]{40}'
+        action: env_extract
+      - id: gen.jwt
+        category: security_leak
+        severity: HIGH
+        title: "JWT / Bearer token"
+        pattern: '\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}'
+        action: env_extract
+      - id: gen.private_key
+        category: security_leak
+        severity: CRITICAL
+        title: "Private key block"
+        pattern: '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'
+        action: env_extract
+      - id: gen.db_uri
+        category: security_leak
+        severity: HIGH
+        title: "Database URI with inline password"
+        pattern: '\b(postgres(ql)?|mysql|mongodb(\+srv)?|redis)://[^:\s/]+:[^@\s]+@[^\s"'']+'
+        action: env_extract
+      - id: gen.generic_secret
+        category: security_leak
+        severity: HIGH
+        title: "Hardcoded secret assignment"
+        pattern: '(?i)\b[A-Z0-9_]*(SECRET|PASSWORD|PASSWD|API_KEY|TOKEN)[A-Z0-9_]*\s*=\s*["''][^"''\s]{8,}["'']'
+        action: env_extract
+      - id: gen.internal_ip
+        category: security_leak
+        severity: MEDIUM
+        title: "Internal IPv4 address"
+        pattern: '\b(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})\b'
+        action: env_extract
+    nl_rules:
+      - "SQL injection via string interpolation or concatenation (f-strings, % formatting, + concatenation) into SQL queries; command injection; SSRF."
+      - "Off-by-one loop bounds (range(len(x)+1), <= length), unhandled None/null dereferences derived from cross-file return types, unclosed files/connections."
+      - "State-mutating API endpoints missing the authentication/authorization decorator used by sibling routes in the codebase index."
+      - "Credentials visible in terminal or browser screenshots."
+
+  fintech_morocco:
+    title: "Moroccan Fintech & E-Commerce (Law 09-08 / CNDP)"
+    regex_rules:
+      - id: ma.cin
+        category: privacy_pii
+        severity: HIGH
+        title: "Moroccan CIN (Carte Nationale d'Identite)"
+        pattern: '(?<![A-Za-z0-9])[A-Z]{1,2}\d{5,6}(?![A-Za-z0-9])'
+        action: synthetic_twin
+      - id: ma.rib
+        category: privacy_pii
+        severity: CRITICAL
+        title: "Moroccan 24-digit RIB"
+        pattern: '(?<!\d)\d{3}[ -]?\d{3}[ -]?\d{16}[ -]?\d{2}(?!\d)'
+        action: synthetic_twin
+      - id: ma.iban
+        category: privacy_pii
+        severity: CRITICAL
+        title: "Moroccan IBAN"
+        pattern: '\bMA\d{2}[ ]?(\d[ ]?){24}\b'
+        action: synthetic_twin
+      - id: ma.phone
+        category: privacy_pii
+        severity: MEDIUM
+        title: "Moroccan phone number"
+        pattern: '(?<!\d)(\+212[ -]?[5-7]|0[5-7])(\d[ -]?){8}(?!\d)'
+        action: synthetic_twin
+      - id: ma.cmi_key
+        category: security_leak
+        severity: CRITICAL
+        title: "CMI / Payzone / Stripe live merchant key"
+        pattern: '\b(cmi_live_[A-Za-z0-9_]{6,}|sk_live_[A-Za-z0-9]{10,}|pz_live_[A-Za-z0-9]{8,})'
+        action: env_extract
+    nl_rules:
+      - "Moroccan PII under Law 09-08 / CNDP: CIN, 24-digit RIB (3 bank + 3 branch + 16 account + 2 key), MA IBAN, +212 phone numbers, home addresses, and customer support text in Darija (Latin or Arabic script), French or Arabic."
+      - "Logging, printing or serializing (__dict__, to_dict(), json.dumps, vars()) an object whose class (resolved from the cross-file index) holds PII fields such as cin_number or rib_account."
+      - "Currency float rounding: IEEE-754 float arithmetic for MAD/EUR amounts (amount * 0.20 TVA, round(x, 2)) instead of Decimal or integer centimes."
+      - "TOCTOU wallet double-spend: check balance then mutate balance without a DB transaction lock / SELECT FOR UPDATE / atomic update."
+      - "Payment webhook/callback that trusts the payload (status == APPROVED, credits amount) without verifying the HMAC signature against the merchant secret from the config module."
+      - "Negative quantity or stacked percentage discounts above 100% due to missing bounds checks."
+
+  research_lab:
+    title: "University & Research Lab (UM6P)"
+    regex_rules:
+      - id: lab.cne
+        category: privacy_pii
+        severity: HIGH
+        title: "Student CNE / Massar code"
+        pattern: '(?<![A-Za-z0-9])[A-Z]\d{9}(?![A-Za-z0-9])'
+        action: synthetic_twin
+      - id: lab.internal_host
+        category: security_leak
+        severity: MEDIUM
+        title: "Internal campus / HPC host"
+        pattern: '\b[a-z0-9.-]+\.(internal\.)?um6p\.ma\b'
+        action: env_extract
+      - id: lab.hpc_token
+        category: security_leak
+        severity: HIGH
+        title: "HPC / lab API token"
+        pattern: '(?i)\b(hpc|slurm|lab)_?(token|key)\s*=\s*["''][^"'']{8,}["'']'
+        action: env_extract
+    nl_rules:
+      - "Student identifiers (CNE/Massar: 1 letter + 9 digits), grades, GPA, scholarship or medical/counselling data in fixtures, CSV, JSON or notebook outputs."
+      - "Jupyter outputs (df.head(), printed tables, plots) exposing participants or tokens."
+      - "ML train/test leakage: scaler.fit_transform / imputation / feature selection fitted on the full dataset before train_test_split, including across pipeline modules."
+      - "Silent NaN / division-by-zero propagation: averages computed without masking sentinel values (-999, NaN) defined in the loader."
+      - "Missing reproducibility seeds: stochastic random/numpy/torch code that ignores the global SEED from config."
