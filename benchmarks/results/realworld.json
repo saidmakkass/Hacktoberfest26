@@ -1,0 +1,490 @@
+[
+ {
+  "engine": "cloud_fast",
+  "label": "BarakaGate + Gemma 4 26B MoE",
+  "ran_at": "2026-10-24 14:40:09",
+  "matched": {
+   "T2": {
+    "line": 3,
+    "title": "Hardcoded OpenAI API key",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "T1": {
+    "line": 2,
+    "title": "Hardcoded legacy CMI key",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "T7": {
+    "line": 13,
+    "title": "Off-by-one error in pagination loop",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "T4": {
+    "line": 10,
+    "title": "Floating point arithmetic for currency",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "T5": {
+    "line": 6,
+    "title": "Timing attack vulnerability in HMAC verification",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "M8": {
+    "line": 23,
+    "title": "HuggingFace Token exposed in notebook output",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "M6": {
+    "line": 4,
+    "title": "Hardcoded W&B API Key",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "M7": {
+    "line": 5,
+    "title": "Internal Host Exposure",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "M4": {
+    "line": 2,
+    "title": "Exposure of Student CNE/Massar Identifier",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "M5": {
+    "line": 3,
+    "title": "Exposure of Student CNE/Massar Identifier",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "M1": {
+    "line": 25,
+    "title": "ML Train/Test Leakage",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "features.py:make_features"
+   },
+   "M2": {
+    "line": 28,
+    "title": "Missing Reproducibility Seed",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "config.py:SEED"
+   },
+   "S1": {
+    "line": 5,
+    "title": "Live Stripe Secret Key Exposed",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "S2": {
+    "line": 6,
+    "title": "Database URI with Inline Password",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "S10": {
+    "line": 2,
+    "title": "Exposure of Moroccan IBAN",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "models.py:Buyer"
+   },
+   "S9": {
+    "line": 2,
+    "title": "Exposure of Moroccan CIN",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "models.py:Buyer"
+   },
+   "S11": {
+    "line": 2,
+    "title": "Exposure of Moroccan Phone Number",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "models.py:Buyer"
+   },
+   "S5": {
+    "line": 20,
+    "title": "PII exposure in debug logs via vars()",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "models.py:Buyer"
+   },
+   "S8": {
+    "line": 43,
+    "title": "SQL injection via string interpolation",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "S12": {
+    "line": 2,
+    "title": "Moroccan CIN exposure",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "S14": {
+    "line": 3,
+    "title": "Moroccan RIB exposure",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "S15": {
+    "line": 3,
+    "title": "Personal Name and Address exposure",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "S13": {
+    "line": 2,
+    "title": "Moroccan phone number exposure",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "T6": {
+    "line": 4,
+    "title": "SQL Injection via queryRawUnsafe",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "T3": {
+    "line": 3,
+    "title": "TOCTOU vulnerability in debit function",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "src/db.ts:prisma"
+   },
+   "S4": {
+    "line": 15,
+    "title": "Potential TOCTOU race condition in refund logic",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": null
+   },
+   "S3": {
+    "line": 10,
+    "title": "Floating-point arithmetic used for currency calculations",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "config.py:VAT_RATE"
+   },
+   "S7": {
+    "line": 31,
+    "title": "Payment webhook trusts payload without signature verification",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "payments.py:verify_signature"
+   },
+   "S6": {
+    "line": 26,
+    "title": "State-mutating endpoint missing authentication",
+    "engine_used": "gemini:gemma-4-26b-a4b-it",
+    "cross_file": "routes.py:show_order"
+   }
+  },
+  "leaks": [
+   17,
+   17
+  ],
+  "bugs": [
+   12,
+   13
+  ],
+  "beyond_regex": [
+   20,
+   21
+  ],
+  "cross_file": [
+   5,
+   6
+  ],
+  "cross_file_cited": 5,
+  "image_boxes": [
+   4,
+   5
+  ],
+  "image_hits": {
+   "0": 0.69,
+   "1": 0.76,
+   "2": 0.3,
+   "4": 0.74
+  },
+  "recall": 0.9428571428571428,
+  "precision": 0.6875,
+  "traps_hit": [
+   "MA204511",
+   "TB30117",
+   "sentry.example.com"
+  ],
+  "trap_fp": 3,
+  "traps_total": 19,
+  "neg_file_fp": 4,
+  "neg_image_fp": 0,
+  "extras": 8,
+  "extra_list": [
+   "oasis_ml_lab/features.py:6 — ML Train/Test Leakage via Pre-split Transformation",
+   "oasis_ml_lab/students.csv:3 — Exposure of Sensitive Counseling Data",
+   "souk_shop/config.py:8 — Floating Point VAT Rate",
+   "souk_shop/models.py:19 — Use of float for currency amounts",
+   "souk_shop/payments.py:31 — Unverified Payment Webhook Payload",
+   "souk_shop/routes.py:8 — PII leakage via object serialization in logs",
+   "souk_shop/routes.py:22 — Improper use of float for currency amounts",
+   "screenshots/cin_card.png box — Date and Place of Birth"
+  ],
+  "fp_list": [
+   "TRAP souk_shop/config.py:7 (public example DSN) ← Hardcoded Sentry DSN",
+   "TRAP souk_shop/data/catalog.json:2 (product SKU shaped like a CIN) ← Exposure of Moroccan CIN in SKU",
+   "TRAP souk_shop/data/catalog.json:3 (product SKU shaped like a CIN) ← Exposure of Moroccan CIN in SKU",
+   "CLEAN clean_controls/.env.example:1 ← Live Stripe Secret Key Exposed",
+   "CLEAN clean_controls/.env.example:2 ← Database URI with Inline Password",
+   "CLEAN clean_controls/build_info.py:5 ← Moroccan CIN (Carte Nationale d'Identite)",
+   "CLEAN clean_controls/queries.py:9 ← Incorrect SQL placeholder for sqlite3"
+  ],
+  "avg_latency": 33.6,
+  "llm_coverage": [
+   30,
+   30
+  ],
+  "engines_used": [
+   "gemini:gemma-4-26b-a4b-it"
+  ]
+ },
+ {
+  "engine": "offline",
+  "label": "BarakaGate offline heuristics (no LLM)",
+  "ran_at": "2026-10-24 14:22:44",
+  "matched": {
+   "M7": {
+    "line": 5,
+    "title": "Internal campus / HPC host",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "M4": {
+    "line": 2,
+    "title": "Student CNE / Massar code",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "M5": {
+    "line": 3,
+    "title": "Student CNE / Massar code",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "M2": {
+    "line": 28,
+    "title": "Stochastic step without reproducibility seed",
+    "engine_used": "offline_heuristic",
+    "cross_file": "config.py:SEED"
+   },
+   "S1": {
+    "line": 5,
+    "title": "CMI / Payzone / Stripe live merchant key",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "S2": {
+    "line": 6,
+    "title": "Database URI with inline password",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "S10": {
+    "line": 2,
+    "title": "Moroccan IBAN",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "S9": {
+    "line": 2,
+    "title": "Moroccan CIN (Carte Nationale d'Identite)",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "S8": {
+    "line": 43,
+    "title": "SQL injection via string interpolation",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "S12": {
+    "line": 2,
+    "title": "Moroccan CIN (Carte Nationale d'Identite)",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "S13": {
+    "line": 2,
+    "title": "Moroccan phone number",
+    "engine_used": "offline_heuristic",
+    "cross_file": null
+   },
+   "S6": {
+    "line": 26,
+    "title": "State-mutating endpoint `cancel_order` missing @login_required",
+    "engine_used": "offline_heuristic",
+    "cross_file": "routes.py:show_order"
+   }
+  },
+  "leaks": [
+   9,
+   17
+  ],
+  "bugs": [
+   3,
+   13
+  ],
+  "beyond_regex": [
+   3,
+   21
+  ],
+  "cross_file": [
+   1,
+   6
+  ],
+  "cross_file_cited": 1,
+  "image_boxes": [
+   0,
+   5
+  ],
+  "image_hits": {},
+  "recall": 0.34285714285714286,
+  "precision": 0.6666666666666666,
+  "traps_hit": [
+   "MA204511",
+   "TB30117"
+  ],
+  "trap_fp": 2,
+  "traps_total": 19,
+  "neg_file_fp": 3,
+  "neg_image_fp": 0,
+  "extras": 1,
+  "extra_list": [
+   "souk_shop/support/tickets.csv:2 — Darija / Arabic customer-support note with card & bank details"
+  ],
+  "fp_list": [
+   "TRAP souk_shop/data/catalog.json:2 (product SKU shaped like a CIN) ← Moroccan CIN (Carte Nationale d'Identite)",
+   "TRAP souk_shop/data/catalog.json:3 (product SKU shaped like a CIN) ← Moroccan CIN (Carte Nationale d'Identite)",
+   "CLEAN clean_controls/.env.example:1 ← CMI / Payzone / Stripe live merchant key",
+   "CLEAN clean_controls/.env.example:2 ← Database URI with inline password",
+   "CLEAN clean_controls/build_info.py:5 ← Moroccan CIN (Carte Nationale d'Identite)"
+  ],
+  "avg_latency": 0.0,
+  "llm_coverage": [
+   0,
+   30
+  ],
+  "engines_used": [
+   "offline_heuristic"
+  ]
+ },
+ {
+  "engine": "regex",
+  "label": "Regex baseline (Gitleaks-style)",
+  "ran_at": "2026-10-24 14:22:44",
+  "matched": {
+   "M7": {
+    "line": 5,
+    "title": "Internal campus / HPC host",
+    "engine_used": "regex",
+    "cross_file": null
+   },
+   "M4": {
+    "line": 2,
+    "title": "Student CNE / Massar code",
+    "engine_used": "regex",
+    "cross_file": null
+   },
+   "M5": {
+    "line": 3,
+    "title": "Student CNE / Massar code",
+    "engine_used": "regex",
+    "cross_file": null
+   },
+   "S1": {
+    "line": 5,
+    "title": "CMI / Payzone / Stripe live merchant key",
+    "engine_used": "regex",
+    "cross_file": null
+   },
+   "S2": {
+    "line": 6,
+    "title": "Database URI with inline password",
+    "engine_used": "regex",
+    "cross_file": null
+   },
+   "S9": {
+    "line": 2,
+    "title": "Moroccan CIN (Carte Nationale d'Identite)",
+    "engine_used": "regex",
+    "cross_file": null
+   },
+   "S10": {
+    "line": 2,
+    "title": "Moroccan IBAN",
+    "engine_used": "regex",
+    "cross_file": null
+   },
+   "S12": {
+    "line": 2,
+    "title": "Moroccan CIN (Carte Nationale d'Identite)",
+    "engine_used": "regex",
+    "cross_file": null
+   },
+   "S13": {
+    "line": 2,
+    "title": "Moroccan phone number",
+    "engine_used": "regex",
+    "cross_file": null
+   }
+  },
+  "leaks": [
+   9,
+   17
+  ],
+  "bugs": [
+   0,
+   13
+  ],
+  "beyond_regex": [
+   0,
+   21
+  ],
+  "cross_file": [
+   0,
+   6
+  ],
+  "cross_file_cited": 0,
+  "image_boxes": [
+   0,
+   5
+  ],
+  "image_hits": {},
+  "recall": 0.2571428571428571,
+  "precision": 0.6428571428571429,
+  "traps_hit": [
+   "MA204511",
+   "TB30117"
+  ],
+  "trap_fp": 2,
+  "traps_total": 19,
+  "neg_file_fp": 3,
+  "neg_image_fp": 0,
+  "extras": 0,
+  "extra_list": [],
+  "fp_list": [
+   "TRAP souk_shop/data/catalog.json:2 (product SKU shaped like a CIN) ← Moroccan CIN (Carte Nationale d'Identite)",
+   "TRAP souk_shop/data/catalog.json:3 (product SKU shaped like a CIN) ← Moroccan CIN (Carte Nationale d'Identite)",
+   "CLEAN clean_controls/.env.example:1 ← CMI / Payzone / Stripe live merchant key",
+   "CLEAN clean_controls/.env.example:2 ← Database URI with inline password",
+   "CLEAN clean_controls/build_info.py:5 ← Moroccan CIN (Carte Nationale d'Identite)"
+  ],
+  "avg_latency": 0.0,
+  "llm_coverage": [
+   0,
+   30
+  ],
+  "engines_used": [
+   "regex",
+   "regex (no vision)"
+  ]
+ }
+]
