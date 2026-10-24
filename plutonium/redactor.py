@@ -50,11 +50,7 @@ def kind_from_rule(rule_id: str) -> str:
 
 
 def _digits(seed: str, n: int) -> str:
-    out, counter = "", 0
-    while len(out) < n:
-        out += str(int(hashlib.sha256(f"{seed}:{counter}".encode()).hexdigest(), 16))
-        counter += 1
-    return out[:n]
+    return "0" * n
 
 
 def _hex(seed: str, n: int = 8) -> str:

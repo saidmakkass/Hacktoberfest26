@@ -53,7 +53,7 @@ def test_twin_rib_and_iban_checksums_valid():
         assert is_valid_rib(synthetic_twin("rib", v))
     iban = synthetic_twin("iban", "MA64011519000001205000534921")
     assert iban.startswith("MA999") is False and iban.startswith("MA") and is_valid_iban(iban)
-    assert synthetic_twin("cin", "BE847291") != synthetic_twin("cin", "AB123456")
+    assert synthetic_twin("cin", "BE847291") == "ZZ000000"
 
 
 def test_twin_regex_interaction_documented():

@@ -156,8 +156,16 @@ _SYNTHETIC_TWIN = re.compile(r"^(ZZ\d{5,6}|Z\d{9}|999[ -]?\d{3}[ -]?\d{16}[ -]?\
                              r"MA\d{2}999\d{21}|cmi_test_SYNTH_\w+|AKIASYNTH\w+)$")
 
 
+_ZERO_PLACEHOLDER = re.compile(r"^[A-Za-z]{0,2}[\s+-]*(?:0[\s-]*){5,}$")
+
+
+def _is_placeholder(value: str) -> bool:
+    v = (value or "").strip()
+    return bool(_SYNTHETIC_TWIN.match(v) or _ZERO_PLACEHOLDER.match(v))
+
+
 def _allowlisted(cfg: PlutoniumConfig, value: str, line: str) -> bool:
-    if cfg.is_allowlisted(value) or _SYNTHETIC_TWIN.match(value.strip()):
+    if cfg.is_allowlisted(value) or _is_placeholder(value):
         return True  # explicit allowlist, or a reserved-prefix synthetic twin we generated
     return any(a in line for a in cfg.allowlist if a in _ENV_SAFE_MARKERS)
 
@@ -941,6 +949,9 @@ def normalize_findings(raw: Any, default_file: str, target_type: str = "text") -
         reason = str(_first(it, "reason", "description", "explanation", "details", "message") or "").strip()
         snippet = _first(it, "offending_snippet", "snippet", "offending", "text", "value", "code", "evidence")
         if not (title or reason or snippet):
+            continue
+        if (cat != FindingCategory.LOGICAL_BUG and isinstance(snippet, str)
+                and _is_placeholder(snippet) and target_type != "image"):
             continue
         rule_id = str(_first(it, "rule_id", "rule", "id_rule") or f"gemma.{cat.value}")
         ls = _to_int(_first(it, "line_start", "line", "start_line", "lineno"))

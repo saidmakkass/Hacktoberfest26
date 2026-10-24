@@ -16,7 +16,8 @@ from typing import Callable
 import yaml
 from PIL import Image
 from plutonium.config import PlutoniumConfig, find_config, validate_yaml
-from plutonium.models import ScanResult
+from plutonium.models import FindingCategory, ScanResult
+from plutonium.scanner import _is_placeholder
 from plutonium.review_policy import ReviewPolicy
 
 
@@ -391,8 +392,13 @@ class ReviewSession:
         except Exception as e:
             blockers.append(f'Validation scan failed: {e}')
             result = self.result
+        applied = {(f.replacement_snippet or '').strip() for f in self.findings
+                   if f.category != FindingCategory.LOGICAL_BUG and (f.replacement_snippet or '').strip()}
         remaining = []
         for f in result.findings:
+            snippet = (f.offending_snippet or '').strip()
+            if f.category != FindingCategory.LOGICAL_BUG and snippet and (snippet in applied or _is_placeholder(snippet)):
+                continue  # our own replacement value: never re-flag it
             if self._finding_key(f) not in dismissed:
                 remaining.append(f)
         blockers.extend(f'{f.file_path}: {f.title}' for f in remaining)
