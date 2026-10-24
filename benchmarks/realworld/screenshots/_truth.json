@@ -1,0 +1,78 @@
+[
+ {
+  "image": "terminal_env.png",
+  "kind": "openai_api_key",
+  "keywords": [
+   "openai",
+   "sk-proj"
+  ],
+  "bbox_2d": [
+   354,
+   179,
+   393,
+   510
+  ]
+ },
+ {
+  "image": "terminal_env.png",
+  "kind": "stripe_secret_key",
+  "keywords": [
+   "stripe",
+   "sk_live"
+  ],
+  "bbox_2d": [
+   686,
+   210,
+   725,
+   541
+  ]
+ },
+ {
+  "image": "cin_card.png",
+  "kind": "name",
+  "keywords": [
+   "name",
+   "nom",
+   "prenom",
+   "holder"
+  ],
+  "bbox_2d": [
+   311,
+   560,
+   356,
+   750
+  ]
+ },
+ {
+  "image": "cin_card.png",
+  "kind": "name",
+  "keywords": [
+   "name",
+   "nom",
+   "prenom",
+   "holder"
+  ],
+  "bbox_2d": [
+   410,
+   560,
+   447,
+   653
+  ]
+ },
+ {
+  "image": "cin_card.png",
+  "kind": "cin",
+  "keywords": [
+   "cin",
+   "national",
+   "identit",
+   "id number"
+  ],
+  "bbox_2d": [
+   611,
+   560,
+   647,
+   715
+  ]
+ }
+]

@@ -1,0 +1,3 @@
+SEED = 2026
+NA_VALUE = -1.0
+WANDB_PROJECT = "oasis-soil"
