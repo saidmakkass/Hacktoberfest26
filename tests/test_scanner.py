@@ -472,3 +472,11 @@ def test_darija_latin_script_in_plain_text_log():
     log = "client: salam khouya, smiti Khadija Berrada, CIN dyali BK482913\nagent: Merci madame.\n"
     hits = heuristic_logic_scan(log, "support_log.txt", [])
     assert [f.line_start for f in hits if f.rule_id == "heur.darija_pii_note"] == [1]
+
+
+def test_darija_line_keeps_value_level_regex_findings(tmp_path):
+    from barakagate.scanner import Scanner
+    (tmp_path / "log.txt").write_text("client: salam khouya, CIN dyali BK482913\n", encoding="utf-8")
+    r = Scanner(tmp_path, offline=True).scan_files([str(tmp_path / "log.txt")])
+    rules = {f.rule_id for f in r.findings}
+    assert "heur.darija_pii_note" in rules and "ma.cin" in rules

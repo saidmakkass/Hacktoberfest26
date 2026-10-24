@@ -1149,8 +1149,8 @@ def merge_findings(llm: List[Finding], regex: List[Finding], heur: List[Finding]
             if gs and (gs == val or gs == raw_val):
                 tgt = g
                 break
-            if gs and (raw_val in gs or gs in val) and not absorbed.get(g.id, set()) - {"heur"} \
-                    and g.category != FindingCategory.LOGICAL_BUG:
+            if gs and g.id in llm_ids and (raw_val in gs or gs in val) \
+                    and not absorbed.get(g.id, set()) - {"heur"} and g.category != FindingCategory.LOGICAL_BUG:
                 tgt = g
                 break
         if tgt is None:
