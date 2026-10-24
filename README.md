@@ -1,4 +1,4 @@
-# BarakaGate
+# Plutonium
 
 **An open-weight pre-flight gate that stops secrets, multilingual PII and cross-file logic bugs before they leave a developer's laptop. Powered by Gemma 4.**
 
@@ -10,9 +10,9 @@ MIT license | Python 3.10+ | Models: `gemma-4-26b-a4b-it`, `gemma-4-31b-it`, `ge
 
 ## Results at a glance
 
-We compared BarakaGate with a classic pattern-matching scanner (like Gitleaks) on a separate test set we never tuned against. Every number comes from a script in this repo.
+We compared Plutonium with a classic pattern-matching scanner (like Gitleaks) on a separate test set we never tuned against. Every number comes from a script in this repo.
 
-| Metric | BarakaGate + Gemma 4 | Classic scanner |
+| Metric | Plutonium + Gemma 4 | Classic scanner |
 |---|---|---|
 | Issues caught | **33 / 35 (94%)** | 9 / 35 (26%) |
 | Logic and security bugs | **12 / 13** | 0 / 13 |
@@ -24,7 +24,7 @@ We compared BarakaGate with a classic pattern-matching scanner (like Gitleaks) o
 | Raw personal data sent to the cloud (`hybrid_smart`) | **0 / 4** | n/a |
 | End-to-end checks passing | **19 / 19** | n/a |
 
-BarakaGate caught everything the classic scanner caught, plus 24 more issues.
+Plutonium caught everything the classic scanner caught, plus 24 more issues.
 
 ## 1. The problem
 
@@ -42,7 +42,7 @@ Classic scanners read one line at a time. They miss:
 
 **Who it is for:** Moroccan fintech and e-commerce teams, university and research labs, and any team that commits code or uses cloud AI.
 
-## 2. What BarakaGate does
+## 2. What Plutonium does
 
 | Capability | What it covers |
 |---|---|
@@ -70,7 +70,7 @@ Classic scanners read one line at a time. They miss:
 | `local_edge` | `gemma4:e4b` | Ollama on the laptop | Fully offline, nothing leaves the machine |
 | `hybrid_smart` | `e4b` then `31b` | Local, then cloud | Remove personal data locally, then audit in the cloud |
 
-If a model is down, BarakaGate falls back automatically (other cloud model → Ollama → cache → offline rules) and always shows which engine answered.
+If a model is down, Plutonium falls back automatically (other cloud model → Ollama → cache → offline rules) and always shows which engine answered.
 
 ## 4. Accuracy
 
@@ -81,8 +81,8 @@ If a model is down, BarakaGate falls back automatically (other cloud model → O
 | Engine | Leaks / PII | Logic bugs | Tricky cases | Cross-file | Screenshots | Recall |
 |---|---|---|---|---|---|---|
 | Classic scanner | 9 / 17 | 0 / 13 | 0 / 21 | 0 / 6 | 0 / 5 | 26% |
-| BarakaGate offline (no LLM) | 9 / 17 | 3 / 13 | 3 / 21 | 1 / 6 | 0 / 5 | 34% |
-| BarakaGate + Gemma 4 26B | **17 / 17** | **12 / 13** | **20 / 21** | **5 / 6** | **4 / 5** | **94%** |
+| Plutonium offline (no LLM) | 9 / 17 | 3 / 13 | 3 / 21 | 1 / 6 | 0 / 5 | 34% |
+| Plutonium + Gemma 4 26B | **17 / 17** | **12 / 13** | **20 / 21** | **5 / 6** | **4 / 5** | **94%** |
 
 - The difference with the classic scanner is statistically significant (p ≈ 0.0000001).
 - Gemma 4 missed 2 items: one averaging bug and one name region on an ID card.
@@ -144,7 +144,7 @@ python3 benchmarks/firewall_bench.py
 
 ## 10. Interfaces and policy
 
-**BarakaGate Studio (4 tabs)**
+**Plutonium Studio (4 tabs)**
 
 1. Code inspector: findings, cross-file context, and one fix decision per finding.
 2. Image sanitizer: Gemma 4 boxes on screenshots, click to blur or keep.
@@ -167,10 +167,17 @@ barakagate/
   redactor.py        fixes, .env extraction, image blur, prompt vault
   cli.py             CLI and pre-commit hook
   server.py          FastAPI backend
-  static/            BarakaGate Studio
+  static/            Plutonium Studio
 benchmarks/          test set and benchmark scripts
 samples/             demo scenarios
 ```
+
+## Team
+
+- Khalil Raghib
+- Said Makkass
+- Ahmed Ait Elaaoud
+- Omar Gourragui
 
 ## License
 
