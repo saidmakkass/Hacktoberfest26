@@ -1,0 +1,54 @@
+[
+ {
+  "label": "Student CNE R139482710",
+  "category": "privacy_pii",
+  "severity": "HIGH",
+  "value": "R139482710",
+  "reason": "Student CNE/Massar identifier in notebook output",
+  "bbox_2d": [
+   350,
+   78,
+   382,
+   188
+  ]
+ },
+ {
+  "label": "Student CNE G130045892",
+  "category": "privacy_pii",
+  "severity": "HIGH",
+  "value": "G130045892",
+  "reason": "Student CNE/Massar identifier in notebook output",
+  "bbox_2d": [
+   470,
+   78,
+   502,
+   188
+  ]
+ },
+ {
+  "label": "Student CNE K120398471",
+  "category": "privacy_pii",
+  "severity": "HIGH",
+  "value": "K120398471",
+  "reason": "Student CNE/Massar identifier in notebook output",
+  "bbox_2d": [
+   590,
+   78,
+   622,
+   188
+  ]
+ },
+ {
+  "label": "Student CNE P141127365",
+  "category": "privacy_pii",
+  "severity": "HIGH",
+  "value": "P141127365",
+  "reason": "Student CNE/Massar identifier in notebook output",
+  "bbox_2d": [
+   710,
+   78,
+   742,
+   188
+  ]
+ }
+]

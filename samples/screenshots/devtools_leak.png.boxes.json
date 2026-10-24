@@ -1,0 +1,54 @@
+[
+ {
+  "label": "Bearer JWT token",
+  "category": "security_leak",
+  "severity": "HIGH",
+  "value": "eyJhbGciOiJIUzI1NiIs...",
+  "reason": "JWT bearer token visible in DevTools headers",
+  "bbox_2d": [
+   234,
+   263,
+   266,
+   517
+  ]
+ },
+ {
+  "label": "Moroccan CIN",
+  "category": "privacy_pii",
+  "severity": "HIGH",
+  "value": "AB654321",
+  "reason": "National ID number (Law 09-08 PII) shown in admin panel",
+  "bbox_2d": [
+   421,
+   175,
+   444,
+   263
+  ]
+ },
+ {
+  "label": "Moroccan 24-digit RIB",
+  "category": "privacy_pii",
+  "severity": "CRITICAL",
+  "value": "011810000012345678901234",
+  "reason": "Customer bank account (RIB) visible",
+  "bbox_2d": [
+   507,
+   75,
+   530,
+   340
+  ]
+ },
+ {
+  "label": "CMI live merchant key",
+  "category": "security_leak",
+  "severity": "CRITICAL",
+  "value": "cmi_live_9823749283",
+  "reason": "Live CMI payment gateway key visible",
+  "bbox_2d": [
+   591,
+   175,
+   623,
+   385
+  ]
+ }
+]
