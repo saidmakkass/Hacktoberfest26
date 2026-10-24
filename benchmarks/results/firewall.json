@@ -1,0 +1,91 @@
+{
+ "removed": 12,
+ "total": 17,
+ "items": [
+  {
+   "value": "Stripe live key",
+   "file": "souk_shop/config.py",
+   "removed": true
+  },
+  {
+   "value": "DB password",
+   "file": "souk_shop/config.py",
+   "removed": true
+  },
+  {
+   "value": "CIN (JSON fixture)",
+   "file": "souk_shop/data/test_buyers.json",
+   "removed": true
+  },
+  {
+   "value": "IBAN 4-digit groups",
+   "file": "souk_shop/data/test_buyers.json",
+   "removed": true
+  },
+  {
+   "value": "Phone, irregular spacing",
+   "file": "souk_shop/data/test_buyers.json",
+   "removed": true
+  },
+  {
+   "value": "CIN in Arabic text",
+   "file": "souk_shop/support/tickets.csv",
+   "removed": true
+  },
+  {
+   "value": "Phone in Arabic text",
+   "file": "souk_shop/support/tickets.csv",
+   "removed": true
+  },
+  {
+   "value": "RIB 4-digit groups",
+   "file": "souk_shop/support/tickets.csv",
+   "removed": false
+  },
+  {
+   "value": "Full name (French)",
+   "file": "souk_shop/support/tickets.csv",
+   "removed": false
+  },
+  {
+   "value": "Home address (French)",
+   "file": "souk_shop/support/tickets.csv",
+   "removed": false
+  },
+  {
+   "value": "Split CMI key (2nd half)",
+   "file": "atlas_wallet_ts/src/config.ts",
+   "removed": false
+  },
+  {
+   "value": "OpenAI key",
+   "file": "atlas_wallet_ts/src/config.ts",
+   "removed": false
+  },
+  {
+   "value": "Student CNE #1",
+   "file": "oasis_ml_lab/students.csv",
+   "removed": true
+  },
+  {
+   "value": "Student CNE #2",
+   "file": "oasis_ml_lab/students.csv",
+   "removed": true
+  },
+  {
+   "value": "Unquoted WANDB key",
+   "file": "oasis_ml_lab/slurm/train.sbatch",
+   "removed": true
+  },
+  {
+   "value": "Internal HPC host",
+   "file": "oasis_ml_lab/slurm/train.sbatch",
+   "removed": true
+  },
+  {
+   "value": "HF token in notebook output",
+   "file": "oasis_ml_lab/notebooks/explore.ipynb",
+   "removed": true
+  }
+ ]
+}
