@@ -1,0 +1,1420 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarakaGate Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg fill='%2310b981'%3E%3Crect x='14' y='14' width='36' height='36' rx='3'/%3E%3Crect x='14' y='14' width='36' height='36' rx='3' transform='rotate(45 32 32)'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='9' fill='%23020617'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  if (window.tailwind) tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'], mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'] },
+    } }
+  };
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #020617; --panel: #0b1222; --panel2: #0f172a; --line: #1e293b; --line2: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --brand: #10b981; --brand2: #14b8a6;
+    --leak: #f43f5e; --bug: #8b5cf6; --warn: #f59e0b;
+  }
+  html, body { background: var(--bg); color: var(--text); }
+  body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; min-height: 100vh; }
+  .font-mono, code, pre, .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace; }
+  .font-mono, code, pre, textarea, .codebox, .diff-line, .tok, .gutter { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+  ::selection { background: rgba(16,185,129,.35); }
+  * { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+  ::-webkit-scrollbar { width: 9px; height: 9px; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9px; }
+  .zellige {
+    background-color: #030a17;
+    background-image:
+      radial-gradient(1200px 300px at 10% -40%, rgba(16,185,129,.18), transparent 60%),
+      radial-gradient(900px 260px at 95% -60%, rgba(20,184,166,.14), transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%2310b981' stroke-opacity='.10' stroke-width='1'%3E%3Cpath d='M28 6l6.5 15.5L50 28l-15.5 6.5L28 50l-6.5-15.5L6 28l15.5-6.5z'/%3E%3Crect x='17' y='17' width='22' height='22' transform='rotate(45 28 28)'/%3E%3Crect x='17' y='17' width='22' height='22'/%3E%3Cpath d='M0 0l6 6M56 0l-6 6M0 56l6-6M56 56l-6-6'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .glass { background: linear-gradient(180deg, rgba(15,23,42,.88), rgba(11,18,34,.92)); border: 1px solid var(--line); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
+  .btn { display:inline-flex; align-items:center; gap:.5rem; border-radius: 10px; padding:.55rem .9rem; font-weight:600; font-size:.85rem; transition: all .15s ease; border:1px solid transparent; cursor:pointer; white-space: nowrap; }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .btn-brand { background: linear-gradient(135deg,#10b981,#0d9488); color:#022c22; box-shadow: 0 0 0 1px rgba(16,185,129,.3), 0 8px 24px -10px rgba(16,185,129,.7); }
+  .btn-brand:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-ghost { background:#0f172a; border-color: var(--line2); color:#cbd5e1; }
+  .btn-ghost:hover:not(:disabled) { border-color:#10b981; color:#ecfdf5; }
+  .btn-rose { background: linear-gradient(135deg,#e11d48,#be123c); color:#fff1f2; }
+  .btn-rose:hover:not(:disabled) { filter: brightness(1.1); }
+  .sel { background:#0b1222; border:1px solid var(--line2); color:#e2e8f0; border-radius:10px; padding:.45rem .6rem; font-size:.8rem; }
+  .sel:focus, .btn:focus-visible, textarea:focus { outline: 2px solid rgba(16,185,129,.6); outline-offset: 1px; }
+  .tab-btn { position:relative; padding:.8rem 1rem; color:#94a3b8; font-weight:600; font-size:.86rem; border-bottom:2px solid transparent; transition: all .15s; white-space: nowrap; }
+  .tab-btn:hover { color:#e2e8f0; }
+  .tab-btn.active { color:#ecfdf5; border-bottom-color:#10b981; background: linear-gradient(180deg, transparent, rgba(16,185,129,.08)); }
+  .tab-panel { display:none; animation: fadein .25s ease; }
+  .tab-panel.active { display:block; }
+  @keyframes fadein { from { opacity:0; transform: translateY(4px);} to { opacity:1; transform:none; } }
+  .chip { display:inline-flex; align-items:center; gap:.3rem; font-size:.7rem; font-weight:700; letter-spacing:.02em; padding:.18rem .5rem; border-radius:999px; border:1px solid; white-space: nowrap; }
+  .chip-leak { color:#fda4af; border-color:rgba(244,63,94,.45); background:rgba(244,63,94,.12); }
+  .chip-bug { color:#c4b5fd; border-color:rgba(139,92,246,.5); background:rgba(139,92,246,.14); }
+  .chip-pass { color:#6ee7b7; border-color:rgba(16,185,129,.45); background:rgba(16,185,129,.12); }
+  .chip-warn { color:#fcd34d; border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.12); }
+  .chip-mute { color:#cbd5e1; border-color:#334155; background:#0f172a; }
+  .chip-cyan { color:#67e8f9; border-color:rgba(34,211,238,.4); background:rgba(34,211,238,.1); }
+  .sev-CRITICAL { color:#fff1f2; background:#be123c; border-color:#fb7185; }
+  .sev-HIGH { color:#ffe4e6; background:rgba(225,29,72,.35); border-color:rgba(251,113,133,.6); }
+  .sev-MEDIUM { color:#fef3c7; background:rgba(217,119,6,.3); border-color:rgba(251,191,36,.55); }
+  .sev-LOW { color:#e2e8f0; background:#1e293b; border-color:#475569; }
+  /* code viewer */
+  .codebox { background:#060c1a; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12.5px; line-height:1.6; counter-reset: none; }
+  .cl { display:flex; min-width: max-content; border-left: 3px solid transparent; }
+  .cl:hover { background: rgba(148,163,184,.05); }
+  .cl .ln { width: 3.2rem; flex: none; text-align:right; padding-right:.9rem; color:#475569; user-select:none; }
+  .cl .lc { white-space: pre; padding-right: 1.5rem; color:#cbd5e1; }
+  .cl.hl-leak { background: rgba(244,63,94,.10); border-left-color:#f43f5e; }
+  .cl.hl-bug { background: rgba(139,92,246,.12); border-left-color:#8b5cf6; }
+  .cl.hl-leak .ln { color:#fb7185; } .cl.hl-bug .ln { color:#a78bfa; }
+  .cl.flash { animation: flash 1.4s ease; }
+  @keyframes flash { 0%,30% { background: rgba(250,204,21,.35); } 100% { } }
+  .hljs { background: transparent !important; padding: 0 !important; }
+  /* diff */
+  .diff-line { white-space: pre; font-family:"JetBrains Mono", monospace; font-size:12px; line-height:1.55; padding: 0 .75rem; min-width: max-content; }
+  .diff-add { background: rgba(16,185,129,.13); color:#a7f3d0; }
+  .diff-del { background: rgba(244,63,94,.13); color:#fecdd3; }
+  .diff-hunk { color:#67e8f9; background: rgba(34,211,238,.06); }
+  .diff-meta { color:#64748b; }
+  /* decisions */
+  .seg { display:flex; flex-wrap:wrap; gap:.35rem; }
+  .seg label { cursor:pointer; }
+  .seg input { position:absolute; opacity:0; pointer-events:none; }
+  .seg span { display:inline-block; font-size:.72rem; font-weight:600; padding:.38rem .6rem; border-radius:8px; border:1px solid #334155; color:#94a3b8; background:#0b1222; transition: all .12s; }
+  .seg label:hover span { border-color:#64748b; color:#e2e8f0; }
+  .seg input:checked + span { color:#ecfdf5; border-color:#10b981; background: rgba(16,185,129,.16); box-shadow: inset 0 0 0 1px rgba(16,185,129,.35); }
+  .seg input:checked + span.keep { color:#fef3c7; border-color:#f59e0b; background: rgba(245,158,11,.14); box-shadow:none; }
+  .seg input:focus-visible + span { outline: 2px solid #10b981; }
+  .finding { transition: border-color .15s, transform .15s, box-shadow .15s; }
+  .finding:hover { border-color:#334155; }
+  .finding.leak { box-shadow: inset 3px 0 0 #f43f5e; }
+  .finding.bug { box-shadow: inset 3px 0 0 #8b5cf6; }
+  .finding.ignored { opacity:.6; }
+  .filter-chip { font-size:.75rem; font-weight:600; padding:.3rem .7rem; border-radius:999px; border:1px solid #334155; color:#94a3b8; background:#0b1222; }
+  .filter-chip.active { color:#022c22; background:#10b981; border-color:#10b981; }
+  /* skeleton */
+  .skel { background: linear-gradient(90deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); background-size: 200% 100%; animation: shimmer 1.3s infinite linear; border-radius: 8px; }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+  .spinner { width:18px; height:18px; border-radius:50%; border:2px solid rgba(16,185,129,.25); border-top-color:#10b981; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .pulse-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .pulse-dot.on { background:#10b981; box-shadow: 0 0 0 0 rgba(16,185,129,.6); animation: ping 2s infinite; }
+  .pulse-dot.off { background:#f43f5e; }
+  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,.55);} 70% { box-shadow: 0 0 0 7px rgba(16,185,129,0);} 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0);} }
+  /* toggle */
+  .toggle { position:relative; width:38px; height:22px; border-radius:999px; background:#1e293b; border:1px solid #334155; transition: all .15s; flex:none; }
+  .toggle::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#94a3b8; transition: all .15s; }
+  input:checked + .toggle { background: rgba(16,185,129,.35); border-color:#10b981; }
+  input:checked + .toggle::after { left:18px; background:#10b981; }
+  /* token chips */
+  .tok { display:inline-block; font-family:"JetBrains Mono", monospace; font-size:.78em; font-weight:700; color:#99f6e4; background: rgba(20,184,166,.14); border:1px solid rgba(45,212,191,.45); border-radius:6px; padding:0 .3rem; margin: 0 1px; }
+  .restored { color:#bbf7d0; background: rgba(16,185,129,.18); border-bottom: 2px solid #10b981; border-radius: 3px; padding: 0 2px; }
+  .pre-wrap { white-space: pre-wrap; word-break: break-word; }
+  /* markdown */
+  .md table { width:100%; border-collapse: collapse; font-size:.8rem; margin: .75rem 0; }
+  .md th { text-align:left; color:#a7f3d0; background:#0f172a; font-weight:700; padding:.5rem .6rem; border-bottom:1px solid #334155; position: sticky; top: 0; }
+  .md td { padding:.45rem .6rem; border-bottom:1px solid #1e293b; color:#cbd5e1; vertical-align: top; }
+  .md tr:hover td { background: rgba(148,163,184,.05); }
+  .md h1,.md h2,.md h3 { font-weight:700; color:#ecfdf5; margin: 1rem 0 .4rem; }
+  .md h1 { font-size:1.15rem; } .md h2 { font-size:1.02rem; } .md h3 { font-size:.92rem; }
+  .md p, .md li { color:#cbd5e1; font-size:.85rem; line-height:1.6; }
+  .md ul { list-style: disc; padding-left: 1.2rem; }
+  .md code { background:#0f172a; border:1px solid #1e293b; padding: 0 .3rem; border-radius:5px; font-size:.8em; color:#a7f3d0; }
+  .md pre code { display:block; padding:.75rem; overflow:auto; }
+  /* yaml editor */
+  .editor-wrap { display:flex; background:#060c1a; border:1px solid #1e293b; border-radius:12px; overflow:hidden; }
+  .gutter { flex:none; padding:.75rem .5rem .75rem .75rem; color:#475569; text-align:right; user-select:none; font-family:"JetBrains Mono", monospace; font-size:12.5px; line-height:1.6; overflow:hidden; white-space: pre; background:#050a16; border-right:1px solid #111a2e; }
+  .yaml-ta { flex:1; resize:none; background:transparent; color:#d1fae5; font-family:"JetBrains Mono", monospace; font-size:12.5px; line-height:1.6; padding:.75rem; white-space: pre; overflow:auto; border:0; outline:none; tab-size: 2; }
+  /* canvas */
+  #imgCanvas { touch-action: none; cursor: crosshair; display:block; max-width:100%; border-radius: 10px; }
+  .compare { position:relative; overflow:hidden; border-radius:10px; user-select:none; }
+  .compare img { display:block; width:100%; height:auto; }
+  .compare .before { position:absolute; inset:0; overflow:hidden; border-right: 2px solid #10b981; }
+  .compare .before img { width: auto; height: 100%; max-width: none; }
+  .modal-bg { background: rgba(2,6,23,.78); backdrop-filter: blur(6px); }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display:none; }
+  details[open] .chev { transform: rotate(90deg); }
+  .chev { transition: transform .15s; display:inline-block; }
+  .toast { animation: toastin .25s ease; }
+  @keyframes toastin { from { opacity:0; transform: translateY(8px) scale(.98);} to { opacity:1; transform:none; } }
+  .thinking-glow { background: radial-gradient(500px 120px at 50% 0%, rgba(16,185,129,.12), transparent 70%); }
+  .bar { transition: width .8s cubic-bezier(.2,.8,.2,1); }
+  .kbd { font-family:"JetBrains Mono", monospace; font-size:.7rem; padding:.05rem .35rem; border-radius:5px; border:1px solid #334155; background:#0f172a; color:#94a3b8; }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- ============================== HEADER ============================== -->
+<header class="zellige border-b border-slate-800/80 lg:sticky lg:top-0 z-40 backdrop-blur">
+  <div class="max-w-[1680px] mx-auto px-4 lg:px-6 py-3 flex flex-wrap items-center gap-x-5 gap-y-3">
+    <div class="flex items-center gap-3 mr-auto min-w-0">
+      <svg class="w-10 h-10 flex-none drop-shadow-[0_0_12px_rgba(16,185,129,.45)]" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#0d9488"/></linearGradient></defs>
+        <g fill="url(#bg1)"><rect x="13" y="13" width="38" height="38" rx="4"/><rect x="13" y="13" width="38" height="38" rx="4" transform="rotate(45 32 32)"/></g>
+        <path d="M32 18l10 4v8c0 7-4.4 12.2-10 14-5.6-1.8-10-7-10-14v-8z" fill="#020617"/>
+        <path d="M27.5 31.5l3.2 3.2 6-6.4" stroke="#34d399" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <h1 class="text-lg font-extrabold tracking-tight text-white">Baraka<span class="text-emerald-400">Gate</span> <span class="text-slate-400 font-semibold">Studio</span></h1>
+          <span class="hidden sm:inline text-[11px] text-slate-500 font-mono" dir="rtl" title="Baraka — blessing">بركة</span>
+        </div>
+        <div id="statusPill" class="mt-0.5 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 max-w-full">
+          <span class="pulse-dot on"></span><span class="truncate">BarakaGate v1.0 — Open-Weight Pre-Flight Security, Privacy &amp; Bug Gate</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <label class="sr-only" for="engineMode">Model engine</label>
+      <select id="engineMode" class="sel max-w-[19rem]" title="Model engine">
+        <option value="cloud_fast">⚡ Cloud Fast: gemma-4-26b-a4b-it (Gemini API MoE)</option>
+        <option value="cloud_deep">🧠 Cloud Deep: gemma-4-31b-it (Gemini API 256K)</option>
+        <option value="local_edge">🔒 Local Air-Gapped: gemma4:e4b (Laptop Ollama)</option>
+        <option value="hybrid_smart">🛡️ Hybrid Smart Router (Local gemma4:e4b Redact → Cloud gemma-4-31b-it Bug Audit)</option>
+      </select>
+      <label class="sr-only" for="domainPreset">Domain policy</label>
+      <select id="domainPreset" class="sel" title="Domain policy pack">
+        <option value="all">All Policy Packs</option>
+        <option value="fintech_morocco">🇲🇦 Moroccan Fintech &amp; E-Commerce</option>
+        <option value="research_lab">🎓 University &amp; Research Lab</option>
+        <option value="general_devsecops">🌐 General DevSecOps</option>
+      </select>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-900/70 pl-3 pr-1 py-1">
+        <svg class="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+        <span class="text-xs text-slate-300 font-mono" id="indexIndicator">Indexed: – Chunks / – Symbols</span>
+        <button id="reindexBtn" class="btn btn-ghost !py-1 !px-2 !text-[11px]" title="POST /api/index">Re-Index Codebase</button>
+      </div>
+      <div class="flex items-center gap-3 rounded-xl border border-slate-700/80 bg-slate-900/70 px-3 py-1.5 text-[11px] font-semibold">
+        <span class="flex items-center gap-1.5" id="cloudDot" title="Gemini API (GEMINI_API_KEY)"><span class="pulse-dot off"></span><span class="text-slate-300">Cloud</span><span class="mark text-slate-500">…</span></span>
+        <span class="flex items-center gap-1.5" id="ollamaDot" title="Local Ollama gemma4:e4b"><span class="pulse-dot off"></span><span class="text-slate-300">Ollama</span><span class="mark text-slate-500">…</span></span>
+      </div>
+      <label class="flex items-center gap-2 cursor-pointer rounded-xl border border-slate-700/80 bg-slate-900/70 px-3 py-1.5" title="Offline-safe: deterministic regex + heuristic engine and demo cache only — zero network calls">
+        <input type="checkbox" id="offlineToggle" class="sr-only">
+        <span class="toggle"></span>
+        <span class="text-[11px] font-semibold text-slate-300">Offline-safe</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- tabs -->
+  <nav class="max-w-[1680px] mx-auto px-2 lg:px-4 flex overflow-x-auto border-t border-slate-800/60" role="tablist">
+    <button class="tab-btn active" data-tab="tab-code" role="tab" id="tabbtn-code"><span class="text-emerald-400 mr-1">01</span> Code Diff, Leak &amp; Logical Bug Inspector</button>
+    <button class="tab-btn" data-tab="tab-image" role="tab" id="tabbtn-image"><span class="text-emerald-400 mr-1">02</span> Multimodal Screenshot &amp; Notebook Image Sanitizer</button>
+    <button class="tab-btn" data-tab="tab-firewall" role="tab" id="tabbtn-firewall"><span class="text-emerald-400 mr-1">03</span> "Safe-to-Prompt" Outbound Agent Firewall</button>
+    <button class="tab-btn" data-tab="tab-policy" role="tab" id="tabbtn-policy"><span class="text-emerald-400 mr-1">04</span> Custom Rules &amp; Benchmark</button>
+  </nav>
+</header>
+
+<main class="max-w-[1680px] mx-auto px-4 lg:px-6 py-5">
+
+<!-- ============================== TAB 1: CODE ============================== -->
+<section id="tab-code" class="tab-panel active" role="tabpanel">
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+    <!-- left -->
+    <div class="xl:col-span-7 space-y-4 min-w-0">
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-bold text-slate-200 tracking-wide uppercase">Quick Demo Scenarios</h2>
+          <span class="text-[11px] text-slate-500">Each scan indexes the scenario repo → pulls cross-file chunks → Gemma 4</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button class="scenario-btn btn btn-ghost !justify-start !py-3 text-left" data-scenario="fintech_morocco">
+            <span class="text-lg">🇲🇦</span><span class="whitespace-normal">[Load Moroccan Fintech Checkout PR]</span></button>
+          <button class="scenario-btn btn btn-ghost !justify-start !py-3 text-left" data-scenario="research_lab_um6p">
+            <span class="text-lg">🎓</span><span class="whitespace-normal">[Load Research Lab Notebook &amp; Pipeline]</span></button>
+          <button class="scenario-btn btn btn-ghost !justify-start !py-3 text-left" data-scenario="general_devsecops">
+            <span class="text-lg">🌐</span><span class="whitespace-normal">[Load General DevSecOps API]</span></button>
+          <button class="scenario-btn btn btn-ghost !justify-start !py-3 text-left" id="stagedBtn" data-scenario="__staged">
+            <span class="text-lg">⎇</span><span class="whitespace-normal">[Scan Live Git Staged Diff]</span></button>
+        </div>
+      </div>
+
+      <div class="card overflow-hidden">
+        <div class="flex flex-wrap items-center gap-2 px-4 py-2.5 border-b border-slate-800 bg-slate-900/40">
+          <div class="flex gap-1.5 mr-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500/70"></span><span class="w-2.5 h-2.5 rounded-full bg-amber-400/70"></span><span class="w-2.5 h-2.5 rounded-full bg-emerald-500/70"></span></div>
+          <div id="fileTabs" class="flex flex-wrap gap-1"></div>
+          <span id="codeTitle" class="ml-auto text-[11px] text-slate-500 font-mono truncate">no file loaded</span>
+        </div>
+        <div id="codeViewer" class="codebox overflow-auto max-h-[560px] min-h-[320px] py-3">
+          <div class="h-[300px] flex flex-col items-center justify-center text-center px-6 text-slate-500">
+            <svg class="w-12 h-12 mb-3 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13.5 6l-3 12"/></svg>
+            <p class="text-sm font-sans">Load a demo scenario to see the target file, the cross-file context the indexer pulls, and Gemma 4's findings.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <details id="ctxDetails" open>
+          <summary class="flex items-center gap-2 px-4 py-3">
+            <span class="chev text-slate-500">▶</span>
+            <h3 class="text-sm font-bold text-slate-200">Retrieved Cross-File Context</h3>
+            <span id="ctxCount" class="chip chip-cyan">0 chunks</span>
+            <span class="ml-auto text-[11px] text-slate-500 hidden sm:inline">AST symbol graph (1-hop) + BM25 → packed into the Gemma 4 prompt</span>
+          </summary>
+          <div id="ctxList" class="px-4 pb-4 space-y-2">
+            <p class="text-xs text-slate-500">No context yet.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- right -->
+    <div class="xl:col-span-5 min-w-0">
+      <div class="xl:sticky xl:top-[196px] space-y-4">
+        <div id="scoreboard" class="card p-4 relative overflow-hidden">
+          <div class="absolute inset-0 pointer-events-none opacity-60" style="background: radial-gradient(400px 120px at 100% 0%, rgba(16,185,129,.12), transparent 70%);"></div>
+          <div class="relative space-y-3">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm font-bold uppercase tracking-wide text-slate-200">Comparison Scoreboard</h2>
+              <div id="verdictBadge" class="chip chip-mute text-sm !px-3 !py-1">NO SCAN</div>
+            </div>
+            <div class="rounded-xl border border-slate-700/70 bg-slate-900/60 p-3">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-[13px] text-slate-300 font-semibold" id="regexLine">Regex Baseline (Gitleaks): – Caught (0 Logical Bugs, 0 Contextual/Image Leaks)</div>
+                <div class="text-2xl font-extrabold text-slate-400 tabular-nums" id="regexNum">–</div>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-slate-800 overflow-hidden"><div id="regexBar" class="bar h-full bg-slate-500" style="width:0%"></div></div>
+            </div>
+            <div class="rounded-xl border border-emerald-500/40 bg-emerald-500/[.07] p-3">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-[13px] text-emerald-100 font-semibold" id="gemmaLine">BarakaGate (Gemma 4): – Caught (Leaks + PII + Cross-File Logical Bugs)</div>
+                <div class="text-2xl font-extrabold text-emerald-400 tabular-nums" id="gemmaNum">–</div>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-slate-800 overflow-hidden"><div id="gemmaBar" class="bar h-full bg-gradient-to-r from-emerald-500 to-teal-400" style="width:0%"></div></div>
+              <div id="breakdown" class="mt-2 flex flex-wrap gap-1.5"></div>
+            </div>
+            <div id="scanMeta" class="text-[11px] text-slate-500 font-mono"></div>
+            <p id="scanSummary" class="text-xs text-slate-400 leading-relaxed"></p>
+            <div id="scanWarnings"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <details id="thinkBox">
+            <summary class="flex items-center gap-2 px-4 py-3">
+              <span class="chev text-slate-500">▶</span>
+              <span class="font-mono text-xs text-violet-300">&lt;|think|&gt;</span>
+              <h3 class="text-sm font-bold text-slate-200">Reasoning Trace</h3>
+              <span class="ml-auto text-[11px] text-slate-500" id="thinkLen"></span>
+            </summary>
+            <pre id="thinkTrace" class="mx-4 mb-4 max-h-64 overflow-auto rounded-lg bg-[#060c1a] border border-slate-800 p-3 text-[11.5px] leading-relaxed text-slate-300 font-mono pre-wrap">No reasoning trace yet.</pre>
+          </details>
+        </div>
+
+        <div class="card flex flex-col min-h-[320px]">
+          <div class="flex flex-wrap items-center gap-2 px-4 pt-3 pb-2 border-b border-slate-800">
+            <h3 class="text-sm font-bold text-slate-200 mr-auto">Findings &amp; Human-in-the-Loop Triage</h3>
+            <div class="flex gap-1.5" id="filterChips">
+              <button class="filter-chip active" data-filter="all">All</button>
+              <button class="filter-chip" data-filter="security_leak">Leaks</button>
+              <button class="filter-chip" data-filter="privacy_pii">PII</button>
+              <button class="filter-chip" data-filter="logical_bug">Bugs</button>
+            </div>
+          </div>
+          <div id="findingsWrap" class="relative flex-1">
+            <div id="findings" class="p-3 space-y-3 max-h-[640px] overflow-auto">
+              <div class="py-12 text-center text-slate-500 text-sm">Findings will appear here. Every card gets a human decision before anything touches disk.</div>
+            </div>
+          </div>
+          <div class="sticky bottom-0 flex flex-wrap gap-2 p-3 border-t border-slate-800 bg-[#0b1222]/95 backdrop-blur rounded-b-[14px]">
+            <button id="previewBtn" class="btn btn-ghost flex-1 justify-center" disabled>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              Preview Combined Patched File</button>
+            <button id="applyBtn" class="btn btn-brand flex-1 justify-center" disabled>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg>
+              Apply Selected Fixes to Disk</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== TAB 2: IMAGE ============================== -->
+<section id="tab-image" class="tab-panel" role="tabpanel">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <div class="lg:col-span-3 space-y-4 min-w-0">
+      <div class="card p-4">
+        <h2 class="text-sm font-bold uppercase tracking-wide text-slate-200 mb-3">Images</h2>
+        <div id="imageList" class="space-y-2"><div class="skel h-14"></div><div class="skel h-14"></div></div>
+      </div>
+      <label id="dropzone" class="card p-5 flex flex-col items-center justify-center text-center border-dashed !border-2 !border-slate-700 hover:!border-emerald-500/70 transition cursor-pointer">
+        <svg class="w-9 h-9 text-emerald-400 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span class="text-sm font-semibold text-slate-200">Drop a screenshot here</span>
+        <span class="text-[11px] text-slate-500 mt-1">or click to upload (PNG / JPG) — scanned with the selected engine</span>
+        <input type="file" id="fileInput" accept="image/*" class="hidden">
+      </label>
+    </div>
+
+    <div class="lg:col-span-6 min-w-0 space-y-4">
+      <div class="card p-3">
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+          <button id="visionScanBtn" class="btn btn-brand" disabled>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></svg>
+            Run Gemma 4 Vision Scan</button>
+          <label class="sr-only" for="blurStyle">Blur style</label>
+          <select id="blurStyle" class="sel">
+            <option value="gaussian_blur">Gaussian Blur</option>
+            <option value="solid_mask">Solid Cyber Redact Box</option>
+          </select>
+          <button id="redactBtn" class="btn btn-rose" disabled>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+            Apply Redaction &amp; Download PNG</button>
+          <span class="ml-auto text-[11px] text-slate-500">Click a box to toggle blur/keep · drag to draw a custom box</span>
+        </div>
+        <div id="canvasWrap" class="relative rounded-xl bg-[#060c1a] border border-slate-800 min-h-[360px] flex items-center justify-center overflow-hidden">
+          <canvas id="imgCanvas" class="hidden"></canvas>
+          <div id="canvasEmpty" class="text-slate-500 text-sm p-10 text-center">Select a sample screenshot or drop your own.</div>
+          <div id="imgThinking" class="hidden absolute inset-0"></div>
+        </div>
+        <div id="imgMeta" class="mt-2 text-[11px] text-slate-500 font-mono"></div>
+      </div>
+      <div id="resultCard" class="card p-3 hidden">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-bold text-slate-200">Before / After</h3>
+          <a id="downloadLink" class="btn btn-ghost !py-1 !text-xs" download>Download again</a>
+        </div>
+        <div class="compare" id="compare">
+          <img id="afterImg" alt="Redacted image">
+          <div class="before" id="beforeClip"><img id="beforeImg" alt="Original image"></div>
+        </div>
+        <input type="range" min="0" max="100" value="50" id="compareRange" class="w-full mt-2 accent-emerald-500" aria-label="Before/after slider">
+        <div class="flex justify-between text-[11px] text-slate-500"><span>◀ original</span><span>redacted ▶</span></div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-3 min-w-0 space-y-4">
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-sm font-bold uppercase tracking-wide text-slate-200">Detected Regions</h2>
+          <span id="boxCount" class="chip chip-mute">0</span>
+        </div>
+        <div id="imgVerdict" class="mb-2"></div>
+        <div id="boxList" class="space-y-2 max-h-[520px] overflow-auto"><p class="text-xs text-slate-500">Run a vision scan or draw boxes on the image.</p></div>
+      </div>
+      <div class="card p-4 text-[11px] text-slate-400 leading-relaxed">
+        <div class="font-semibold text-slate-300 mb-1">Coordinate contract</div>
+        Gemma 4 returns <code class="text-emerald-300">bbox_2d = [ymin, xmin, ymax, xmax]</code> normalized 0–1000. The canvas converts with <code class="text-emerald-300">y = ymin/1000·H</code>; the server pads 15% before blurring.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== TAB 3: FIREWALL ============================== -->
+<section id="tab-firewall" class="tab-panel" role="tabpanel">
+  <div class="card p-4 mb-5 flex flex-wrap items-center gap-4 thinking-glow">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-300">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6z"/></svg>
+      </div>
+      <div>
+        <div class="text-sm font-bold text-slate-100">Outbound Agent Firewall</div>
+        <div class="text-[11px] text-slate-400">Redact locally → ask the cloud with tokens only → rehydrate locally.</div>
+      </div>
+    </div>
+    <div class="ml-auto flex flex-wrap gap-3">
+      <div class="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-center">
+        <div class="text-[10px] uppercase tracking-wider text-emerald-300 font-bold">bytes of PII sent to cloud</div>
+        <div id="piiBytes" class="text-2xl font-extrabold text-emerald-400 tabular-nums">0</div>
+      </div>
+      <div class="rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2 text-center">
+        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">entities protected</div>
+        <div id="entCount" class="text-2xl font-extrabold text-teal-300 tabular-nums">0</div>
+      </div>
+      <div class="rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2 text-center">
+        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">sanitized bytes sent</div>
+        <div id="sentBytes" class="text-2xl font-extrabold text-slate-300 tabular-nums">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="card flex flex-col min-w-0">
+      <div class="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-rose-500/15 text-rose-300 text-xs font-bold flex items-center justify-center">1</span>
+        <h3 class="text-sm font-bold text-slate-200">Raw Developer Prompt / Stack Trace</h3>
+        <span class="ml-auto chip chip-leak">contains PII</span>
+      </div>
+      <textarea id="rawPrompt" class="mono flex-1 min-h-[420px] bg-[#060c1a] text-[12.5px] leading-relaxed text-slate-200 p-4 resize-y outline-none" spellcheck="false"></textarea>
+      <div class="p-3 border-t border-slate-800">
+        <button id="sanitizeBtn" class="btn btn-brand w-full justify-center">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+          Sanitize with Local gemma4:e4b</button>
+      </div>
+    </div>
+
+    <div class="card flex flex-col min-w-0">
+      <div class="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-teal-500/15 text-teal-300 text-xs font-bold flex items-center justify-center">2</span>
+        <h3 class="text-sm font-bold text-slate-200">Sanitized Prompt + Local Token Vault</h3>
+        <span id="sanEngine" class="ml-auto text-[10px] text-slate-500 font-mono"></span>
+      </div>
+      <div id="sanitizedOut" class="mono text-[12.5px] leading-relaxed text-slate-200 p-4 pre-wrap min-h-[220px] max-h-[300px] overflow-auto bg-[#060c1a]">
+        <span class="text-slate-500 font-sans text-sm">Sanitized text appears here — every sensitive entity is replaced by a token.</span>
+      </div>
+      <div class="px-4 pt-3 pb-2 border-t border-slate-800">
+        <div class="flex items-center gap-2 mb-2">
+          <svg class="w-4 h-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+          <span class="text-xs font-bold text-slate-200">Local Token Vault</span>
+          <label class="ml-auto flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" id="revealVault" class="accent-emerald-500"> reveal</label>
+        </div>
+        <p class="text-[11px] text-amber-200/80 mb-2">🔐 Kept in this browser tab's memory only — never written to disk, never sent to the cloud.</p>
+        <div class="max-h-[180px] overflow-auto rounded-lg border border-slate-800">
+          <table class="w-full text-[11.5px]"><thead><tr class="text-left text-slate-400 bg-slate-900/70"><th class="px-2 py-1.5">Token</th><th class="px-2 py-1.5">Original value</th></tr></thead>
+          <tbody id="vaultTable"><tr><td colspan="2" class="px-2 py-3 text-slate-500 text-center">empty</td></tr></tbody></table>
+        </div>
+      </div>
+      <div class="p-3 border-t border-slate-800 mt-auto">
+        <button id="askBtn" class="btn btn-brand w-full justify-center" disabled>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 18a4.5 4.5 0 01-.9-8.9A6 6 0 0117.7 8 4 4 0 0118 16"/><path d="M12 12v9m0 0l-3-3m3 3l3-3"/></svg>
+          Ask Cloud Gemma 4 31B &amp; Restore Context</button>
+      </div>
+    </div>
+
+    <div class="card flex flex-col min-w-0">
+      <div class="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-emerald-500/15 text-emerald-300 text-xs font-bold flex items-center justify-center">3</span>
+        <h3 class="text-sm font-bold text-slate-200">Send to Cloud AI &amp; Auto-Rehydrate</h3>
+        <span id="fwEngine" class="ml-auto text-[10px] text-slate-500 font-mono"></span>
+      </div>
+      <div id="fwOut" class="p-4 space-y-3 overflow-auto max-h-[640px] relative min-h-[420px]">
+        <div class="text-slate-500 text-sm">The cloud only ever receives the tokenized prompt. Its answer is rehydrated here, locally.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== TAB 4: POLICY ============================== -->
+<section id="tab-policy" class="tab-panel" role="tabpanel">
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+    <div class="card flex flex-col min-w-0">
+      <div class="px-4 py-3 border-b border-slate-800 flex flex-wrap items-center gap-2">
+        <h2 class="text-sm font-bold text-slate-200">Live Policy-as-Code Editor</h2>
+        <span class="chip chip-mute font-mono">.barakagate.yaml</span>
+        <span id="policyStats" class="text-[11px] text-slate-500"></span>
+        <button id="reloadPolicyBtn" class="btn btn-ghost !py-1 !text-xs ml-auto">Reload</button>
+        <button id="savePolicyBtn" class="btn btn-brand !py-1.5">Save Policy</button>
+      </div>
+      <div id="policyMsg" class="hidden mx-4 mt-3"></div>
+      <div class="p-4 flex-1">
+        <div class="editor-wrap h-[640px]">
+          <div id="yamlGutter" class="gutter">1</div>
+          <textarea id="yamlEditor" class="yaml-ta" spellcheck="false" wrap="off" aria-label="Policy YAML"></textarea>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-2"><span class="text-emerald-300">regex_rules</span> feed the deterministic baseline; <span class="text-violet-300">nl_rules</span> are injected verbatim into the Gemma 4 system prompt. <span class="kbd">Ctrl</span>+<span class="kbd">S</span> saves.</p>
+      </div>
+    </div>
+
+    <div class="space-y-5 min-w-0">
+      <div class="card p-4">
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+          <h2 class="text-sm font-bold text-slate-200 mr-auto">Phase 1 Benchmark Matrix</h2>
+          <label class="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" id="benchOffline" class="accent-emerald-500" checked> offline (regex + heuristic + cache)</label>
+          <button id="benchBtn" class="btn btn-brand">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+            Run Full Benchmark Suite</button>
+        </div>
+        <div id="benchChart" class="space-y-2.5"><p class="text-xs text-slate-500">Recall per engine appears here after a run.</p></div>
+        <div id="benchMeta" class="text-[11px] text-slate-500 font-mono mt-3"></div>
+      </div>
+      <div class="card p-4 relative">
+        <h3 class="text-sm font-bold text-slate-200 mb-2">Results Table</h3>
+        <div id="benchMd" class="md overflow-auto max-h-[560px]"><p class="text-xs text-slate-500">Run the suite (12 cases × Regex vs gemma-4-26b-a4b-it vs gemma4:e4b).</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="border-t border-slate-800/80 mt-6">
+  <div class="max-w-[1680px] mx-auto px-4 lg:px-6 py-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-slate-500">
+    <span class="font-semibold text-slate-400">BarakaGate</span>
+    <span>MIT License</span>
+    <span>Built for Hacktoberfest26 Rabat Hack Day</span>
+    <span>Powered by Google <span class="text-emerald-400 font-semibold">Gemma 4</span> open weights (gemma-4-26b-a4b-it · gemma-4-31b-it · gemma4:e4b)</span>
+    <span class="ml-auto font-mono" id="footerRoot"></span>
+  </div>
+</footer>
+
+<!-- modal -->
+<div id="modal" class="fixed inset-0 z-50 hidden modal-bg items-center justify-center p-3 sm:p-6">
+  <div class="card w-full max-w-[1400px] max-h-[92vh] flex flex-col shadow-2xl shadow-black/60">
+    <div class="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-slate-800">
+      <h3 id="modalTitle" class="text-sm font-bold text-slate-100 mr-auto">Preview</h3>
+      <div id="modalTabs" class="flex flex-wrap gap-1"></div>
+      <div id="modalViewToggle" class="flex gap-1"></div>
+      <button id="modalClose" class="btn btn-ghost !py-1 !px-2" aria-label="Close">✕</button>
+    </div>
+    <div id="modalBody" class="overflow-auto flex-1"></div>
+    <div id="modalFoot" class="px-4 py-3 border-t border-slate-800 flex flex-wrap gap-2 justify-end"></div>
+  </div>
+</div>
+
+<div id="toasts" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 w-[min(420px,calc(100vw-2rem))]"></div>
+
+<script>
+'use strict';
+/* ===================================================================== utils */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('bg.' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('bg.' + k, JSON.stringify(v)); } catch (e) {} },
+};
+const params = new URLSearchParams(location.search);
+
+function toast(msg, kind = 'info', ms = 4200) {
+  const colors = { info: 'border-teal-500/50 text-teal-100', ok: 'border-emerald-500/60 text-emerald-100', err: 'border-rose-500/60 text-rose-100', warn: 'border-amber-500/60 text-amber-100' };
+  const icon = { info: 'ℹ', ok: '✓', err: '✕', warn: '!' }[kind] || 'ℹ';
+  const el = document.createElement('div');
+  el.className = `toast card !rounded-xl px-4 py-3 text-[13px] flex gap-3 items-start shadow-xl shadow-black/50 ${colors[kind] || colors.info}`;
+  el.innerHTML = `<span class="font-bold">${icon}</span><div class="flex-1 min-w-0 break-words">${typeof msg === 'string' ? esc(msg) : ''}</div><button class="text-slate-500 hover:text-slate-200">✕</button>`;
+  if (typeof msg !== 'string') el.querySelector('div').appendChild(msg);
+  el.querySelector('button').onclick = () => el.remove();
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+
+async function api(path, opts = {}) {
+  const init = { method: opts.method || (opts.body !== undefined ? 'POST' : 'GET'), headers: {} };
+  if (opts.body !== undefined) {
+    if (opts.body instanceof FormData) init.body = opts.body;
+    else { init.headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(opts.body); }
+  }
+  let res;
+  try { res = await fetch(path, init); }
+  catch (e) { throw new Error('Server unreachable — is `barakagate serve` running?'); }
+  if (opts.raw) { if (!res.ok) throw new Error(await errText(res)); return res; }
+  const ct = res.headers.get('content-type') || '';
+  const data = ct.includes('json') ? await res.json() : await res.text();
+  if (!res.ok) {
+    const d = data && data.detail;
+    throw new Error(typeof d === 'string' ? d : (d ? JSON.stringify(d) : `HTTP ${res.status}`));
+  }
+  return data;
+}
+async function errText(res) { try { const j = await res.json(); return j.detail || `HTTP ${res.status}`; } catch (e) { return `HTTP ${res.status}`; } }
+
+const ENGINE_THINK = {
+  cloud_fast: 'Gemma 4 26B MoE', cloud_deep: 'Gemma 4 31B Dense',
+  local_edge: 'Local gemma4:e4b', hybrid_smart: 'gemma4:e4b → Gemma 4 31B',
+};
+const engineMode = () => $('#engineMode').value;
+const preset = () => $('#domainPreset').value;
+const offline = () => $('#offlineToggle').checked;
+const thinkerName = (mode) => offline() ? 'Offline heuristic engine' : (ENGINE_THINK[mode || engineMode()] || 'Gemma 4');
+
+/** Overlay a skeleton loader with an elapsed-seconds counter. Returns stop(). */
+function thinking(container, label, rows = 4) {
+  const ov = document.createElement('div');
+  ov.className = 'absolute inset-0 z-10 bg-[#0b1222]/92 backdrop-blur-[2px] p-4 flex flex-col gap-3 thinking-glow rounded-b-[14px]';
+  ov.innerHTML = `<div class="flex items-center gap-3"><div class="spinner"></div><div class="text-sm font-semibold text-emerald-200">${esc(label)} is thinking… <span class="tabular-nums text-emerald-400 el">0s</span></div></div>
+    <div class="text-[11px] text-slate-500 font-mono hint">${offline() ? 'deterministic regex + heuristic pass' : 'indexing → retrieving cross-file chunks → reasoning (10–60s on cloud)'}</div>
+    ${Array.from({length: rows}, (_, i) => `<div class="skel h-${i % 2 ? 16 : 20}" style="opacity:${1 - i * .15}"></div>`).join('')}`;
+  container.style.position = container.style.position || 'relative';
+  container.appendChild(ov);
+  const t0 = Date.now();
+  const iv = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); ov.querySelector('.el').textContent = s + 's'; }, 250);
+  return () => { clearInterval(iv); ov.remove(); };
+}
+
+function setBusy(btn, busy, text) {
+  if (!btn) return;
+  if (busy) { btn.dataset.html = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="spinner !w-4 !h-4"></span> ${esc(text || 'Working…')}`; }
+  else { if (btn.dataset.html) btn.innerHTML = btn.dataset.html; btn.disabled = false; }
+}
+
+/* =================================================================== highlight */
+function langFor(file) {
+  const ext = (file || '').split('.').pop().toLowerCase();
+  return { py: 'python', ipynb: 'python', js: 'javascript', ts: 'typescript', tsx: 'typescript', jsx: 'javascript', diff: 'diff', patch: 'diff',
+    yaml: 'yaml', yml: 'yaml', json: 'json', sql: 'sql', sh: 'bash', env: 'bash', md: 'markdown' }[ext] || 'plaintext';
+}
+function highlight(code, lang) {
+  if (window.hljs) {
+    try { if (lang !== 'plaintext' && hljs.getLanguage(lang)) return hljs.highlight(code, { language: lang, ignoreIllegals: true }).value; } catch (e) {}
+  }
+  return esc(code);
+}
+/** Split highlighted HTML into lines while keeping <span> nesting balanced on each line. */
+function splitHtmlLines(html) {
+  const lines = []; const stack = []; let cur = '';
+  const re = /<span[^>]*>|<\/span>|\n|[^<\n]+|</g; let m;
+  while ((m = re.exec(html))) {
+    const t = m[0];
+    if (t === '\n') { lines.push(cur + '</span>'.repeat(stack.length)); cur = stack.join(''); }
+    else if (t.startsWith('<span')) { stack.push(t); cur += t; }
+    else if (t === '</span>') { stack.pop(); cur += t; }
+    else cur += t;
+  }
+  lines.push(cur + '</span>'.repeat(stack.length));
+  return lines;
+}
+
+/* ====================================================================== status */
+let STATUS = null;
+async function loadStatus() {
+  try {
+    const s = await api('/api/status');
+    STATUS = s;
+    setDot('#cloudDot', s.engines.cloud); setDot('#ollamaDot', s.engines.ollama);
+    if (!(SCAN.data && SCAN.data.index)) setIndex(s.index);
+    $('#footerRoot').textContent = s.root || '';
+    if (!s.engines.cloud && !s.engines.ollama && store.get('offline', null) === null) {
+      $('#offlineToggle').checked = true; syncOffline();
+    }
+  } catch (e) { toast(e.message, 'err'); }
+}
+function setDot(sel, on) {
+  const el = $(sel);
+  el.querySelector('.pulse-dot').className = 'pulse-dot ' + (on ? 'on' : 'off');
+  const mk = el.querySelector('.mark'); mk.textContent = on ? '✓' : '✗';
+  mk.className = 'mark ' + (on ? 'text-emerald-400' : 'text-rose-400');
+}
+function setIndex(ix) {
+  if (!ix) return;
+  $('#indexIndicator').textContent = `Indexed: ${ix.chunks ?? 0} Chunks / ${ix.symbols ?? 0} Symbols`;
+}
+function syncOffline() {
+  store.set('offline', offline());
+  const pill = $('#statusPill');
+  pill.classList.toggle('!border-amber-500/40', offline());
+}
+
+/* ======================================================================== tabs */
+function showTab(id) {
+  $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  $$('.tab-panel').forEach(p => p.classList.toggle('active', p.id === id));
+  store.set('tab', id);
+  if (id === 'tab-image' && !IMG.listLoaded) loadImages();
+  if (id === 'tab-policy' && !POLICY.loaded) { loadPolicy(); loadLastBench(); }
+}
+
+/* ==================================================================== TAB 1 */
+const SCAN = { data: null, decisions: {}, activeFile: null, filter: 'all', lineMap: {} };
+const LEAK_ACTIONS = [
+  ['synthetic_twin', '✓ Swap Synthetic Twin'], ['env_extract', 'Extract to .env'], ['solid_mask', 'Hard Mask'], ['whitelist', 'Keep / Whitelist'],
+];
+const BUG_ACTIONS = [['code_patch', '✓ Apply Bug Fix Patch'], ['whitelist', 'Keep Original (Ignore)']];
+const isBug = f => f.category === 'logical_bug';
+
+async function runScenario(name) {
+  $$('.scenario-btn').forEach(b => b.classList.toggle('!border-emerald-500', b.dataset.scenario === name));
+  const stop = thinking($('#findingsWrap'), thinkerName(), 5);
+  disableScanButtons(true);
+  try {
+    let data;
+    if (name === '__staged') {
+      data = await api('/api/scan/staged', { body: { mode: engineMode(), preset: preset(), offline: offline() } });
+    } else {
+      // show code immediately while the model thinks
+      try {
+        const s = await api('/api/samples/' + encodeURIComponent(name));
+        const files = {}; (s.targets || [s.target_file]).forEach(t => { if (s.files[t] !== undefined) files[t] = s.files[t]; });
+        SCAN.data = null; renderFiles(files, s.target_file, s.title);
+      } catch (e) {}
+      const pr = preset() === 'all' ? 'all' : preset();
+      data = await api('/api/scan', { body: { scenario: name, mode: engineMode(), preset: pr, offline: offline() } });
+    }
+    SCAN.data = data;
+    SCAN.decisions = {};
+    (data.findings || []).forEach(f => { SCAN.decisions[f.id] = defaultAction(f); });
+    renderScan();
+    const n = (data.findings || []).length;
+    toast(`${data.verdict}: ${n} finding${n === 1 ? '' : 's'} via ${data.engine_used} in ${data.elapsed_s ?? '?'}s`, data.verdict === 'PASS' ? 'ok' : 'warn');
+  } catch (e) {
+    toast('Scan failed: ' + e.message, 'err');
+  } finally { stop(); disableScanButtons(false); }
+}
+function disableScanButtons(d) { $$('.scenario-btn').forEach(b => b.disabled = d); }
+
+function actionsFor(f) {
+  if (isBug(f)) return BUG_ACTIONS;
+  // PII leaks whose safe fix is a code change (e.g. logging customer.__dict__) get a patch option first.
+  if (f.recommended_action === 'code_patch' && f.replacement_snippet) return [['code_patch', '✓ Apply Safe Fix Patch'], ...LEAK_ACTIONS.map(([v, l]) => [v, l.replace('✓ ', '')])];
+  return LEAK_ACTIONS;
+}
+function defaultAction(f) {
+  const opts = actionsFor(f).map(a => a[0]);
+  return opts.includes(f.recommended_action) ? f.recommended_action : opts[0];
+}
+
+function renderFiles(files, active, title) {
+  SCAN.files = files;
+  const keys = Object.keys(files);
+  SCAN.activeFile = keys.includes(active) ? active : keys[0];
+  const tabs = $('#fileTabs');
+  tabs.innerHTML = keys.map(k => `<button class="file-tab px-2.5 py-1 rounded-md text-[11.5px] font-mono border ${k === SCAN.activeFile ? 'border-emerald-500/60 text-emerald-200 bg-emerald-500/10' : 'border-slate-700 text-slate-400 hover:text-slate-200'}" data-file="${esc(k)}">${esc(k)}<span class="cnt"></span></button>`).join('');
+  $$('.file-tab', tabs).forEach(b => b.onclick = () => { SCAN.activeFile = b.dataset.file; renderFiles(SCAN.files, b.dataset.file, title); });
+  $('#codeTitle').textContent = title || '';
+  renderCode();
+}
+
+function fileOfFinding(f) {
+  const d = SCAN.data; if (d && d.finding_files && d.finding_files[f.id]) return d.finding_files[f.id];
+  const keys = Object.keys(SCAN.files || {});
+  return keys.find(k => k === f.file_path || (f.file_path || '').endsWith('/' + k) || k.split('/').pop() === (f.file_path || '').split('/').pop()) || keys[0];
+}
+
+function renderCode() {
+  const file = SCAN.activeFile; const code = (SCAN.files || {})[file];
+  const viewer = $('#codeViewer');
+  if (code === undefined) return;
+  const marks = {};
+  const findings = (SCAN.data && SCAN.data.findings) || [];
+  findings.forEach(f => {
+    if (fileOfFinding(f) !== file || !f.line_start) return;
+    const end = Math.max(f.line_start, f.line_end || f.line_start);
+    for (let l = f.line_start; l <= Math.min(end, f.line_start + 40); l++) {
+      marks[l] = marks[l] === 'leak' ? 'leak' : (isBug(f) ? 'bug' : 'leak');
+    }
+  });
+  const lines = splitHtmlLines(highlight(code, langFor(file)));
+  viewer.innerHTML = '<div class="hljs">' + lines.map((h, i) => {
+    const n = i + 1; const m = marks[n];
+    return `<div class="cl${m ? ' hl-' + m : ''}" data-line="${n}"><span class="ln">${n}</span><span class="lc">${h || ' '}</span></div>`;
+  }).join('') + '</div>';
+  // counts on file tabs
+  $$('.file-tab').forEach(b => {
+    const c = findings.filter(f => fileOfFinding(f) === b.dataset.file).length;
+    b.querySelector('.cnt').innerHTML = c ? ` <span class="ml-1 px-1.5 rounded bg-rose-500/20 text-rose-300">${c}</span>` : '';
+  });
+}
+
+function jumpTo(f) {
+  const file = fileOfFinding(f);
+  if (file && file !== SCAN.activeFile && SCAN.files[file] !== undefined) { SCAN.activeFile = file; renderFiles(SCAN.files, file, $('#codeTitle').textContent); }
+  const row = $(`#codeViewer .cl[data-line="${f.line_start}"]`);
+  if (!row) return;
+  row.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  for (let l = f.line_start; l <= (f.line_end || f.line_start); l++) {
+    const r = $(`#codeViewer .cl[data-line="${l}"]`); if (r) { r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash'); }
+  }
+}
+
+function renderScan() {
+  const d = SCAN.data; if (!d) return;
+  renderFiles(d.files || {}, (d.target_files || [])[0], d.scenario ? (d.scenario + ' · ' + (d.kind || '')) : d.kind);
+  if (d.index) setIndex(d.index);
+  // scoreboard
+  const findings = d.findings || [];
+  const regex = findings.filter(f => f.caught_by_regex_baseline).length;
+  const total = findings.length;
+  $('#regexLine').textContent = `Regex Baseline (Gitleaks): ${regex} Caught (0 Logical Bugs, 0 Contextual/Image Leaks)`;
+  $('#gemmaLine').textContent = `BarakaGate (Gemma 4): ${total} Caught (Leaks + PII + Cross-File Logical Bugs)`;
+  $('#regexNum').textContent = regex; $('#gemmaNum').textContent = total;
+  const max = Math.max(total, regex, 1);
+  requestAnimationFrame(() => { $('#regexBar').style.width = (regex / max * 100) + '%'; $('#gemmaBar').style.width = (total / max * 100) + '%'; });
+  const cnt = c => findings.filter(f => f.category === c).length;
+  const xf = findings.filter(f => f.cross_file_context_used).length;
+  const only = total - regex;
+  $('#breakdown').innerHTML = [
+    `<span class="chip chip-leak">🔴 ${cnt('security_leak')} secret leaks</span>`,
+    `<span class="chip chip-leak">🪪 ${cnt('privacy_pii')} PII</span>`,
+    `<span class="chip chip-bug">🟣 ${cnt('logical_bug')} logical bugs</span>`,
+    `<span class="chip chip-cyan">🔗 ${xf} cross-file proofs</span>`,
+    only > 0 ? `<span class="chip chip-pass">+${only} only Gemma 4 caught</span>` : '',
+  ].join('');
+  const v = d.verdict || 'PASS';
+  const vb = $('#verdictBadge');
+  vb.className = 'chip text-sm !px-3 !py-1 ' + (v === 'BLOCK' ? 'sev-CRITICAL' : v === 'WARN' ? 'chip-warn' : 'chip-pass');
+  vb.textContent = (v === 'BLOCK' ? '⛔ ' : v === 'WARN' ? '⚠ ' : '✓ ') + v;
+  $('#scanMeta').textContent = `engine: ${d.engine_used} · preset: ${d.preset_used} · ${d.indexed_chunks_count || 0} chunks indexed · ${(d.context || []).length} retrieved · ${d.elapsed_s ?? '?'}s`;
+  $('#scanSummary').textContent = d.summary || '';
+  $('#scanWarnings').innerHTML = (d.warnings || []).map(w => `<div class="mt-1 text-[11px] rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-200 px-2 py-1">⚠ ${esc(w)}</div>`).join('');
+  // thinking
+  const tt = d.thinking_trace || '';
+  $('#thinkTrace').textContent = tt || 'No reasoning trace returned by this engine (offline heuristic / cache).';
+  $('#thinkLen').textContent = tt ? `${tt.length.toLocaleString()} chars` : '';
+  // context
+  renderContext(d.context || []);
+  renderFindings();
+  $('#previewBtn').disabled = !total; $('#applyBtn').disabled = !total;
+}
+
+function renderContext(ctx) {
+  $('#ctxCount').textContent = `${ctx.length} chunk${ctx.length === 1 ? '' : 's'}`;
+  if (!ctx.length) { $('#ctxList').innerHTML = '<p class="text-xs text-slate-500">No cross-file chunks were retrieved for this target.</p>'; return; }
+  $('#ctxList').innerHTML = ctx.map((c, i) => {
+    const base = (c.file_path || '').split('/').pop();
+    const lines = splitHtmlLines(highlight(c.code || '', langFor(c.file_path)));
+    const body = lines.map((h, j) => `<div class="cl"><span class="ln">${(c.start_line || 1) + j}</span><span class="lc">${h || ' '}</span></div>`).join('');
+    return `<details class="rounded-lg border border-slate-800 bg-[#060c1a] overflow-hidden" ${i < 2 ? 'open' : ''}>
+      <summary class="flex items-center gap-2 px-3 py-2 text-[12px] font-mono hover:bg-slate-900/60">
+        <span class="chev text-slate-600">▶</span>
+        <span class="text-teal-300 font-semibold">${esc(base)}:${esc(c.symbol_name)}</span>
+        <span class="text-slate-500">L${esc(c.start_line)}-${esc(c.end_line)}</span>
+        <span class="ml-auto chip chip-mute !text-[10px]">${esc(c.chunk_type || 'chunk')}</span>
+      </summary>
+      <div class="codebox overflow-auto max-h-64 py-2 border-t border-slate-800 hljs">${body}</div></details>`;
+  }).join('');
+}
+
+function renderFindings() {
+  const d = SCAN.data; const wrap = $('#findings');
+  let list = (d && d.findings) || [];
+  const sevRank = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+  list = list.slice().sort((a, b) => (sevRank[a.severity] - sevRank[b.severity]) || ((a.line_start || 0) - (b.line_start || 0)));
+  if (SCAN.filter !== 'all') list = list.filter(f => f.category === SCAN.filter);
+  if (!list.length) {
+    wrap.innerHTML = `<div class="py-12 text-center text-sm ${d && d.verdict === 'PASS' ? 'text-emerald-300' : 'text-slate-500'}">${d ? (d.findings.length ? 'No findings in this filter.' : '✓ Clean — nothing to fix.') : 'No scan yet.'}</div>`;
+    return;
+  }
+  wrap.innerHTML = list.map(cardHtml).join('');
+  $$('.finding', wrap).forEach(card => {
+    const f = list.find(x => x.id === card.dataset.id);
+    card.querySelector('.jump').onclick = () => jumpTo(f);
+    $$('input[type=radio]', card).forEach(r => r.onchange = () => {
+      SCAN.decisions[f.id] = r.value; card.classList.toggle('ignored', r.value === 'whitelist');
+    });
+  });
+}
+
+function cardHtml(f) {
+  const bug = isBug(f);
+  const cat = bug ? '<span class="chip chip-bug">🟣 LOGICAL / SECURITY BUG</span>' : '<span class="chip chip-leak">🔴 PRIVACY / SECRET LEAK</span>';
+  const sub = f.category === 'privacy_pii' ? '<span class="chip chip-mute">PII</span>' : (f.category === 'security_leak' ? '<span class="chip chip-mute">SECRET</span>' : '');
+  const file = fileOfFinding(f) || f.file_path;
+  const loc = `${file}${f.line_start ? ':' + f.line_start + (f.line_end && f.line_end !== f.line_start ? '-' + f.line_end : '') : ''}`;
+  const proof = f.cross_file_context_used ? `<span class="chip chip-cyan" title="Indexed symbol that proved this finding">🔗 Cross-File Proof: ${esc(f.cross_file_context_used)}</span>` : '';
+  const who = f.caught_by_regex_baseline ? '<span class="chip chip-mute">Regex also caught</span>' : '<span class="chip chip-pass">★ Only Gemma 4 caught</span>';
+  const off = f.offending_snippet ? f.offending_snippet.split('\n').map(l => `<div class="diff-line diff-del">- ${esc(l)}</div>`).join('') : '';
+  let rep = '';
+  if (f.replacement_snippet) rep = f.replacement_snippet.split('\n').map(l => `<div class="diff-line diff-add">+ ${esc(l)}</div>`).join('');
+  const envNote = f.env_var_name ? `<div class="diff-line diff-meta"># .env ← ${esc(f.env_var_name)}=•••</div>` : '';
+  const diff = (off || rep) ? `<div class="mt-2 rounded-lg border border-slate-800 bg-[#060c1a] py-1.5 overflow-auto max-h-48"><div class="diff-line diff-meta"># Proposed fix</div>${off}${rep}${envNote}</div>` : '';
+  const acts = actionsFor(f);
+  const cur = SCAN.decisions[f.id] || defaultAction(f);
+  const radios = acts.map(([v, label]) => `<label><input type="radio" name="dec-${esc(f.id)}" value="${v}" ${cur === v ? 'checked' : ''}><span class="${v === 'whitelist' ? 'keep' : ''}">${esc(label)}${v === f.recommended_action ? ' <span class="opacity-60">· rec</span>' : ''}</span></label>`).join('');
+  return `<article class="finding card !rounded-xl p-3 ${bug ? 'bug' : 'leak'} ${cur === 'whitelist' ? 'ignored' : ''}" data-id="${esc(f.id)}">
+    <div class="flex flex-wrap items-center gap-1.5">${cat}${sub}<span class="chip sev-${esc(f.severity)}">${esc(f.severity)}</span>
+      <span class="text-[11px] text-slate-500 ml-auto tabular-nums">conf ${Math.round((f.confidence || 0) * 100)}%</span></div>
+    <h4 class="mt-2 text-[13.5px] font-bold text-slate-100 leading-snug">${esc(f.title)}</h4>
+    <button class="jump mt-1 text-[11.5px] font-mono text-teal-300 hover:text-teal-200 hover:underline" title="Show in code viewer">${esc(loc)} ↗</button>
+    <div class="mt-1.5 flex flex-wrap gap-1.5">${proof}${who}<span class="chip chip-mute font-mono !font-medium">${esc(f.rule_id)}</span></div>
+    <p class="mt-2 text-[12.5px] text-slate-300 leading-relaxed">${esc(f.reason)}</p>
+    ${diff}
+    <div class="seg mt-3" role="radiogroup" aria-label="Decision">${radios}</div>
+  </article>`;
+}
+
+/* preview & apply */
+async function previewPatch() {
+  if (!SCAN.data) return;
+  const btn = $('#previewBtn'); setBusy(btn, true, 'Building preview…');
+  try {
+    const r = await api('/api/preview', { body: { scan_id: SCAN.data.scan_id, decisions: SCAN.decisions } });
+    const files = r.files || {};
+    if (!Object.keys(files).length) { toast('No patchable text changes for the selected decisions.', 'warn'); return; }
+    openPreviewModal(files, r.warnings || []);
+  } catch (e) { toast('Preview failed: ' + e.message, 'err'); }
+  finally { setBusy(btn, false); }
+}
+
+function diffHtml(diff) {
+  if (!diff) return '<div class="p-4 text-slate-500 text-sm">No changes.</div>';
+  return '<div class="py-2">' + diff.split('\n').map(l => {
+    let cls = '';
+    if (l.startsWith('+++') || l.startsWith('---')) cls = 'diff-meta';
+    else if (l.startsWith('+')) cls = 'diff-add'; else if (l.startsWith('-')) cls = 'diff-del'; else if (l.startsWith('@@')) cls = 'diff-hunk';
+    return `<div class="diff-line ${cls}">${esc(l) || ' '}</div>`;
+  }).join('') + '</div>';
+}
+function sideBySide(orig, patched, file) {
+  const col = (txt, title, accent) => `<div class="min-w-0 border border-slate-800 rounded-lg overflow-hidden"><div class="px-3 py-1.5 text-[11px] font-bold ${accent} bg-slate-900/70 border-b border-slate-800">${title}</div>
+    <div class="codebox overflow-auto max-h-[70vh] py-2 hljs">${splitHtmlLines(highlight(txt, langFor(file))).map((h, i) => `<div class="cl"><span class="ln">${i + 1}</span><span class="lc">${h || ' '}</span></div>`).join('')}</div></div>`;
+  return `<div class="grid grid-cols-1 lg:grid-cols-2 gap-3 p-3">${col(orig, 'ORIGINAL', 'text-rose-300')}${col(patched, 'PATCHED', 'text-emerald-300')}</div>`;
+}
+function openPreviewModal(files, warnings) {
+  const keys = Object.keys(files); let active = keys[0]; let view = 'unified';
+  $('#modalTitle').textContent = 'Preview Combined Patched File';
+  const draw = () => {
+    $('#modalTabs').innerHTML = keys.map(k => `<button class="px-2.5 py-1 rounded-md text-[11.5px] font-mono border ${k === active ? 'border-emerald-500/60 text-emerald-200 bg-emerald-500/10' : 'border-slate-700 text-slate-400'}" data-k="${esc(k)}">${esc(k)}</button>`).join('');
+    $$('#modalTabs button').forEach(b => b.onclick = () => { active = b.dataset.k; draw(); });
+    $('#modalViewToggle').innerHTML = ['unified', 'side-by-side'].map(v => `<button class="px-2.5 py-1 rounded-md text-[11.5px] border ${v === view ? 'border-teal-500/60 text-teal-200 bg-teal-500/10' : 'border-slate-700 text-slate-400'}" data-v="${v}">${v}</button>`).join('');
+    $$('#modalViewToggle button').forEach(b => b.onclick = () => { view = b.dataset.v; draw(); });
+    const f = files[active];
+    $('#modalBody').innerHTML = (warnings.length ? warnings.map(w => `<div class="mx-3 mt-3 text-[11px] rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-200 px-2 py-1">⚠ ${esc(w)}</div>`).join('') : '')
+      + (view === 'unified' ? diffHtml(f.diff) : sideBySide(f.original, f.patched, active));
+  };
+  $('#modalFoot').innerHTML = '';
+  const apply = document.createElement('button'); apply.className = 'btn btn-brand'; apply.textContent = '✓ Apply Selected Fixes to Disk';
+  apply.onclick = () => { closeModal(); applyFixes(); };
+  const close = document.createElement('button'); close.className = 'btn btn-ghost'; close.textContent = 'Close'; close.onclick = closeModal;
+  $('#modalFoot').append(close, apply);
+  draw(); openModal();
+}
+function openModal() { const m = $('#modal'); m.classList.remove('hidden'); m.classList.add('flex'); }
+function closeModal() { const m = $('#modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
+
+async function applyFixes() {
+  if (!SCAN.data) return;
+  const btn = $('#applyBtn'); setBusy(btn, true, 'Writing…');
+  try {
+    const r = await api('/api/apply', { body: { scan_id: SCAN.data.scan_id, decisions: SCAN.decisions } });
+    const w = r.written || [];
+    if (!w.length) { toast('Nothing written (all findings kept / whitelisted).' + ((r.warnings || []).length ? ' ' + r.warnings.join('; ') : ''), 'warn'); return; }
+    const box = document.createElement('div');
+    box.innerHTML = `<div class="font-semibold mb-1">Patched ${w.length} file${w.length > 1 ? 's' : ''}${w.some(x => !x.in_place) ? ' (sample fixtures untouched — safe copy)' : ''}</div>` +
+      w.map(x => `<div class="font-mono text-[11px] text-emerald-200 break-all">→ ${esc(x.rel_path || x.path)}</div>${x.env_path ? `<div class="font-mono text-[11px] text-amber-200 break-all">.env → ${esc(x.env_path)}</div>` : ''}`).join('');
+    toast(box, 'ok', 9000);
+    (r.warnings || []).forEach(m => toast(m, 'warn'));
+  } catch (e) { toast('Apply failed: ' + e.message, 'err'); }
+  finally { setBusy(btn, false); }
+}
+
+/* ==================================================================== TAB 2 */
+const IMG = { listLoaded: false, current: null, img: null, boxes: [], scale: 1, drag: null, scanId: null };
+const BOX_COLORS = { security_leak: '#f43f5e', privacy_pii: '#fb923c', logical_bug: '#8b5cf6', manual: '#22d3ee' };
+
+async function loadImages() {
+  IMG.listLoaded = true;
+  try {
+    const items = await api('/api/images');
+    const list = $('#imageList');
+    if (!items.length) { list.innerHTML = '<p class="text-xs text-slate-500">No sample images yet (samples/screenshots/). Drop one below.</p>'; return; }
+    list.innerHTML = items.map((it, i) => `<button class="img-item w-full flex items-center gap-3 p-2 rounded-xl border border-slate-800 hover:border-emerald-500/60 bg-slate-900/40 text-left transition" data-i="${i}">
+      <img src="${esc(it.url)}" alt="" class="w-16 h-11 object-cover rounded-md border border-slate-700 flex-none" loading="lazy">
+      <div class="min-w-0"><div class="text-[12px] font-semibold text-slate-200 leading-tight">${esc(it.label)}</div>
+      <div class="text-[10.5px] text-slate-500 font-mono truncate">${esc(it.name)} · ${esc(it.width)}×${esc(it.height)} · ${esc(it.source)}</div></div></button>`).join('');
+    $$('.img-item', list).forEach(b => b.onclick = () => selectImage(items[+b.dataset.i]));
+    if (!IMG.current) selectImage(items[0]);
+    IMG.items = items;
+  } catch (e) { toast('Could not list images: ' + e.message, 'err'); }
+}
+
+function selectImage(it) {
+  IMG.current = it; IMG.boxes = []; IMG.scanId = null;
+  $$('.img-item').forEach(b => b.classList.toggle('!border-emerald-500', IMG.items && IMG.items[+b.dataset.i] === it));
+  const im = new Image();
+  im.onload = () => { IMG.img = im; $('#canvasEmpty').classList.add('hidden'); $('#imgCanvas').classList.remove('hidden'); drawCanvas(); renderBoxList(); };
+  im.onerror = () => toast('Image failed to load', 'err');
+  im.src = it.url;
+  $('#visionScanBtn').disabled = false; $('#redactBtn').disabled = false;
+  $('#imgMeta').textContent = `${it.path} · ${it.width}×${it.height}`;
+  $('#imgVerdict').innerHTML = ''; $('#resultCard').classList.add('hidden');
+}
+
+function drawCanvas() {
+  const im = IMG.img; if (!im) return;
+  const cv = $('#imgCanvas'); const wrap = $('#canvasWrap');
+  const maxW = wrap.clientWidth - 2; const maxH = Math.max(360, window.innerHeight * 0.68);
+  const scale = Math.min(maxW / im.naturalWidth, maxH / im.naturalHeight, 1.5);
+  IMG.scale = scale;
+  const dpr = window.devicePixelRatio || 1;
+  cv.style.width = Math.round(im.naturalWidth * scale) + 'px'; cv.style.height = Math.round(im.naturalHeight * scale) + 'px';
+  cv.width = Math.round(im.naturalWidth * scale * dpr); cv.height = Math.round(im.naturalHeight * scale * dpr);
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = im.naturalWidth * scale, H = im.naturalHeight * scale;
+  ctx.drawImage(im, 0, 0, W, H);
+  const style = $('#blurStyle').value;
+  IMG.boxes.forEach((b, i) => {
+    const [ymin, xmin, ymax, xmax] = b.bbox; const x = xmin / 1000 * W, y = ymin / 1000 * H, w = (xmax - xmin) / 1000 * W, h = (ymax - ymin) / 1000 * H;
+    const color = BOX_COLORS[b.manual ? 'manual' : b.category] || '#f43f5e';
+    if (b.redact) {
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+      if (style === 'solid_mask') { ctx.fillStyle = '#050a14'; ctx.fillRect(x, y, w, h); ctx.fillStyle = color; ctx.font = '700 10px JetBrains Mono, monospace'; ctx.fillText('█ REDACTED', x + 4, y + Math.min(h - 3, 13)); }
+      else { try { ctx.filter = 'blur(7px)'; } catch (e) {} ctx.drawImage(im, 0, 0, W, H); ctx.filter = 'none'; ctx.fillStyle = color + '22'; ctx.fillRect(x, y, w, h); }
+      ctx.restore();
+    }
+    ctx.save(); ctx.lineWidth = 2; ctx.strokeStyle = color; ctx.setLineDash(b.redact ? [] : [6, 4]);
+    ctx.strokeRect(x, y, w, h);
+    const label = `${i + 1} ${b.label}${b.redact ? '' : ' (kept)'}`.slice(0, 48);
+    ctx.font = '600 11px Inter, sans-serif'; const tw = ctx.measureText(label).width + 8;
+    const ly = y - 17 < 0 ? y + h + 1 : y - 17;
+    ctx.fillStyle = b.redact ? color : '#334155'; ctx.fillRect(x, ly, tw, 16);
+    ctx.fillStyle = '#fff'; ctx.fillText(label, x + 4, ly + 12); ctx.restore();
+  });
+  if (IMG.drag && IMG.drag.moved) {
+    const d = IMG.drag; ctx.save(); ctx.strokeStyle = '#22d3ee'; ctx.setLineDash([4, 3]); ctx.lineWidth = 2;
+    ctx.strokeRect(Math.min(d.x0, d.x1), Math.min(d.y0, d.y1), Math.abs(d.x1 - d.x0), Math.abs(d.y1 - d.y0)); ctx.restore();
+  }
+}
+
+function canvasPoint(ev) { const r = $('#imgCanvas').getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top, W: r.width, H: r.height }; }
+function boxAt(p) {
+  for (let i = IMG.boxes.length - 1; i >= 0; i--) {
+    const [ymin, xmin, ymax, xmax] = IMG.boxes[i].bbox;
+    if (p.x >= xmin / 1000 * p.W && p.x <= xmax / 1000 * p.W && p.y >= ymin / 1000 * p.H && p.y <= ymax / 1000 * p.H) return i;
+  }
+  return -1;
+}
+function initCanvas() {
+  const cv = $('#imgCanvas');
+  cv.addEventListener('pointerdown', ev => { if (!IMG.img) return; cv.setPointerCapture(ev.pointerId); const p = canvasPoint(ev); IMG.drag = { x0: p.x, y0: p.y, x1: p.x, y1: p.y, moved: false }; });
+  cv.addEventListener('pointermove', ev => { if (!IMG.drag) return; const p = canvasPoint(ev); IMG.drag.x1 = p.x; IMG.drag.y1 = p.y; if (Math.hypot(p.x - IMG.drag.x0, p.y - IMG.drag.y0) > 6) IMG.drag.moved = true; if (IMG.drag.moved) drawCanvas(); });
+  cv.addEventListener('pointerup', ev => {
+    const d = IMG.drag; IMG.drag = null; if (!d) return; const p = canvasPoint(ev);
+    if (!d.moved) { const i = boxAt(p); if (i >= 0) { IMG.boxes[i].redact = !IMG.boxes[i].redact; drawCanvas(); renderBoxList(); } return; }
+    const c = v => Math.max(0, Math.min(1000, Math.round(v)));
+    const bbox = [c(Math.min(d.y0, p.y) / p.H * 1000), c(Math.min(d.x0, p.x) / p.W * 1000), c(Math.max(d.y0, p.y) / p.H * 1000), c(Math.max(d.x0, p.x) / p.W * 1000)];
+    if (bbox[2] - bbox[0] < 4 || bbox[3] - bbox[1] < 4) { drawCanvas(); return; }
+    IMG.boxes.push({ id: 'manual-' + Date.now(), bbox, label: 'Manual redaction', category: 'manual', severity: 'HIGH', redact: true, manual: true });
+    drawCanvas(); renderBoxList();
+  });
+  window.addEventListener('resize', () => { clearTimeout(IMG._rt); IMG._rt = setTimeout(drawCanvas, 120); });
+}
+
+function renderBoxList() {
+  const list = $('#boxList'); $('#boxCount').textContent = IMG.boxes.length;
+  if (!IMG.boxes.length) { list.innerHTML = '<p class="text-xs text-slate-500">No regions yet. Run a vision scan or drag on the image to draw one.</p>'; return; }
+  list.innerHTML = IMG.boxes.map((b, i) => {
+    const color = BOX_COLORS[b.manual ? 'manual' : b.category] || '#f43f5e';
+    return `<div class="rounded-xl border border-slate-800 bg-slate-900/40 p-2.5 ${b.redact ? '' : 'opacity-60'}">
+      <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm flex-none" style="background:${color}"></span>
+        <span class="text-[12px] font-semibold text-slate-200 truncate">${i + 1}. ${esc(b.label)}</span>
+        <label class="ml-auto flex items-center gap-1.5 cursor-pointer"><input type="checkbox" class="sr-only bx" data-i="${i}" ${b.redact ? 'checked' : ''}><span class="toggle"></span></label></div>
+      <div class="mt-1 flex flex-wrap gap-1 items-center">${b.manual ? '<span class="chip chip-cyan">manual</span>' : `<span class="chip sev-${esc(b.severity)}">${esc(b.severity)}</span>`}
+        <span class="text-[10.5px] font-mono text-slate-500">[${b.bbox.join(', ')}]</span>
+        ${b.manual ? `<button class="rm ml-auto text-[11px] text-rose-300 hover:underline" data-i="${i}">remove</button>` : ''}</div>
+      ${b.reason ? `<p class="mt-1 text-[11px] text-slate-400 leading-snug">${esc(b.reason)}</p>` : ''}</div>`;
+  }).join('');
+  $$('.bx', list).forEach(c => c.onchange = () => { IMG.boxes[+c.dataset.i].redact = c.checked; drawCanvas(); renderBoxList(); });
+  $$('.rm', list).forEach(c => c.onclick = () => { IMG.boxes.splice(+c.dataset.i, 1); drawCanvas(); renderBoxList(); });
+}
+
+function applyImageResult(r) {
+  IMG.scanId = r.scan_id;
+  IMG.boxes = IMG.boxes.filter(b => b.manual).concat((r.findings || []).filter(f => Array.isArray(f.bbox_2d) && f.bbox_2d.length === 4).map(f => ({
+    id: f.id, bbox: f.bbox_2d.map(Number), label: f.title, category: f.category, severity: f.severity, reason: f.reason, redact: f.recommended_action !== 'whitelist', manual: false,
+  })));
+  const v = r.verdict || 'PASS';
+  $('#imgVerdict').innerHTML = `<div class="flex flex-wrap gap-1.5 items-center"><span class="chip ${v === 'BLOCK' ? 'sev-CRITICAL' : v === 'WARN' ? 'chip-warn' : 'chip-pass'}">${esc(v)}</span><span class="text-[10.5px] font-mono text-slate-500">${esc(r.engine_used)} · ${esc(r.elapsed_s)}s</span></div>
+    ${r.summary ? `<p class="text-[11px] text-slate-400 mt-1">${esc(r.summary)}</p>` : ''}${(r.warnings || []).map(w => `<p class="text-[11px] text-amber-300 mt-1">⚠ ${esc(w)}</p>`).join('')}`;
+  drawCanvas(); renderBoxList();
+}
+
+async function visionScan() {
+  if (!IMG.current) return;
+  const btn = $('#visionScanBtn'); setBusy(btn, true, 'Scanning…');
+  const stop = thinking($('#canvasWrap'), thinkerName() + ' Vision', 3);
+  try {
+    const r = await api('/api/image/scan', { body: { path: IMG.current.path, mode: engineMode(), preset: preset(), offline: offline() } });
+    applyImageResult(r);
+    toast(`Vision scan: ${(r.findings || []).length} region(s) via ${r.engine_used}`, (r.findings || []).length ? 'warn' : 'ok');
+  } catch (e) { toast('Vision scan failed: ' + e.message, 'err'); }
+  finally { stop(); setBusy(btn, false); }
+}
+
+async function uploadImage(file) {
+  if (!file) return;
+  if (!/^image\//.test(file.type)) { toast('Please drop an image file', 'warn'); return; }
+  const fd = new FormData(); fd.append('file', file); fd.append('mode', engineMode()); fd.append('preset', preset()); fd.append('offline', String(offline()));
+  const stop = thinking($('#canvasWrap'), thinkerName() + ' Vision', 3);
+  try {
+    const r = await api('/api/image/scan', { body: fd });
+    const it = { ...r.image, label: 'Uploaded: ' + r.image.name, source: 'upload' };
+    IMG.items = [it, ...(IMG.items || [])];
+    await new Promise(res => { selectImage(it); const t = setInterval(() => { if (IMG.img && IMG.img.src.includes(encodeURIComponent(it.path).slice(0, 10))) { clearInterval(t); res(); } }, 50); setTimeout(() => { clearInterval(t); res(); }, 3000); });
+    applyImageResult(r);
+    loadImagesQuiet();
+  } catch (e) { toast('Upload failed: ' + e.message, 'err'); }
+  finally { stop(); }
+}
+async function loadImagesQuiet() { const cur = IMG.current; IMG.listLoaded = false; await loadImages(); IMG.current = cur; }
+
+async function redactDownload() {
+  if (!IMG.current) return;
+  const boxes = IMG.boxes.filter(b => b.redact).map(b => b.bbox);
+  if (!boxes.length) { toast('No boxes selected for redaction — toggle at least one region.', 'warn'); return; }
+  const btn = $('#redactBtn'); setBusy(btn, true, 'Redacting…');
+  try {
+    const res = await api('/api/image/redact', { body: { path: IMG.current.path, boxes, style: $('#blurStyle').value }, raw: true });
+    const blob = await res.blob(); const url = URL.createObjectURL(blob);
+    const name = (IMG.current.name || 'image').replace(/\.[^.]+$/, '') + '.redacted.png';
+    $('#afterImg').src = url; $('#beforeImg').src = IMG.current.url;
+    $('#downloadLink').href = url; $('#downloadLink').download = name;
+    $('#resultCard').classList.remove('hidden'); syncCompare();
+    const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    toast(`Redacted ${boxes.length} region(s) → ${res.headers.get('X-Redacted-Path') || name}`, 'ok');
+  } catch (e) { toast('Redaction failed: ' + e.message, 'err'); }
+  finally { setBusy(btn, false); }
+}
+function syncCompare() {
+  const v = +$('#compareRange').value; const clip = $('#beforeClip');
+  clip.style.width = v + '%';
+  const after = $('#afterImg'); $('#beforeImg').style.width = after.clientWidth + 'px'; $('#beforeImg').style.height = 'auto';
+}
+
+/* ==================================================================== TAB 3 */
+const FW = { vault: {}, sanitized: '' };
+const DEFAULT_PROMPT = `salam khouya, 3andi mochkil f checkout dyal Atlas Pay 😩
+Le client Youssef El Amrani (CIN BE847291, tel +212661234567) kaykhlles b RIB 230780123456789012345678
+w la réconciliation katla3 b 1 centime de différence chaque soir. Le stagiaire (CNE R139482710) a testé
+contre https://hpc-staging.internal.um6p.ma/api/v1 avec HPC_TOKEN = "hpc_tok_7f3a9b2c1d4e5f60718293a4"
+et CMI_STORE_KEY = "cmi_live_sk_9988776655443322" — ça marche, mais le total TVA est faux.
+
+Voilà le code, chno l'mochkil ? Kifach n9addo bla ma nbeddlo l'API ?
+
+def compute_total(amount_mad: float, quantity: int) -> float:
+    subtotal = amount_mad * quantity
+    tva = round(subtotal * 0.20, 2)
+    return subtotal + tva
+
+Traceback (most recent call last):
+  File "reconcile.py", line 42, in <module>
+    assert ledger_total == bank_total, f"mismatch for BE847291: {ledger_total} != {bank_total}"
+AssertionError: mismatch for BE847291: 1199.99 != 1200.0`;
+
+const tokRe = /\[[A-Z][A-Z0-9_]*_\d+\]/g;
+function tokenChips(text) { return esc(text).replace(/\[[A-Z][A-Z0-9_]*_\d+\]/g, t => `<span class="tok">${t}</span>`); }
+function rehydrateHtml(text, vault) {
+  // escape then swap tokens for highlighted restored values
+  return esc(text).replace(/\[[A-Z][A-Z0-9_]*_\d+\]/g, t => vault[t] !== undefined ? `<span class="restored" title="${esc(t)}">${esc(vault[t])}</span>` : `<span class="tok">${t}</span>`);
+}
+function rehydrateText(text, vault) { return String(text || '').replace(tokRe, t => vault[t] !== undefined ? vault[t] : t); }
+
+function renderVault() {
+  const tb = $('#vaultTable'); const reveal = $('#revealVault').checked;
+  const ents = Object.entries(FW.vault);
+  $('#entCount').textContent = ents.length;
+  if (!ents.length) { tb.innerHTML = '<tr><td colspan="2" class="px-2 py-3 text-slate-500 text-center">empty</td></tr>'; return; }
+  const mask = v => reveal ? v : (v.length <= 4 ? '••••' : v.slice(0, 2) + '•'.repeat(Math.min(v.length - 4, 18)) + v.slice(-2));
+  tb.innerHTML = ents.map(([k, v]) => `<tr class="border-t border-slate-800"><td class="px-2 py-1.5"><span class="tok">${esc(k)}</span></td><td class="px-2 py-1.5 font-mono text-amber-100 break-all">${esc(mask(String(v)))}</td></tr>`).join('');
+}
+
+async function sanitizePrompt() {
+  const btn = $('#sanitizeBtn'); setBusy(btn, true, 'Sanitizing on-device…');
+  try {
+    const r = await api('/api/sanitize', { body: { text: $('#rawPrompt').value, use_local_llm: !offline() } });
+    FW.vault = r.vault || {}; FW.sanitized = r.sanitized || '';
+    $('#sanitizedOut').innerHTML = tokenChips(FW.sanitized);
+    $('#sanEngine').textContent = r.engine || '';
+    renderVault();
+    $('#askBtn').disabled = false;
+    (r.warnings || []).forEach(w => toast(w, 'warn'));
+    toast(`${Object.keys(FW.vault).length} sensitive entities tokenized locally`, 'ok');
+  } catch (e) { toast('Sanitize failed: ' + e.message, 'err'); }
+  finally { setBusy(btn, false); }
+}
+
+async function askCloud() {
+  if (!FW.sanitized) return;
+  // client-side defense in depth too
+  const leaks = Object.entries(FW.vault).filter(([k, v]) => v && v.length >= 3 && FW.sanitized.includes(v));
+  if (leaks.length) { toast('Blocked: sanitized prompt still contains raw values (' + leaks.map(x => x[0]).join(', ') + ')', 'err'); return; }
+  const btn = $('#askBtn'); setBusy(btn, true, 'Asking cloud…');
+  const out = $('#fwOut');
+  const stop = thinking(out, offline() ? 'Offline template' : 'Gemma 4 31B Dense', 4);
+  try {
+    const r = await api('/api/firewall/ask', { body: { sanitized_prompt: FW.sanitized, vault: FW.vault, mode: 'cloud_deep', offline: offline() } });
+    $('#piiBytes').textContent = r.pii_bytes_sent ?? 0;
+    $('#sentBytes').textContent = (r.sent_bytes ?? 0).toLocaleString();
+    $('#fwEngine').textContent = r.engine + ' · ' + r.elapsed_s + 's';
+    const restoredCode = rehydrateText(r.raw_fixed_code || '', FW.vault);
+    out.innerHTML = `
+      ${(r.warnings || []).map(w => `<div class="text-[11px] rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-200 px-2 py-1">⚠ ${esc(w)}</div>`).join('')}
+      <details class="rounded-lg border border-slate-800 bg-[#060c1a]"><summary class="px-3 py-2 text-[12px] font-semibold text-slate-300 flex items-center gap-2"><span class="chev text-slate-600">▶</span> ⬆ What was sent to the cloud <span class="ml-auto chip chip-pass">0 raw PII</span></summary>
+        <div class="px-3 pb-3 font-mono text-[11.5px] text-slate-300 pre-wrap max-h-56 overflow-auto">${tokenChips(r.sent_prompt || '')}</div></details>
+      <div class="rounded-lg border border-slate-800 bg-[#060c1a] p-3">
+        <div class="text-[11px] font-bold text-teal-300 mb-1.5 uppercase tracking-wide">⬇ Cloud answer (tokens only)</div>
+        <div class="text-[12.5px] text-slate-300 pre-wrap leading-relaxed">${tokenChips(r.raw_answer || '')}</div></div>
+      <div class="rounded-lg border border-emerald-500/40 bg-emerald-500/[.06] p-3">
+        <div class="text-[11px] font-bold text-emerald-300 mb-1.5 uppercase tracking-wide">✓ Rehydrated locally</div>
+        <div class="text-[12.5px] text-slate-100 pre-wrap leading-relaxed">${rehydrateHtml(r.raw_answer || '', FW.vault)}</div></div>
+      ${restoredCode ? `<div class="rounded-lg border border-slate-800 overflow-hidden"><div class="px-3 py-1.5 text-[11px] font-bold text-violet-300 bg-slate-900/70 border-b border-slate-800">Suggested fix</div>
+        <div class="codebox overflow-auto max-h-72 py-2 hljs">${splitHtmlLines(highlight(restoredCode, 'python')).map((h, i) => `<div class="cl"><span class="ln">${i + 1}</span><span class="lc">${h || ' '}</span></div>`).join('')}</div></div>` : ''}`;
+    toast('Answer received and rehydrated locally', 'ok');
+  } catch (e) {
+    toast('Firewall: ' + e.message, 'err');
+  } finally { stop(); setBusy(btn, false); }
+}
+
+/* ==================================================================== TAB 4 */
+const POLICY = { loaded: false };
+function syncGutter() {
+  const ta = $('#yamlEditor'); const n = ta.value.split('\n').length;
+  const g = $('#yamlGutter'); if (g.dataset.n != n) { g.textContent = Array.from({ length: n }, (_, i) => i + 1).join('\n'); g.dataset.n = n; }
+  g.scrollTop = ta.scrollTop;
+}
+async function loadPolicy() {
+  POLICY.loaded = true;
+  try {
+    const r = await api('/api/policy');
+    $('#yamlEditor').value = r.yaml || ''; syncGutter(); policyStats();
+  } catch (e) { toast('Could not load policy: ' + e.message, 'err'); }
+}
+function policyStats() {
+  const t = $('#yamlEditor').value;
+  const rr = (t.match(/^\s*-\s*id:/gm) || []).length; const nl = (t.match(/nl_rules:/g) || []).length;
+  $('#policyStats').textContent = `${t.split('\n').length} lines · ${rr} regex rules · ${nl} NL rule packs`;
+}
+function policyMsg(html, kind) {
+  const el = $('#policyMsg'); el.classList.remove('hidden');
+  el.className = 'mx-4 mt-3 text-[12px] rounded-lg px-3 py-2 border ' + (kind === 'ok' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200' : 'border-rose-500/40 bg-rose-500/10 text-rose-200 font-mono pre-wrap');
+  el.innerHTML = html;
+}
+async function savePolicy() {
+  const btn = $('#savePolicyBtn'); setBusy(btn, true, 'Validating…');
+  try {
+    const r = await api('/api/policy', { method: 'PUT', body: { yaml: $('#yamlEditor').value } });
+    policyMsg(`✓ Saved to <span class="font-mono">${esc(r.path)}</span> — ${esc(r.presets.length)} presets, ${esc(r.regex_rules)} regex rules, ${esc(r.nl_rules)} NL rules. Scanner cache reset.`, 'ok');
+    toast('Policy saved & validated', 'ok');
+  } catch (e) { policyMsg('✕ ' + esc(e.message), 'err'); toast('Policy invalid — not saved', 'err'); }
+  finally { setBusy(btn, false); }
+}
+
+function renderMarkdown(md) {
+  if (!md) return '<p class="text-xs text-slate-500">No markdown returned.</p>';
+  if (window.marked) {
+    try {
+      const html = marked.parse(md, { mangle: false, headerIds: false });
+      const tpl = document.createElement('template'); tpl.innerHTML = html;
+      tpl.content.querySelectorAll('script,iframe,object,embed,style').forEach(n => n.remove());
+      tpl.content.querySelectorAll('*').forEach(n => [...n.attributes].forEach(a => { if (/^on/i.test(a.name) || /javascript:/i.test(a.value)) n.removeAttribute(a.name); }));
+      return tpl.innerHTML;
+    } catch (e) {}
+  }
+  return `<pre class="pre-wrap text-xs">${esc(md)}</pre>`;
+}
+
+/** Find recall per engine in the benchmark result / markdown. */
+function extractRecall(payload) {
+  const out = [];
+  const r = payload.result;
+  const pct = v => { if (v === null || v === undefined) return null; if (typeof v === 'number') return v <= 1 ? v * 100 : v; const m = String(v).match(/([\d.]+)\s*%?/); if (!m) return null; const n = parseFloat(m[1]); return String(v).includes('%') || n > 1 ? n : n * 100; };
+  const visit = (obj, name) => {
+    if (!obj || typeof obj !== 'object') return;
+    for (const [k, v] of Object.entries(obj)) {
+      if (/recall/i.test(k) && (typeof v === 'number' || typeof v === 'string') && name) out.push({ engine: name, recall: pct(v) });
+      else if (v && typeof v === 'object' && !Array.isArray(v)) visit(v, Array.isArray(obj) ? name : k);
+    }
+  };
+  if (r && r.engines && typeof r.engines === 'object') {
+    for (const [k, e] of Object.entries(r.engines)) if (e && e.recall !== undefined) out.push({ engine: e.label || k, recall: pct(e.recall) });
+  }
+  if (!out.length && r && typeof r === 'object') {
+    for (const key of ['engines', 'summary', 'per_engine', 'metrics', 'totals']) if (r[key]) visit(r[key], null);
+    if (!out.length) visit(r, null);
+  }
+  if (!out.length && payload.markdown) {
+    const lines = payload.markdown.split('\n').filter(l => l.trim().startsWith('|'));
+    const rows = lines.map(l => l.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim().replace(/\*\*/g, '')));
+    for (let i = 0; i < rows.length; i++) {
+      const hdr = rows[i]; const ci = hdr.findIndex(c => /recall/i.test(c));
+      if (ci > 0) { for (let j = i + 2; j < rows.length && rows[j].length === hdr.length; j++) { const v = pct(rows[j][ci]); if (v !== null) out.push({ engine: rows[j][0], recall: v }); } if (out.length) break; }
+      const rowRecall = rows.find(rw => /recall/i.test(rw[0]));
+      if (rowRecall && i === 0) { hdr.slice(1).forEach((h, k) => { const v = pct(rowRecall[k + 1]); if (v !== null) out.push({ engine: h, recall: v }); }); if (out.length) break; }
+    }
+  }
+  const seen = new Set();
+  return out.filter(o => o.recall !== null && !isNaN(o.recall) && !seen.has(o.engine) && seen.add(o.engine));
+}
+function renderBench(payload) {
+  $('#benchMd').innerHTML = renderMarkdown(payload.markdown);
+  const rec = extractRecall(payload);
+  const chart = $('#benchChart');
+  if (!rec.length) chart.innerHTML = '<p class="text-xs text-slate-500">No recall metric found in result.</p>';
+  else chart.innerHTML = rec.map(o => {
+    const regex = /regex|gitleaks|baseline/i.test(o.engine);
+    return `<div><div class="flex justify-between text-[12px] mb-1"><span class="font-semibold ${regex ? 'text-slate-400' : 'text-emerald-200'}">${esc(o.engine)}</span><span class="font-mono tabular-nums ${regex ? 'text-slate-400' : 'text-emerald-300'}">${o.recall.toFixed(0)}% recall</span></div>
+      <div class="h-3 rounded-full bg-slate-800 overflow-hidden"><div class="bar h-full ${regex ? 'bg-slate-500' : 'bg-gradient-to-r from-emerald-500 to-teal-400'}" style="width:0%" data-w="${Math.max(0, Math.min(100, o.recall))}"></div></div></div>`;
+  }).join('');
+  requestAnimationFrame(() => $$('#benchChart .bar').forEach(b => b.style.width = b.dataset.w + '%'));
+  const meta = [];
+  if (payload.elapsed_s !== undefined) meta.push(`ran in ${payload.elapsed_s}s`);
+  if (payload.ts) meta.push(new Date(payload.ts * 1000).toLocaleString());
+  (payload.warnings || []).forEach(w => meta.push('⚠ ' + w));
+  $('#benchMeta').textContent = meta.join(' · ');
+}
+async function runBench() {
+  const btn = $('#benchBtn'); setBusy(btn, true, 'Running benchmark…');
+  const card = $('#benchMd').parentElement;
+  const stop = thinking(card, $('#benchOffline').checked ? 'Benchmark (offline)' : 'Benchmark: Regex vs Gemma 4', 6);
+  try {
+    const r = await api('/api/benchmark', { body: { offline: $('#benchOffline').checked } });
+    renderBench(r);
+    if ((r.warnings || []).length) toast(r.warnings.join('; '), 'warn'); else toast('Benchmark complete', 'ok');
+  } catch (e) { toast('Benchmark failed: ' + e.message, 'err'); }
+  finally { stop(); setBusy(btn, false); }
+}
+async function loadLastBench() {
+  try { const r = await api('/api/benchmark/last'); if (r && (r.markdown || r.result)) renderBench(r); } catch (e) {}
+}
+
+/* ======================================================================= init */
+async function reindex() {
+  const btn = $('#reindexBtn'); setBusy(btn, true, 'Indexing…');
+  try {
+    const scen = SCAN.data && SCAN.data.scenario;
+    const r = await api('/api/index', { body: { force: true, scenario: scen || null } });
+    setIndex(r);
+    (r.warnings || []).forEach(w => toast(w, 'warn'));
+    toast(`Indexed ${r.files_indexed ?? 0} files (${r.files_reused ?? 0} reused) → ${r.chunks} chunks / ${r.symbols} symbols${scen ? ' [' + scen + ']' : ''}`, 'ok');
+  } catch (e) { toast('Re-index failed: ' + e.message, 'err'); }
+  finally { setBusy(btn, false); }
+}
+
+function init() {
+  // restore prefs
+  const em = store.get('engine', null); if (em) $('#engineMode').value = em;
+  const dp = store.get('preset', null); if (dp) $('#domainPreset').value = dp;
+  const off = params.has('offline') ? params.get('offline') === '1' : store.get('offline', false);
+  $('#offlineToggle').checked = !!off; syncOffline();
+  $('#engineMode').onchange = () => store.set('engine', engineMode());
+  $('#domainPreset').onchange = () => store.set('preset', preset());
+  $('#offlineToggle').onchange = syncOffline;
+  $$('.tab-btn').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+  $('#reindexBtn').onclick = reindex;
+  // tab 1
+  $$('.scenario-btn').forEach(b => b.onclick = () => runScenario(b.dataset.scenario));
+  $$('#filterChips .filter-chip').forEach(c => c.onclick = () => { SCAN.filter = c.dataset.filter; $$('#filterChips .filter-chip').forEach(x => x.classList.toggle('active', x === c)); renderFindings(); });
+  $('#previewBtn').onclick = previewPatch; $('#applyBtn').onclick = applyFixes;
+  $('#modalClose').onclick = closeModal; $('#modal').onclick = e => { if (e.target.id === 'modal') closeModal(); };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  // tab 2
+  initCanvas();
+  $('#visionScanBtn').onclick = visionScan; $('#redactBtn').onclick = redactDownload;
+  $('#blurStyle').onchange = drawCanvas;
+  $('#compareRange').oninput = syncCompare; $('#afterImg').onload = syncCompare;
+  const dz = $('#dropzone');
+  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('!border-emerald-500'); }));
+  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('!border-emerald-500'); }));
+  dz.addEventListener('drop', e => uploadImage(e.dataTransfer.files[0]));
+  $('#fileInput').onchange = e => uploadImage(e.target.files[0]);
+  // tab 3
+  $('#rawPrompt').value = DEFAULT_PROMPT;
+  $('#sanitizeBtn').onclick = sanitizePrompt; $('#askBtn').onclick = askCloud;
+  $('#revealVault').onchange = renderVault;
+  // tab 4
+  const ta = $('#yamlEditor');
+  ta.addEventListener('input', () => { syncGutter(); policyStats(); }); ta.addEventListener('scroll', syncGutter);
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Tab') { e.preventDefault(); const s = ta.selectionStart; ta.setRangeText('  ', s, ta.selectionEnd, 'end'); syncGutter(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); savePolicy(); }
+  });
+  $('#savePolicyBtn').onclick = savePolicy; $('#reloadPolicyBtn').onclick = loadPolicy;
+  $('#benchBtn').onclick = runBench;
+
+  loadStatus();
+  setInterval(loadStatus, 30000);
+  // deep links: ?tab=image|firewall|policy|code&demo=<scenario>&scan=1&fw=1
+  const tabMap = { code: 'tab-code', image: 'tab-image', firewall: 'tab-firewall', policy: 'tab-policy' };
+  const t = tabMap[params.get('tab')] || store.get('tab', 'tab-code');
+  showTab($('#' + t) ? t : 'tab-code');
+  if (params.get('demo')) { showTab('tab-code'); runScenario(params.get('demo')); }
+  if (params.get('scan') === '1') { showTab('tab-image'); const iv = setInterval(() => { if (IMG.img) { clearInterval(iv); visionScan(); } }, 200); }
+  if (params.get('fw') === '1') { showTab('tab-firewall'); sanitizePrompt().then(() => askCloud()); }
+  if (params.get('bench') === '1') { showTab('tab-policy'); runBench(); }
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
