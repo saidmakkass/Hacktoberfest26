@@ -1,0 +1,55 @@
+name: BarakaGate
+
+on:
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  barakagate:
+    name: Pre-flight leak, PII & logic-bug gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install BarakaGate
+        run: pip install -e .
+
+      - name: Scan changed files
+        id: scan
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          mkdir -p .barakagate
+          git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD" > .barakagate/changed.txt
+          echo "Changed files:"; cat .barakagate/changed.txt
+          if [ ! -s .barakagate/changed.txt ]; then
+            echo '{"verdict": "PASS", "summary": "no changed files"}' > .barakagate/report.json
+            exit 0
+          fi
+          set +e
+          xargs -a .barakagate/changed.txt -d '\n' barakagate scan --offline-safe --json > .barakagate/report.json
+          status=$?
+          set -e
+          python -c "import json; r=json.load(open('.barakagate/report.json')); print('Verdict:', r['verdict']); [print(f\"{f['severity']:8} {f['file_path']}:{f.get('line_start')} {f['title']}\") for f in r.get('findings', [])]"
+          if [ "$status" -ne 0 ]; then
+            echo "::error::BarakaGate verdict is BLOCK - see the report artifact"
+            exit 1
+          fi
+
+      - name: Upload BarakaGate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: barakagate-report
+          path: .barakagate/report.json
+          if-no-files-found: ignore
