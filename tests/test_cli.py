@@ -64,7 +64,7 @@ def test_install_hook(tmp_path):
     res = runner.invoke(app, ["install-hook", "--root", str(tmp_path)])
     assert res.exit_code == 0, res.output
     hook = hooks / "pre-commit"
-    assert "barakagate staged" in hook.read_text()
+    assert "barakagate review" in hook.read_text()
     assert os.access(hook, os.X_OK)
     assert (hooks / "pre-commit.bak").read_text() == "#!/bin/sh\necho old\n"
 

@@ -108,7 +108,7 @@ def render_result(result: ScanResult, show_trace: bool = True, max_trace_lines: 
     t.add_column("Regex?", justify="center", width=6)
     for i, f in enumerate(result.findings, 1):
         sev = f.severity.value
-        cat = "🔴 LEAK/PII" if _is_leak(f) else "🟣 LOGIC BUG"
+        cat = "LEAK/PII" if _is_leak(f) else "LOGIC BUG"
         loc = f"{f.file_path}:{f.line_start}" if f.line_start else f.file_path
         t.add_row(str(i), Text(sev, style=SEV_STYLE.get(sev, "")), cat, Text(loc), Text(f.title),
                   Text(f.cross_file_context_used or "-"), "yes" if f.caught_by_regex_baseline else "[bold]no[/]")
@@ -203,6 +203,86 @@ def scan(
     if (fix or yes) and result.findings:
         apply_fixes(result, root, interactive=fix and not yes)
     _finish(result, as_json)
+
+
+@app.command()
+def check(
+    base: str = typer.Option(..., "--base", help="Trusted policy/base commit"),
+    head: str = typer.Option("HEAD", "--head", help="Proposed revision"),
+    root: Optional[Path] = typer.Option(None, "--root"),
+):
+    """Noninteractive revision check using trusted base policy. Never applies edits."""
+    from barakagate.review_check import check_revision
+    try:
+        report = check_revision(root or Path.cwd(), base, head)
+    except (ValueError, OSError) as exc:
+        typer.echo(json.dumps({"passed": False, "error": str(exc)}))
+        raise typer.Exit(1)
+    typer.echo(json.dumps(report, indent=2))
+    raise typer.Exit(0 if report['passed'] else 1)
+
+
+@app.command()
+def review(
+    root: Optional[Path] = typer.Option(None, "--root"),
+    offline: bool = typer.Option(False, "--offline"),
+    interactive: Optional[bool] = typer.Option(None, "--interactive/--non-interactive"),
+):
+    """Review staged changes, then release or abort the waiting Git commit."""
+    from barakagate.review import ReviewSession, ReviewError, read_policy
+    from barakagate.review_server import serve_review
+    root = (root or Path.cwd()).resolve()
+    try:
+        policy = None
+        if offline:
+            policy, _ = read_policy(root)
+            policy.offline = True
+        with ReviewSession(root, policy=policy) as session:
+            render_result(session.result, show_trace=False)
+            console.print(Text("Policy: " + str(session.policy_path or "configured policy"), style="dim"))
+            for f in session.findings:
+                console.print(Text(f"{f.id}: " + ("Dismissal permitted" if session.policy.can_dismiss(f) else "Enforced by policy")))
+            import difflib
+            for path, file in session.files.items():
+                if file['kind'] == 'text' and file['original'] != file['proposed']:
+                    diff = ''.join(difflib.unified_diff(file['original'].splitlines(keepends=True),
+                        file['proposed'].splitlines(keepends=True), fromfile='staged/' + path,
+                        tofile='proposed/' + path))
+                    console.print(Panel(Text(diff), title=path, border_style='grey50'))
+            if session.env_updates:
+                console.print(Text('Local-only .env additions (not staged): ' + ', '.join(session.env_updates)))
+            for warning in session.coverage:
+                console.print(Text(warning, style="yellow"))
+            if not session.findings and not session.coverage:
+                return
+            if interactive is False or (interactive is None and not sys.stdin.isatty()):
+                console.print("Review required. Run in a terminal with --interactive; no files were changed.")
+                raise typer.Exit(1)
+            while True:
+                choice = typer.prompt("[a] Approve proposed changes / [c] Cancel commit / [w] Review in browser", default="c").strip().lower()
+                if choice == "c":
+                    session.cancel()
+                    console.print("Commit cancelled. Original staged and working files are unchanged.")
+                    raise typer.Exit(1)
+                if choice == "w":
+                    if serve_review(session, output=lambda message: console.print(Text(message), soft_wrap=True)):
+                        console.print("Review approved. Git will continue.")
+                        return
+                    raise typer.Exit(1)
+                if choice == "a":
+                    result = session.validate(session.revision)
+                    if not result['valid']:
+                        console.print(Text("Approval blocked:\n" + "\n".join(result['blockers']), style="yellow"))
+                        continue
+                    session.approve(session.revision)
+                    console.print("Reviewed changes staged. Git will continue.")
+                    return
+    except (ReviewError, ValueError, OSError) as exc:
+        console.print(Text(f"Commit review stopped: {exc}", style="red"))
+        raise typer.Exit(1)
+    except (KeyboardInterrupt, EOFError):
+        console.print("Commit cancelled. Review was not approved.")
+        raise typer.Exit(1)
 
 
 @app.command()
@@ -315,14 +395,20 @@ def sanitize(
 
 HOOK_SCRIPT = """#!/bin/sh
 # BarakaGate pre-commit hook (installed by `barakagate install-hook`)
+# Previous hooks run first and retain their veto.
+hook_dir=$(dirname "$0")
+if [ -x "$hook_dir/pre-commit.barakagate-previous" ]; then
+  "$hook_dir/pre-commit.barakagate-previous" "$@" || exit $?
+fi
+if [ -r /dev/tty ] && ( : </dev/tty ) 2>/dev/null; then
+  exec </dev/tty
+fi
 if command -v barakagate >/dev/null 2>&1; then
-  barakagate staged
+  barakagate review
+elif command -v python3 >/dev/null 2>&1; then
+  python3 -m barakagate.cli review
 else
-  if command -v python3 >/dev/null 2>&1; then
-    python3 -m barakagate.cli staged
-  else
-    python -m barakagate.cli staged
-  fi
+  python -m barakagate.cli review
 fi
 """
 
@@ -331,16 +417,23 @@ fi
 def install_hook(root: Optional[Path] = typer.Option(None, "--root")):
     """Install the git pre-commit hook (backs up an existing hook)."""
     root = (root or Path.cwd()).resolve()
-    git_dir = root / ".git"
-    if not git_dir.is_dir():
+    import subprocess
+    root = (root or Path.cwd()).resolve()
+    result = subprocess.run(["git", "-C", str(root), "rev-parse", "--path-format=absolute", "--git-path", "hooks"], capture_output=True, text=True)
+    if result.returncode:
         console.print(Text(f"{root} is not a git repository", style="red"))
         raise typer.Exit(code=2)
-    hooks = git_dir / "hooks"
-    hooks.mkdir(exist_ok=True)
+    hooks = Path(result.stdout.strip())
+    hooks.mkdir(parents=True, exist_ok=True)
     hook = hooks / "pre-commit"
     if hook.exists() and "BarakaGate" not in hook.read_text(errors="ignore"):
-        hook.rename(hooks / "pre-commit.bak")
-        console.print(Text("Existing hook backed up to pre-commit.bak", style="yellow"))
+        import shutil
+        previous = hooks / "pre-commit.barakagate-previous"
+        if previous.exists():
+            raise typer.BadParameter("A previous hook backup already exists; reconcile it before installing")
+        shutil.copy2(hook, hooks / "pre-commit.bak")
+        hook.rename(previous)
+        console.print(Text("Existing hook preserved and chained", style="yellow"))
     hook.write_text(HOOK_SCRIPT)
     hook.chmod(hook.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     console.print(Text(f"Installed BarakaGate pre-commit hook -> {hook}", style="bold green"))

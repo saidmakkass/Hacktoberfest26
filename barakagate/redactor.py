@@ -384,7 +384,7 @@ def preview_patch(text: str, findings: List[Finding], decisions: Dict[str, Actio
 
 def _project_root_for(path: Path) -> Path:
     for d in [path.parent, *path.parent.parents]:
-        if (d / ".git").exists() or (d / ".barakagate.yaml").is_file():
+        if (d / ".git" / "HEAD").is_file() or (d / ".git").is_file() or (d / ".barakagate.yaml").is_file():
             return d
     return path.parent
 
@@ -499,15 +499,7 @@ def redact_image(path: str, boxes: List[List[int]], style: str = "gaussian_blur"
         if bw <= 0 or bh <= 0:
             continue
         if style == ActionType.SOLID_MASK.value:
-            draw.rectangle([x1, y1, x2 - 1, y2 - 1], fill=(0, 0, 0), outline=(57, 255, 20), width=2)
-            fsize = max(8, min(int(bh * 0.6), 28))
-            font = _font(fsize)
-            label = "REDACTED"
-            tb = draw.textbbox((0, 0), label, font=font)
-            tw, th = tb[2] - tb[0], tb[3] - tb[1]
-            if tw < bw - 4 and th < bh - 2:
-                draw.text((x1 + (bw - tw) / 2 - tb[0], y1 + (bh - th) / 2 - tb[1]), label,
-                          fill=(57, 255, 20), font=font)
+            draw.rectangle([x1, y1, x2 - 1, y2 - 1], fill=(0, 0, 0))
         else:
             region = img.crop((x1, y1, x2, y2))
             # pixelate then blur: unreadable even for large OCR-friendly fonts

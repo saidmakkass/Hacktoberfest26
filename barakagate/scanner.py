@@ -1009,7 +1009,7 @@ def compute_verdict(findings: Iterable[Finding], config: Optional[BarakaConfig] 
 # --------------------------------------------------------------------------- prompts
 def build_system_instruction(preset: str = "all", config: Optional[BarakaConfig] = None) -> str:
     cfg = config or load_config()
-    rules = "\n".join(f"- {r}" for r in cfg.nl_rules(preset)) or "- Any secret, PII or logical/security bug."
+    rules = "Use the bracketed policy rule ID verbatim as rule_id for matching findings.\n" + "\n".join(f"- {r}" for r in cfg.nl_rules(preset)) or "- Any secret, PII or logical/security bug."
     return f"""You are BarakaGate, a senior pre-commit security, privacy and correctness auditor (Gemma 4).
 You audit code BEFORE it reaches production for three categories:
 1. security_leak - secrets, API keys, tokens, credentials, internal hosts/URLs.
@@ -1075,7 +1075,7 @@ def build_user_prompt(targets: List[Tuple[str, str]], context: List[CodeChunk],
 
 def build_image_system(preset: str = "all", config: Optional[BarakaConfig] = None) -> str:
     cfg = config or load_config()
-    rules = "\n".join(f"- {r}" for r in cfg.nl_rules(preset))
+    rules = "Use the bracketed policy rule ID verbatim as rule_id for matching findings.\n" + "\n".join(f"- {r}" for r in cfg.nl_rules(preset))
     return ("You are BarakaGate's vision auditor (Gemma 4). Read ALL text in the screenshot (OCR) and find every "
             "visible secret or personal datum: bearer/JWT tokens, API or merchant keys (cmi_live_...), passwords, "
             "Moroccan CIN (e.g. AB654321), 24-digit RIB, phone numbers, student CNE/Massar codes, names next to IDs, "

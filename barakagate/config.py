@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import hashlib
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -98,7 +99,12 @@ class BarakaConfig:
     def nl_rules(self, preset: str | DomainPreset = DomainPreset.ALL) -> List[str]:
         out: List[str] = []
         for name in self.preset_names(preset):
-            out.extend(self.raw["presets"][name].get("nl_rules") or [])
+            for rule in self.raw["presets"][name].get("nl_rules") or []:
+                if isinstance(rule, str):
+                    rid = "nl." + name + "." + hashlib.sha256(rule.encode()).hexdigest()[:12]
+                    out.append(f"[{rid}] {rule}")
+                else:
+                    out.append(f"[{rule['id']}] {rule['text']}")
         return out
 
     def is_allowlisted(self, value: str) -> bool:
@@ -142,7 +148,16 @@ def validate_yaml(text: str) -> Dict[str, Any]:
         raise ValueError(f"Invalid YAML: {e}") from e
     if not isinstance(data, dict) or "presets" not in data:
         raise ValueError("Policy must be a mapping with a 'presets' section")
+    from barakagate.review_policy import ReviewPolicy
+    ReviewPolicy.from_raw(data)
+    if not isinstance(data.get("presets"), dict):
+        raise ValueError("presets must be a mapping")
     for pname, preset in (data.get("presets") or {}).items():
+        if not isinstance(preset, dict):
+            raise ValueError(f"Preset {pname} must be a mapping")
+        for rule in preset.get("nl_rules", []):
+            if not isinstance(rule, str) and not (isinstance(rule, dict) and isinstance(rule.get("id"), str) and isinstance(rule.get("text"), str)):
+                raise ValueError("Natural-language rules require text or an id/text mapping")
         for r in (preset or {}).get("regex_rules") or []:
             try:
                 re.compile(r["pattern"])

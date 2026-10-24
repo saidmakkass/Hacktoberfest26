@@ -150,3 +150,17 @@ presets:
       - "ML train/test leakage: scaler.fit_transform / imputation / feature selection fitted on the full dataset before train_test_split, including across pipeline modules."
       - "Silent NaN / division-by-zero propagation: averages computed without masking sentinel values (-999, NaN) defined in the loader."
       - "Missing reproducibility seeds: stochastic random/numpy/torch code that ignores the global SEED from config."
+
+# Commit review. These defaults enforce HIGH/CRITICAL findings while allowing
+# explicit dismissal of lower severities. See docs/COMMIT_REVIEW.md.
+review:
+  dismissal:
+    default: true
+    severity:
+      CRITICAL: false
+      HIGH: false
+  allow_fallback: false
+  incomplete: block
+  open_browser: true
+  timeout_seconds: 1800
+  max_file_bytes: 1000000
