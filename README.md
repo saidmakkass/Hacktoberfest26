@@ -179,6 +179,6 @@ samples/             demo scenarios
 - Ahmed Ait Elaaoud
 - Omar Gourragui
 
-## License
+## License 
 
 MIT. See [LICENSE](LICENSE). Gemma is provided under the [Gemma Terms of Use](https://ai.google.dev/gemma/terms).
