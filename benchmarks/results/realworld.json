@@ -1,7 +1,7 @@
 [
  {
   "engine": "cloud_fast",
-  "label": "BarakaGate + Gemma 4 26B MoE",
+  "label": "Plutonium + Gemma 4 26B MoE",
   "ran_at": "2026-10-24 14:40:09",
   "matched": {
    "T2": {
@@ -248,7 +248,7 @@
  },
  {
   "engine": "offline",
-  "label": "BarakaGate offline heuristics (no LLM)",
+  "label": "Plutonium offline heuristics (no LLM)",
   "ran_at": "2026-10-24 14:22:44",
   "matched": {
    "M7": {

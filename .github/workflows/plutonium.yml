@@ -1,11 +1,11 @@
-name: BarakaGate
+name: Plutonium
 on:
   pull_request:
     branches: [main, master]
 permissions:
   contents: read
 jobs:
-  barakagate:
+  plutonium:
     name: Required policy review
     runs-on: ubuntu-latest
     steps:
@@ -22,17 +22,17 @@ jobs:
       - name: Fetch proposed objects
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: git fetch origin "refs/pull/$PR_NUMBER/head:refs/barakagate/proposed"
+        run: git fetch origin "refs/pull/$PR_NUMBER/head:refs/plutonium/proposed"
       - name: Check proposed revision with base policy
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          mkdir -p .barakagate
-          barakagate check --base "$BASE_SHA" --head refs/barakagate/proposed > .barakagate/review-report.json
+          mkdir -p .plutonium
+          plutonium check --base "$BASE_SHA" --head refs/plutonium/proposed > .plutonium/review-report.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: barakagate-review
-          path: .barakagate/review-report.json
+          name: plutonium-review
+          path: .plutonium/review-report.json
           if-no-files-found: ignore

@@ -1,7 +1,7 @@
 """Unified Gemma 4 router: Gemini API (26b MoE / 31b dense) + local Ollama gemma4:e4b.
 
 Fallback chain (pitfall #3): requested model -> other cloud model -> local Ollama ->
-`.barakagate/demo_cache.json` -> raise `AllEnginesFailed` (the scanner then uses its
+`.plutonium/demo_cache.json` -> raise `AllEnginesFailed` (the scanner then uses its
 deterministic offline heuristic engine so the demo never shows an empty screen).
 """
 from __future__ import annotations
@@ -18,8 +18,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
 
-from barakagate.config import PROJECT_ROOT, load_dotenv
-from barakagate.models import EngineMode
+from plutonium.config import PROJECT_ROOT, load_dotenv
+from plutonium.models import EngineMode
 
 try:  # Strictly the new SDK (pitfall #1) — never `google.generativeai`.
     from google import genai
@@ -31,7 +31,7 @@ except ImportError:  # pragma: no cover - exercised only without the SDK install
 CLOUD_FAST_MODEL = "gemma-4-26b-a4b-it"
 CLOUD_DEEP_MODEL = "gemma-4-31b-it"
 LOCAL_MODEL = "gemma4:e4b"
-CACHE_PATH = Path(os.environ.get("BARAKAGATE_CACHE", PROJECT_ROOT / ".barakagate" / "demo_cache.json"))
+CACHE_PATH = Path(os.environ.get("PLUTONIUM_CACHE", PROJECT_ROOT / ".plutonium" / "demo_cache.json"))
 
 
 class AllEnginesFailed(RuntimeError):
@@ -154,7 +154,7 @@ class GemmaRouter:
             )
         self.cache = DemoCache(cache_path)
         self.offline_safe = offline_safe
-        self.thinking_level = thinking_level or os.environ.get("BARAKAGATE_THINKING", "low")
+        self.thinking_level = thinking_level or os.environ.get("PLUTONIUM_THINKING", "low")
         self.timeout_s = timeout_s
         self.last_errors: List[str] = []
 

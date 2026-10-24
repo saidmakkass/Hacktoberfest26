@@ -1,19 +1,19 @@
 # Commit review
 
-BarakaGate can pause a commit for a terminal or browser review. The browser uses
+Plutonium can pause a commit for a terminal or browser review. The browser uses
 local assets and a temporary loopback server. Your proposed edits remain in the
 session until approval; cancellation leaves the index and working files unchanged.
 
 ```sh
 pip install -e .
-barakagate install-hook
+plutonium install-hook
 # Stage the intended files, then commit normally:
 git commit -m "Your message"
 ```
 
 The hook shows findings, explanations, and before/after suggestions. Choose
 `a` to validate and approve proposals, `c` to cancel the commit, or `w` to open
-browser review. You can also start a review with `barakagate review`.
+browser review. You can also start a review with `plutonium review`.
 
 In the browser, choose a file, edit its proposed text or draw image redactions,
 then **Validate changes** and **Approve changes**. Permitted findings can be
@@ -24,7 +24,7 @@ it. The browser never claims that a commit was created.
 
 ## Configuration
 
-`.barakagate.yaml` retains its existing rules and adds a `review` section:
+`.plutonium.yaml` retains its existing rules and adds a `review` section:
 
 ```yaml
 review:
@@ -81,11 +81,11 @@ the configured timeout. A terminated process loses unapplied session edits.
 Noninteractive use never applies fixes or waits for a terminal:
 
 ```sh
-barakagate review --non-interactive
-barakagate check --base BASE_SHA --head PROPOSED_SHA
+plutonium review --non-interactive
+plutonium check --base BASE_SHA --head PROPOSED_SHA
 ```
 
-The check command uses `.barakagate.yaml` from the trusted base revision, scans
+The check command uses `.plutonium.yaml` from the trusted base revision, scans
 proposed content without executing it, and emits a JSON report without raw secret
 snippets. Configure the **Required policy review** CI job as a required protected
 branch check. Required organization checks must run from a trusted workflow or
@@ -97,7 +97,7 @@ required coverage unless the trusted policy explicitly selects offline checks.
 
 ## Standalone Studio and frontend assets
 
-`barakagate serve` retains the standalone inspector, image redaction, prompt
+`plutonium serve` retains the standalone inspector, image redaction, prompt
 firewall, policies, and benchmarks. Commit review starts its own server and cannot
 edit policy or switch repositories.
 
@@ -107,9 +107,9 @@ regenerate its utility stylesheet after changing utility classes with Tailwind 3
 ```sh
 tailwindcss -c scripts/frontend/tailwind.config.cjs \
   -i scripts/frontend/tailwind.css \
-  -o barakagate/static/studio-utilities.css --minify
+  -o plutonium/static/studio-utilities.css --minify
 ```
 
 Validation: `python -m pytest -q`; JavaScript syntax checks:
-`node --check barakagate/static/review.js` and
-`node --check barakagate/static/studio.js`.
+`node --check plutonium/static/review.js` and
+`node --check plutonium/static/studio.js`.

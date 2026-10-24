@@ -4,7 +4,7 @@ Stage 1  structural chunking: Python via ``ast`` (functions, classes and module-
          UPPER_CASE constants), TS/JS via regex + brace counting, ``.ipynb`` code cells
          (text outputs rendered as comments, PNG outputs extracted for vision) and
          80-line / 10-overlap windows for config & data fixtures.
-Stage 2  incremental storage in ``<root>/.barakagate/index.json`` keyed by file sha256.
+Stage 2  incremental storage in ``<root>/.plutonium/index.json`` keyed by file sha256.
 Stage 3  ``get_context_for_target``: 1-hop symbol graph -> semantic hints -> BM25 -> budget.
 
 No chromadb / faiss / tree-sitter: everything here is the standard library.
@@ -23,8 +23,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from barakagate.config import BarakaConfig, load_config
-from barakagate.models import CodeChunk, EngineMode, IndexStats
+from plutonium.config import PlutoniumConfig, load_config
+from plutonium.models import CodeChunk, EngineMode, IndexStats
 
 INDEX_VERSION = 2
 MAX_FILE_BYTES = 1_000_000
@@ -218,11 +218,11 @@ _TS_IMPORT = re.compile(r"import\s+(?:type\s+)?(?:([A-Za-z_$][\w$]*)\s*,?\s*)?(?
 
 # --------------------------------------------------------------------------- indexer
 class CodebaseIndexer:
-    def __init__(self, root: str | Path = ".", config: Optional[BarakaConfig] = None):
+    def __init__(self, root: str | Path = ".", config: Optional[PlutoniumConfig] = None):
         self.root = Path(root).resolve()
         self.config = config or load_config(self.root)
-        self.index_path = self.root / ".barakagate" / "index.json"
-        self.image_dir = self.root / ".barakagate" / "tmp_nb_images"
+        self.index_path = self.root / ".plutonium" / "index.json"
+        self.image_dir = self.root / ".plutonium" / "tmp_nb_images"
         self.chunks: List[CodeChunk] = []
         self.symbol_map: Dict[str, CodeChunk] = {}
         self.symbols_by_name: Dict[str, List[CodeChunk]] = {}
@@ -250,7 +250,7 @@ class CodebaseIndexer:
             rel_dir = "" if rel_dir == "." else rel_dir + "/"
             dirnames[:] = sorted(d for d in dirnames
                                  if not self.config.is_ignored_path(f"{rel_dir}{d}/")
-                                 and d not in (".git", ".barakagate", "__pycache__", "node_modules"))
+                                 and d not in (".git", ".plutonium", "__pycache__", "node_modules"))
             for fn in sorted(filenames):
                 rel = f"{rel_dir}{fn}"
                 if self.config.is_ignored_path(rel):

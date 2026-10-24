@@ -1,4 +1,4 @@
-"""Policy-as-Code loader for `.barakagate.yaml` plus a tiny `.env` loader."""
+"""Policy-as-Code loader for `.plutonium.yaml` plus a tiny `.env` loader."""
 from __future__ import annotations
 
 import os
@@ -10,11 +10,11 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-from barakagate.models import DomainPreset
+from plutonium.models import DomainPreset
 
 PACKAGE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = PACKAGE_DIR.parent
-CONFIG_FILENAME = ".barakagate.yaml"
+CONFIG_FILENAME = ".plutonium.yaml"
 
 DEFAULT_MODELS = {
     "cloud_fast": "gemma-4-26b-a4b-it",
@@ -41,7 +41,7 @@ class RegexRule:
 
 
 @dataclass
-class BarakaConfig:
+class PlutoniumConfig:
     raw: Dict[str, Any]
     path: Optional[Path] = None
 
@@ -128,7 +128,7 @@ def find_config(root: Path | str | None = None) -> Optional[Path]:
     return fallback if fallback.is_file() else None
 
 
-def load_config(root: Path | str | None = None, path: Path | str | None = None) -> BarakaConfig:
+def load_config(root: Path | str | None = None, path: Path | str | None = None) -> PlutoniumConfig:
     cfg_path = Path(path) if path else find_config(root)
     raw: Dict[str, Any] = {}
     if cfg_path and cfg_path.is_file():
@@ -137,7 +137,7 @@ def load_config(root: Path | str | None = None, path: Path | str | None = None) 
         except yaml.YAMLError:
             raw = {}
     raw.setdefault("presets", {})
-    return BarakaConfig(raw=raw, path=cfg_path)
+    return PlutoniumConfig(raw=raw, path=cfg_path)
 
 
 def validate_yaml(text: str) -> Dict[str, Any]:
@@ -148,7 +148,7 @@ def validate_yaml(text: str) -> Dict[str, Any]:
         raise ValueError(f"Invalid YAML: {e}") from e
     if not isinstance(data, dict) or "presets" not in data:
         raise ValueError("Policy must be a mapping with a 'presets' section")
-    from barakagate.review_policy import ReviewPolicy
+    from plutonium.review_policy import ReviewPolicy
     ReviewPolicy.from_raw(data)
     if not isinstance(data.get("presets"), dict):
         raise ValueError("presets must be a mapping")

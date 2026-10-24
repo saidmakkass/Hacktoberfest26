@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""BarakaGate 12-case benchmark: Regex baseline (Gitleaks-style) vs BarakaGate engines.
+"""Plutonium 12-case benchmark: Regex baseline (Gitleaks-style) vs Plutonium engines.
 
     python evaluate_benchmark.py                       # regex + offline (+ cloud_fast if GEMINI_API_KEY, + local_edge if Ollama)
     python evaluate_benchmark.py --engines regex,offline --markdown out.md --json out.json
@@ -18,15 +18,15 @@ from typing import Any, Dict, List, Optional
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-from barakagate.config import load_dotenv  # noqa: E402
+from plutonium.config import load_dotenv  # noqa: E402
 
 SAMPLES = ROOT / "samples"
-BENCH_DIR = ROOT / ".barakagate" / "bench"
-OUT_DIR = ROOT / ".barakagate"
+BENCH_DIR = ROOT / ".plutonium" / "bench"
+OUT_DIR = ROOT / ".plutonium"
 
 ENGINE_LABELS = {
     "regex": "Regex Baseline (Gitleaks-style)",
-    "offline": "BarakaGate Offline Heuristic",
+    "offline": "Plutonium Offline Heuristic",
     "cloud_fast": "Gemma 4 26B (cloud_fast)",
     "local_edge": "Gemma 4 E4B (local_edge)",
 }
@@ -105,7 +105,7 @@ def build_cases() -> List[Dict[str, Any]]:
         dst = BENCH_DIR / scen
         if dst.exists():
             shutil.rmtree(dst)
-        shutil.copytree(SAMPLES / scen, dst, ignore=shutil.ignore_patterns(".barakagate", "__pycache__"))
+        shutil.copytree(SAMPLES / scen, dst, ignore=shutil.ignore_patterns(".plutonium", "__pycache__"))
     inline = BENCH_DIR / "inline"
     inline.mkdir(exist_ok=True)
     (inline / "support_log.txt").write_text(DARIJA_LOG, encoding="utf-8")
@@ -207,7 +207,7 @@ def score_case(case: dict, findings: list) -> Dict[str, Any]:
 
 def _ollama_up() -> bool:
     try:
-        from barakagate.llm_router import GemmaRouter
+        from plutonium.llm_router import GemmaRouter
         return GemmaRouter(cache_path=BENCH_DIR / "_probe.json").ollama_available()
     except Exception:  # noqa: BLE001
         return False
@@ -225,8 +225,8 @@ def default_engines(offline: bool = False) -> List[str]:
 
 
 def run_engine_on_case(engine: str, case: dict) -> Dict[str, Any]:
-    from barakagate.models import EngineMode
-    from barakagate import scanner as sc
+    from plutonium.models import EngineMode
+    from plutonium import scanner as sc
     t0 = time.perf_counter()
     engine_used = engine
     if engine == "regex":
@@ -240,7 +240,7 @@ def run_engine_on_case(engine: str, case: dict) -> Dict[str, Any]:
         offline = engine == "offline"
         router = None
         if not offline:
-            from barakagate.llm_router import GemmaRouter
+            from plutonium.llm_router import GemmaRouter
             router = GemmaRouter(cache_path=OUT_DIR / "demo_cache.json", offline_safe=True)
         scanner = sc.Scanner(root=str(case["root"]), router=router, offline=offline)
         mode = EngineMode.LOCAL_EDGE if engine == "local_edge" else EngineMode.CLOUD_FAST
@@ -303,7 +303,7 @@ def run_benchmark(engines: Optional[List[str]] = None, offline: bool = False) ->
 
 def to_markdown(result: Dict[str, Any]) -> str:
     engs = result["engines"]
-    lines = ["## BarakaGate Benchmark: Regex vs Gemma 4", "",
+    lines = ["## Plutonium Benchmark: Regex vs Gemma 4", "",
              "| Engine | Leaks/PII caught | Logic bugs caught | Cross-file proofs | Recall | Precision | FP on clean control | Avg latency |",
              "| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |"]
     for key, e in engs.items():
@@ -351,8 +351,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--engines", help="comma list: regex,offline,cloud_fast,local_edge")
     ap.add_argument("--offline", action="store_true", help="deterministic engines only")
-    ap.add_argument("--json", dest="json_path", help="JSON output path (default .barakagate/benchmark.json)")
-    ap.add_argument("--markdown", dest="md_path", help="Markdown output path (default .barakagate/benchmark.md)")
+    ap.add_argument("--json", dest="json_path", help="JSON output path (default .plutonium/benchmark.json)")
+    ap.add_argument("--markdown", dest="md_path", help="Markdown output path (default .plutonium/benchmark.md)")
     args = ap.parse_args(argv)
     engines = [e.strip() for e in args.engines.split(",")] if args.engines else None
     result = run_benchmark(engines, args.offline)

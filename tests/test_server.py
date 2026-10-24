@@ -1,4 +1,4 @@
-"""Offline tests for the BarakaGate Studio FastAPI backend."""
+"""Offline tests for the Plutonium Studio FastAPI backend."""
 import importlib.util
 import shutil
 from pathlib import Path
@@ -9,17 +9,17 @@ fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-HAS_SCANNER = importlib.util.find_spec("barakagate.scanner") is not None
-HAS_REDACTOR = importlib.util.find_spec("barakagate.redactor") is not None
-needs_scanner = pytest.mark.skipif(not HAS_SCANNER, reason="barakagate.scanner not built yet")
-needs_redactor = pytest.mark.skipif(not HAS_REDACTOR, reason="barakagate.redactor not built yet")
+HAS_SCANNER = importlib.util.find_spec("plutonium.scanner") is not None
+HAS_REDACTOR = importlib.util.find_spec("plutonium.redactor") is not None
+needs_scanner = pytest.mark.skipif(not HAS_SCANNER, reason="plutonium.scanner not built yet")
+needs_redactor = pytest.mark.skipif(not HAS_REDACTOR, reason="plutonium.redactor not built yet")
 
 
 @pytest.fixture
 def client(monkeypatch, tmp_path):
-    from barakagate import server
+    from plutonium import server
 
-    monkeypatch.setenv("BARAKAGATE_ROOT", str(tmp_path))
+    monkeypatch.setenv("PLUTONIUM_ROOT", str(tmp_path))
     server.STATE.reset()
     server.STATE.routers.clear()
     server.STATE.scans.clear()
@@ -70,7 +70,7 @@ def test_sanitize_roundtrip(client):
     for secret in ("BE847291", "230780123456789012345678"):
         assert secret not in body["sanitized"]
     assert body["vault"]
-    from barakagate.redactor import rehydrate
+    from plutonium.redactor import rehydrate
 
     assert rehydrate(body["sanitized"], body["vault"]) == raw
 
@@ -93,14 +93,14 @@ def test_firewall_refuses_raw_values_and_answers_offline(client):
 def test_policy_get_and_invalid_put(client, tmp_path):
     g = client.get("/api/policy")
     assert g.status_code == 200 and "presets" in g.json()["yaml"]
-    real = (ROOT / ".barakagate.yaml").read_text(encoding="utf-8")
+    real = (ROOT / ".plutonium.yaml").read_text(encoding="utf-8")
     for bad in ("presets: [unclosed", "just_a_string", "presets:\n  x:\n    regex_rules:\n      - id: a\n        pattern: '(['\n"):
         r = client.put("/api/policy", json={"yaml": bad})
         assert r.status_code == 400, bad
-    assert not (tmp_path / ".barakagate.yaml").exists()
-    assert (ROOT / ".barakagate.yaml").read_text(encoding="utf-8") == real
+    assert not (tmp_path / ".plutonium.yaml").exists()
+    assert (ROOT / ".plutonium.yaml").read_text(encoding="utf-8") == real
     good = client.put("/api/policy", json={"yaml": real})
-    assert good.status_code == 200 and (tmp_path / ".barakagate.yaml").read_text(encoding="utf-8") == real
+    assert good.status_code == 200 and (tmp_path / ".plutonium.yaml").read_text(encoding="utf-8") == real
 
 
 def test_image_path_traversal_rejected(client, tmp_path):
@@ -171,7 +171,7 @@ def test_preview_and_apply_writes_safe_copy(client, tmp_path):
     written = ap.json()["written"]
     assert written
     out = Path(written[0]["path"])
-    assert out.is_relative_to(tmp_path / ".barakagate" / "patched" / "fintech_morocco")
+    assert out.is_relative_to(tmp_path / ".plutonium" / "patched" / "fintech_morocco")
     assert out.read_text(encoding="utf-8") != original
     # the sample fixture itself is untouched
     assert (ROOT / "samples" / "fintech_morocco" / "checkout.py").read_text(encoding="utf-8") == original

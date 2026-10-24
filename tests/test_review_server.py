@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from tests.test_review import repo, session
-from barakagate.review_server import create_review_app
+from plutonium.review_server import create_review_app
 
 
 def test_auth_revision_validation_approval(repo):

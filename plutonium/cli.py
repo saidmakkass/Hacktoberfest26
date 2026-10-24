@@ -1,4 +1,4 @@
-"""BarakaGate CLI (Typer + Rich).  Entry point: `barakagate` -> `barakagate.cli:app`."""
+"""Plutonium CLI (Typer + Rich).  Entry point: `plutonium` -> `plutonium.cli:app`."""
 from __future__ import annotations
 
 import json
@@ -16,12 +16,12 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from barakagate.config import PROJECT_ROOT, load_config, load_dotenv
-from barakagate.models import ActionType, EngineMode, Finding, FindingCategory, ScanResult
+from plutonium.config import PROJECT_ROOT, load_config, load_dotenv
+from plutonium.models import ActionType, EngineMode, Finding, FindingCategory, ScanResult
 
 app = typer.Typer(
-    name="barakagate",
-    help="BarakaGate - multimodal pre-flight security, privacy & cross-file logical bug gate (Gemma 4).",
+    name="plutonium",
+    help="Plutonium - multimodal pre-flight security, privacy & cross-file logical bug gate (Gemma 4).",
     no_args_is_help=True,
     add_completion=False,
 )
@@ -40,21 +40,21 @@ PRESET_HELP = "Policy preset: all | fintech_morocco | research_lab | general_dev
 
 def _banner() -> None:
     console.print(Panel.fit(
-        Text.assemble(("BarakaGate v1.0", "bold bright_green"), "  ",
+        Text.assemble(("Plutonium v1.0", "bold bright_green"), "  ",
                       ("Open-Weight Pre-Flight Security, Privacy & Bug Gate", "dim"), "  ",
                       ("powered by Gemma 4", "magenta")),
         border_style="bright_green"))
 
 
 def _router(root: Path, offline_safe: bool):
-    from barakagate.llm_router import GemmaRouter
+    from plutonium.llm_router import GemmaRouter
     cfg = load_config(root)
     return GemmaRouter(ollama_url=cfg.models.get("ollama_url", "http://localhost:11434"),
-                       cache_path=root / ".barakagate" / "demo_cache.json", offline_safe=offline_safe)
+                       cache_path=root / ".plutonium" / "demo_cache.json", offline_safe=offline_safe)
 
 
 def _scanner(root: Path, offline: bool, offline_safe: bool):
-    from barakagate.scanner import Scanner
+    from plutonium.scanner import Scanner
     router = None if offline else _router(root, offline_safe)
     return Scanner(root=str(root), router=router, config=load_config(root), offline=offline)
 
@@ -75,7 +75,7 @@ def scoreboard(result: ScanResult) -> str:
     proofs = sum(1 for f in result.findings if f.cross_file_context_used)
     regex = result.regex_baseline_count or sum(1 for f in result.findings if f.caught_by_regex_baseline)
     total = len(result.findings)
-    return (f"Regex baseline: {regex} | BarakaGate (Gemma 4): {total} "
+    return (f"Regex baseline: {regex} | Plutonium (Gemma 4): {total} "
             f"(+{logic} logic bugs, cross-file proofs: {proofs})")
 
 
@@ -86,7 +86,7 @@ def render_result(result: ScanResult, show_trace: bool = True, max_trace_lines: 
               Text(result.summary or "", style="white"),
               Text(f"engine: {result.engine_used}   preset: {result.preset_used}   "
                    f"indexed chunks: {result.indexed_chunks_count}", style="dim")),
-        border_style=style.split()[-1], title="BarakaGate Verdict", title_align="left"))
+        border_style=style.split()[-1], title="Plutonium Verdict", title_align="left"))
     console.print(Text(scoreboard(result), style="bold cyan"))
     if result.retrieved_context_Chunks:
         console.print(Text("Cross-file context: " + ", ".join(result.retrieved_context_Chunks[:10]), style="dim"))
@@ -147,7 +147,7 @@ def _ask_action(f: Finding) -> ActionType:
 
 
 def apply_fixes(result: ScanResult, root: Path, interactive: bool) -> List[dict]:
-    from barakagate.redactor import apply_to_disk
+    from plutonium.redactor import apply_to_disk
     by_file: Dict[str, List[Finding]] = defaultdict(list)
     for f in result.findings:
         if f.target_type != "image":
@@ -212,7 +212,7 @@ def check(
     root: Optional[Path] = typer.Option(None, "--root"),
 ):
     """Noninteractive revision check using trusted base policy. Never applies edits."""
-    from barakagate.review_check import check_revision
+    from plutonium.review_check import check_revision
     try:
         report = check_revision(root or Path.cwd(), base, head)
     except (ValueError, OSError) as exc:
@@ -229,8 +229,8 @@ def review(
     interactive: Optional[bool] = typer.Option(None, "--interactive/--non-interactive"),
 ):
     """Review staged changes, then release or abort the waiting Git commit."""
-    from barakagate.review import ReviewSession, ReviewError, read_policy
-    from barakagate.review_server import serve_review
+    from plutonium.review import ReviewSession, ReviewError, read_policy
+    from plutonium.review_server import serve_review
     root = (root or Path.cwd()).resolve()
     try:
         policy = None
@@ -303,7 +303,7 @@ def staged(
         _banner()
         render_result(result)
         if result.verdict == "BLOCK":
-            console.print(Text("Commit blocked. Fix with `barakagate scan <files> --fix` or bypass with "
+            console.print(Text("Commit blocked. Fix with `plutonium scan <files> --fix` or bypass with "
                                "`git commit --no-verify` (not recommended).", style="red"))
     _finish(result, as_json)
 
@@ -313,8 +313,8 @@ def index(
     root: Optional[Path] = typer.Option(None, "--root"),
     force: bool = typer.Option(False, "--force", help="Re-chunk every file"),
 ):
-    """Build / refresh the local codebase index (.barakagate/index.json)."""
-    from barakagate.indexer import CodebaseIndexer
+    """Build / refresh the local codebase index (.plutonium/index.json)."""
+    from plutonium.indexer import CodebaseIndexer
     root = (root or Path.cwd()).resolve()
     with console.status("Chunking & indexing..."):
         stats = CodebaseIndexer(root, load_config(root)).build(force=force)
@@ -347,7 +347,7 @@ def image(
     root: Optional[Path] = typer.Option(None, "--root"),
 ):
     """Gemma 4 vision scan of a screenshot; optionally blur/mask the leaks."""
-    from barakagate.redactor import redact_image
+    from plutonium.redactor import redact_image
     load_dotenv()
     root = (root or Path.cwd()).resolve()
     result = _scanner(root, offline, offline_safe).scan_image(str(path), mode=_mode(mode))
@@ -378,7 +378,7 @@ def sanitize(
     local_llm: bool = typer.Option(False, "--local-llm", help="Also run on-device gemma4:e4b NER (Ollama)"),
 ):
     """Safe-to-Prompt firewall: tokenize PII/secrets before pasting into a cloud AI."""
-    from barakagate.redactor import sanitize_prompt, sanitize_prompt_llm
+    from plutonium.redactor import sanitize_prompt, sanitize_prompt_llm
     text = sys.stdin.read() if file == "-" else Path(file).read_text(encoding="utf-8")
     sanitized, vault = sanitize_prompt_llm(text) if local_llm else sanitize_prompt(text)
     if as_json:
@@ -394,21 +394,21 @@ def sanitize(
 
 
 HOOK_SCRIPT = """#!/bin/sh
-# BarakaGate pre-commit hook (installed by `barakagate install-hook`)
+# Plutonium pre-commit hook (installed by `plutonium install-hook`)
 # Previous hooks run first and retain their veto.
 hook_dir=$(dirname "$0")
-if [ -x "$hook_dir/pre-commit.barakagate-previous" ]; then
-  "$hook_dir/pre-commit.barakagate-previous" "$@" || exit $?
+if [ -x "$hook_dir/pre-commit.plutonium-previous" ]; then
+  "$hook_dir/pre-commit.plutonium-previous" "$@" || exit $?
 fi
 if [ -r /dev/tty ] && ( : </dev/tty ) 2>/dev/null; then
   exec </dev/tty
 fi
-if command -v barakagate >/dev/null 2>&1; then
-  barakagate review
+if command -v plutonium >/dev/null 2>&1; then
+  plutonium review
 elif command -v python3 >/dev/null 2>&1; then
-  python3 -m barakagate.cli review
+  python3 -m plutonium.cli review
 else
-  python -m barakagate.cli review
+  python -m plutonium.cli review
 fi
 """
 
@@ -426,9 +426,9 @@ def install_hook(root: Optional[Path] = typer.Option(None, "--root")):
     hooks = Path(result.stdout.strip())
     hooks.mkdir(parents=True, exist_ok=True)
     hook = hooks / "pre-commit"
-    if hook.exists() and "BarakaGate" not in hook.read_text(errors="ignore"):
+    if hook.exists() and "Plutonium" not in hook.read_text(errors="ignore"):
         import shutil
-        previous = hooks / "pre-commit.barakagate-previous"
+        previous = hooks / "pre-commit.plutonium-previous"
         if previous.exists():
             raise typer.BadParameter("A previous hook backup already exists; reconcile it before installing")
         shutil.copy2(hook, hooks / "pre-commit.bak")
@@ -436,7 +436,7 @@ def install_hook(root: Optional[Path] = typer.Option(None, "--root")):
         console.print(Text("Existing hook preserved and chained", style="yellow"))
     hook.write_text(HOOK_SCRIPT)
     hook.chmod(hook.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-    console.print(Text(f"Installed BarakaGate pre-commit hook -> {hook}", style="bold green"))
+    console.print(Text(f"Installed Plutonium pre-commit hook -> {hook}", style="bold green"))
 
 
 def _load_benchmark_module():
@@ -466,16 +466,16 @@ def benchmark(
     mod.write_outputs(result, md)
     from rich.markdown import Markdown
     console.print(Markdown(md))
-    console.print(Text("Saved .barakagate/benchmark.md and .barakagate/benchmark.json", style="dim"))
+    console.print(Text("Saved .plutonium/benchmark.md and .plutonium/benchmark.json", style="dim"))
 
 
 @app.command()
 def serve(host: str = typer.Option("127.0.0.1", "--host"), port: int = typer.Option(8000, "--port")):
-    """Launch BarakaGate Studio (FastAPI web UI)."""
+    """Launch Plutonium Studio (FastAPI web UI)."""
     import uvicorn
     _banner()
     console.print(Text(f"Studio -> http://{host}:{port}", style="bold green"))
-    uvicorn.run("barakagate.server:app", host=host, port=port)
+    uvicorn.run("plutonium.server:app", host=host, port=port)
 
 
 if __name__ == "__main__":

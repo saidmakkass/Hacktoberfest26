@@ -1,4 +1,4 @@
-"""Verify BarakaGate against the build plan + CLAUDE.md spec, end to end.
+"""Verify Plutonium against the build plan + CLAUDE.md spec, end to end.
 
     python3 scripts/verify_plan.py            # offline checks only (no network)
     python3 scripts/verify_plan.py --live     # + live Gemma 4 checks (needs GEMINI_API_KEY)
@@ -51,19 +51,19 @@ def sh(cmd: list[str], cwd: Path = ROOT, env: dict | None = None, timeout: int =
 
 def copy_samples(tmp: Path) -> Path:
     dst = tmp / "samples"
-    shutil.copytree(ROOT / "samples", dst, ignore=shutil.ignore_patterns(".barakagate"))
-    shutil.copy(ROOT / ".barakagate.yaml", tmp / ".barakagate.yaml")
+    shutil.copytree(ROOT / "samples", dst, ignore=shutil.ignore_patterns(".plutonium"))
+    shutil.copy(ROOT / ".plutonium.yaml", tmp / ".plutonium.yaml")
     return dst
 
 
 # --------------------------------------------------------------------------- structure & contract
 @check("Spec §2", "Directory structure matches spec")
 def c_structure():
-    req = ["LICENSE", "README.md", "pyproject.toml", "requirements.txt", ".barakagate.yaml",
-           ".github/workflows/barakagate.yml", "skills/barakagate/SKILL.md", "barakagate/__init__.py",
-           "barakagate/models.py", "barakagate/config.py", "barakagate/llm_router.py", "barakagate/indexer.py",
-           "barakagate/scanner.py", "barakagate/redactor.py", "barakagate/cli.py", "barakagate/server.py",
-           "barakagate/static/index.html", "samples/fintech_morocco", "samples/research_lab_um6p",
+    req = ["LICENSE", "README.md", "pyproject.toml", "requirements.txt", ".plutonium.yaml",
+           ".github/workflows/plutonium.yml", "skills/plutonium/SKILL.md", "plutonium/__init__.py",
+           "plutonium/models.py", "plutonium/config.py", "plutonium/llm_router.py", "plutonium/indexer.py",
+           "plutonium/scanner.py", "plutonium/redactor.py", "plutonium/cli.py", "plutonium/server.py",
+           "plutonium/static/index.html", "samples/fintech_morocco", "samples/research_lab_um6p",
            "samples/general_devsecops", "samples/screenshots/devtools_leak.png", "evaluate_benchmark.py",
            "samples/generate_sample_screenshots.py"]
     missing = [p for p in req if not (ROOT / p).exists()]
@@ -77,17 +77,17 @@ def c_structure():
 def c_models():
     spec = (ROOT / "CLAUDE.md").read_text()
     block = spec.split("## 3. Shared Data Contract", 1)[1].split("```python", 1)[1].split("```", 1)[0].strip()
-    assert block in (ROOT / "barakagate/models.py").read_text(), "spec block not found verbatim in models.py"
+    assert block in (ROOT / "plutonium/models.py").read_text(), "spec block not found verbatim in models.py"
     return f"{len(block.splitlines())} spec lines matched exactly"
 
 
 @check("Pitfall 1", "Only the new google-genai SDK is used")
 def c_sdk():
     bad = [str(p.relative_to(ROOT)) for p in ROOT.rglob("*.py")
-           if ".barakagate" not in p.parts and p.name != "verify_plan.py"
+           if ".plutonium" not in p.parts and p.name != "verify_plan.py"
            and re.search(r"^\s*(import|from)\s+google\.generativeai", p.read_text(errors="ignore"), re.M)]
     assert not bad, f"deprecated SDK in {bad}"
-    assert "from google import genai" in (ROOT / "barakagate/llm_router.py").read_text()
+    assert "from google import genai" in (ROOT / "plutonium/llm_router.py").read_text()
     return "no google.generativeai imports; router uses `from google import genai`"
 
 
@@ -102,8 +102,8 @@ def c_pytest():
 # --------------------------------------------------------------------------- router
 @check("Spec §5 / Pitfall 3", "Router fallback chains per engine mode")
 def c_chain():
-    from barakagate.llm_router import GemmaRouter
-    from barakagate.models import EngineMode as M
+    from plutonium.llm_router import GemmaRouter
+    from plutonium.models import EngineMode as M
     r = GemmaRouter.__new__(GemmaRouter)
     ch = {m.value: GemmaRouter.engine_chain(r, m) for m in M}
     assert ch["cloud_fast"][:3] == [("gemini", "gemma-4-26b-a4b-it"), ("gemini", "gemma-4-31b-it"), ("ollama", "gemma4:e4b")]
@@ -115,7 +115,7 @@ def c_chain():
 
 @check("Pitfall 2 / 6", "Ollama payload: num_ctx 8192, flat 'json' format for images")
 def c_ollama():
-    from barakagate import llm_router
+    from plutonium import llm_router
     sent = []
 
     class R:
@@ -146,8 +146,8 @@ def c_ollama():
 # --------------------------------------------------------------------------- indexer
 @check("Spec §4", "Indexer: cross-file symbol resolution + engine token budgets")
 def c_indexer():
-    from barakagate.indexer import CodebaseIndexer
-    from barakagate.models import EngineMode as M
+    from plutonium.indexer import CodebaseIndexer
+    from plutonium.models import EngineMode as M
     with tempfile.TemporaryDirectory() as td:
         s = copy_samples(Path(td)) / "fintech_morocco"
         ix = CodebaseIndexer(s); st = ix.build()
@@ -166,8 +166,8 @@ def c_indexer():
 # --------------------------------------------------------------------------- scanner / CLI offline
 @check("Plan verification", "Offline scans: every scenario → BLOCK with leaks + logic bugs + cross-file proofs")
 def c_offline_scans():
-    from barakagate.models import FindingCategory as C
-    from barakagate.scanner import Scanner
+    from plutonium.models import FindingCategory as C
+    from plutonium.scanner import Scanner
     out = []
     with tempfile.TemporaryDirectory() as td:
         s = copy_samples(Path(td))
@@ -186,7 +186,7 @@ def c_offline_scans():
 def c_cli_offline():
     with tempfile.TemporaryDirectory() as td:
         s = copy_samples(Path(td))
-        r = sh([sys.executable, "-m", "barakagate", "scan", "fintech_morocco/checkout.py", "--root", "fintech_morocco",
+        r = sh([sys.executable, "-m", "plutonium", "scan", "fintech_morocco/checkout.py", "--root", "fintech_morocco",
                 "--offline", "--json"], cwd=s, env={"GEMINI_API_KEY": ""})
         assert r.returncode == 1, f"exit {r.returncode}: {r.stderr[-300:]}"
         data = json.loads(r.stdout[r.stdout.index("{"):])
@@ -197,8 +197,8 @@ def c_cli_offline():
 @check("Pitfall 5", "Applying all fixes: patched file parses and re-scan is clean of heuristics")
 def c_apply_all():
     import ast
-    from barakagate.redactor import apply_text_fixes
-    from barakagate.scanner import Scanner
+    from plutonium.redactor import apply_text_fixes
+    from plutonium.scanner import Scanner
     with tempfile.TemporaryDirectory() as td:
         s = copy_samples(Path(td)) / "fintech_morocco"
         sc = Scanner(s, offline=True)
@@ -216,7 +216,7 @@ def c_apply_all():
 @check("Pitfall 4", "bbox [ymin,xmin,ymax,xmax]/1000 → pixels with padding; blur changes only the box")
 def c_bbox():
     from PIL import Image, ImageChops
-    from barakagate.redactor import bbox_to_pixels, redact_image
+    from plutonium.redactor import bbox_to_pixels, redact_image
     x1, y1, x2, y2 = bbox_to_pixels([100, 200, 300, 400], 1000, 500)
     assert x1 < 200 and x2 > 400 and y1 < 50 and y2 > 150, (x1, y1, x2, y2)
     with tempfile.TemporaryDirectory() as td:
@@ -239,8 +239,8 @@ def c_hook():
         g = lambda *a: subprocess.run(["git", *a], cwd=repo, capture_output=True, text=True,
                                       env={**os.environ, "PYTHONPATH": str(ROOT), "GEMINI_API_KEY": ""})
         g("init", "-q"); g("config", "user.email", "t@t"); g("config", "user.name", "t")
-        shutil.copy(ROOT / ".barakagate.yaml", repo)
-        r = sh([sys.executable, "-m", "barakagate", "install-hook", "--root", "."], cwd=repo)
+        shutil.copy(ROOT / ".plutonium.yaml", repo)
+        r = sh([sys.executable, "-m", "plutonium", "install-hook", "--root", "."], cwd=repo)
         assert r.returncode == 0 and os.access(repo / ".git/hooks/pre-commit", os.X_OK)
         (repo / "ok.py").write_text('print("hello")\n'); g("add", "."); ok = g("commit", "-qm", "clean")
         (repo / "leak.py").write_text('CLIENT = {"cin": "BE847291", "rib": "230780123456789012345678"}\n')
@@ -253,8 +253,8 @@ def c_hook():
 @check("Spec §7", "Studio: all spec labels + every REST endpoint answers (offline)")
 def c_server():
     from fastapi.testclient import TestClient
-    os.environ["BARAKAGATE_ROOT"] = str(ROOT)
-    import barakagate.server as srv
+    os.environ["PLUTONIUM_ROOT"] = str(ROOT)
+    import plutonium.server as srv
     c = TestClient(srv.app)
     html = c.get("/").text
     labels = ["engineMode", "domainPreset", "Cloud Fast: gemma-4-26b-a4b-it (Gemini API MoE)",
@@ -274,7 +274,7 @@ def c_server():
     dec = {f["id"]: f["recommended_action"] for f in scan["findings"]}
     assert c.post("/api/preview", json={"scan_id": scan["scan_id"], "decisions": dec}).status_code == 200
     ap = c.post("/api/apply", json={"scan_id": scan["scan_id"], "decisions": dec})
-    assert ap.status_code == 200 and ".barakagate" in json.dumps(ap.json()), "apply must not overwrite fixtures"
+    assert ap.status_code == 200 and ".plutonium" in json.dumps(ap.json()), "apply must not overwrite fixtures"
     imgs = c.get("/api/images").json()
     assert c.post("/api/image/scan", json={"path": "samples/screenshots/devtools_leak.png", "offline": True}).status_code == 200
     red = c.post("/api/image/redact", json={"path": "samples/screenshots/devtools_leak.png",
@@ -293,11 +293,11 @@ def c_server():
 @check("Case 01", "Agent Skill manifest + CI workflow are well-formed")
 def c_skill_ci():
     import yaml
-    sk = (ROOT / "skills/barakagate/SKILL.md").read_text()
+    sk = (ROOT / "skills/plutonium/SKILL.md").read_text()
     fm = yaml.safe_load(sk.split("---", 2)[1])
-    assert fm.get("name") == "barakagate" and len(fm.get("description", "")) > 40
-    wf = yaml.safe_load((ROOT / ".github/workflows/barakagate.yml").read_text())
-    assert "jobs" in wf and "barakagate" in json.dumps(wf)
+    assert fm.get("name") == "plutonium" and len(fm.get("description", "")) > 40
+    wf = yaml.safe_load((ROOT / ".github/workflows/plutonium.yml").read_text())
+    assert "jobs" in wf and "plutonium" in json.dumps(wf)
     return f"SKILL.md name={fm['name']}; workflow jobs={list(wf['jobs'])}"
 
 
@@ -313,8 +313,8 @@ def live(fn):
 @live
 @check("Live / Plan verification", "cloud_fast fintech scan → real Gemma 4 BLOCK with ≥2 leaks, ≥2 bugs, MoroccanCustomer proof")
 def l_fintech():
-    from barakagate.models import EngineMode, FindingCategory as C
-    from barakagate.scanner import Scanner
+    from plutonium.models import EngineMode, FindingCategory as C
+    from plutonium.scanner import Scanner
     s = ROOT / "samples/fintech_morocco"
     r = None
     for _ in range(3):
@@ -334,8 +334,8 @@ def l_fintech():
 @live
 @check("Live / Phase C", "Research + DevSecOps scenarios scanned live (populates demo_cache.json)")
 def l_other():
-    from barakagate.models import EngineMode
-    from barakagate.scanner import Scanner
+    from plutonium.models import EngineMode
+    from plutonium.scanner import Scanner
     out = []
     for scen, files, preset in [("research_lab_um6p", ["train_pipeline.py", "loader.py"], "research_lab"),
                                 ("general_devsecops", ["api.py", "settings.py"], "general_devsecops")]:
@@ -349,8 +349,8 @@ def l_other():
 @live
 @check("Live / Spec §7 Tab 2", "Real Gemma 4 vision on devtools_leak.png (sidecar hidden) → boxes on the secrets")
 def l_vision():
-    from barakagate.models import EngineMode
-    from barakagate.scanner import Scanner
+    from plutonium.models import EngineMode
+    from plutonium.scanner import Scanner
     with tempfile.TemporaryDirectory() as td:
         img = Path(td) / "devtools_leak.png"
         shutil.copy(ROOT / "samples/screenshots/devtools_leak.png", img)  # no .boxes.json next to it
@@ -377,9 +377,9 @@ def l_vision():
 @live
 @check("Live / Spec §1.4", "hybrid_smart: no raw CIN/RIB/phone/CMI key reaches the cloud prompt")
 def l_hybrid():
-    from barakagate.llm_router import GemmaRouter
-    from barakagate.models import EngineMode
-    from barakagate.scanner import Scanner
+    from plutonium.llm_router import GemmaRouter
+    from plutonium.models import EngineMode
+    from plutonium.scanner import Scanner
     sent = []
     router = GemmaRouter()
     orig = router.analyze
@@ -401,9 +401,9 @@ def l_hybrid():
 @live
 @check("Live / Pitfall 3", "Demo-cache fallback: same scan with cloud+Ollama down is served from cache")
 def l_cache():
-    from barakagate.llm_router import GemmaRouter
-    from barakagate.models import EngineMode
-    from barakagate.scanner import Scanner
+    from plutonium.llm_router import GemmaRouter
+    from plutonium.models import EngineMode
+    from plutonium.scanner import Scanner
     s = ROOT / "samples/fintech_morocco"
     key = os.environ.pop("GEMINI_API_KEY", None)
     try:
@@ -419,7 +419,7 @@ def l_cache():
 
 def write_report(live_mode: bool) -> Path:
     passed = sum(ok for *_, ok, _ in [(a, b, c, d) for a, b, c, d in RESULTS])
-    lines = ["# BarakaGate — Plan & Spec Verification", "",
+    lines = ["# Plutonium — Plan & Spec Verification", "",
              f"Generated by `python3 scripts/verify_plan.py{' --live' if live_mode else ''}` on "
              f"{time.strftime('%Y-%m-%d %H:%M')} — **{passed}/{len(RESULTS)} checks passed**.", "",
              "| # | Area | Check | Result | Evidence |", "| :-: | :--- | :--- | :-: | :--- |"]
@@ -435,7 +435,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--live", action="store_true", help="also run live Gemma 4 checks")
     args = ap.parse_args()
-    from barakagate.config import load_dotenv
+    from plutonium.config import load_dotenv
     load_dotenv()
     for fn in [c_structure, c_models, c_sdk, c_pytest, c_chain, c_ollama, c_indexer, c_offline_scans,
                c_cli_offline, c_apply_all, c_bbox, c_hook, c_server, c_skill_ci]:

@@ -1,24 +1,24 @@
-# BarakaGate — Held-out Real-World Benchmark
+# Plutonium — Held-out Real-World Benchmark
 
 **Held-out set:** 4 mini-projects (Python/Flask, TypeScript/Prisma, ML research, clean controls) · 27 files + 3 screenshots · **30 labelled issues + 5 image regions**, **19 false-positive traps**, 6 fully-clean files and 1 clean image. Ground truth was committed before any engine ran on it (`benchmarks/realworld/labels.json`).
 
 | Engine | Leaks/PII | Logic bugs | Beyond-regex edge cases | Cross-file bugs | Screenshot regions (IoU≥0.2) | Recall | Strict precision | Traps fired | FP on clean files/image | Avg s/file |
 | :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Regex baseline (Gitleaks-style) | 9/17 (53%) | 0/13 (0%) | 0/21 (0%) | 0/6 (0%) | 0/5 (0%) | **26%** | 64% | 2/19 | 3 / 0 | 0.0 |
-| BarakaGate offline heuristics (no LLM) | 9/17 (53%) | 3/13 (23%) | 3/21 (14%) | 1/6 (17%) | 0/5 (0%) | **34%** | 67% | 2/19 | 3 / 0 | 0.0 |
-| BarakaGate + Gemma 4 26B MoE | 17/17 (100%) | 12/13 (92%) | 20/21 (95%) | 5/6 (83%) | 4/5 (80%) | **94%** | 69% | 3/19 | 4 / 0 | 33.6 |
+| Plutonium offline heuristics (no LLM) | 9/17 (53%) | 3/13 (23%) | 3/21 (14%) | 1/6 (17%) | 0/5 (0%) | **34%** | 67% | 2/19 | 3 / 0 | 0.0 |
+| Plutonium + Gemma 4 26B MoE | 17/17 (100%) | 12/13 (92%) | 20/21 (95%) | 5/6 (83%) | 4/5 (80%) | **94%** | 69% | 3/19 | 4 / 0 | 33.6 |
 
 **Statistical confidence** (n = 35 labelled items; Wilson 95% CI on recall; exact McNemar test on paired per-item outcomes vs. the regex baseline):
 
 | Engine | Caught | Recall [95% CI] | Only this engine caught / only regex caught | McNemar p vs regex |
 | :--- | :-: | :-: | :-: | :-: |
 | Regex baseline (Gitleaks-style) | 9/35 | 26% [14–42%] | — | — |
-| BarakaGate offline heuristics (no LLM) | 12/35 | 34% [21–51%] | 3 / 0 | 0.250 |
-| BarakaGate + Gemma 4 26B MoE | 33/35 | 94% [81–98%] | 24 / 0 | 1.2e-07 |
+| Plutonium offline heuristics (no LLM) | 12/35 | 34% [21–51%] | 3 / 0 | 0.250 |
+| Plutonium + Gemma 4 26B MoE | 33/35 | 94% [81–98%] | 24 / 0 | 1.2e-07 |
 
 <details><summary><b>Per-issue results (edge-case by edge-case)</b></summary>
 
-| ID | Edge case | Type | Regex baseline | BarakaGate offline heuristics | Gemma 4 26B MoE |
+| ID | Edge case | Type | Regex baseline | Plutonium offline heuristics | Gemma 4 26B MoE |
 | :-: | :--- | :-: | :-: | :-: | :-: |
 | S1 | Stripe live secret key hardcoded in settings | leak | ✅ | ✅ | ✅ |
 | S2 | MySQL URI with inline password to an internal host | leak | ✅ | ✅ | ✅ |
@@ -70,7 +70,7 @@
 
 </details>
 
-<details><summary>BarakaGate offline heuristics (no LLM): 5 false positives, 1 unlabeled extra findings</summary>
+<details><summary>Plutonium offline heuristics (no LLM): 5 false positives, 1 unlabeled extra findings</summary>
 
 - ❗ TRAP souk_shop/data/catalog.json:2 (product SKU shaped like a CIN) ← Moroccan CIN (Carte Nationale d'Identite)
 - ❗ TRAP souk_shop/data/catalog.json:3 (product SKU shaped like a CIN) ← Moroccan CIN (Carte Nationale d'Identite)
@@ -81,7 +81,7 @@
 
 </details>
 
-<details><summary>BarakaGate + Gemma 4 26B MoE: 7 false positives, 8 unlabeled extra findings</summary>
+<details><summary>Plutonium + Gemma 4 26B MoE: 7 false positives, 8 unlabeled extra findings</summary>
 
 - ❗ TRAP souk_shop/config.py:7 (public example DSN) ← Hardcoded Sentry DSN
 - ❗ TRAP souk_shop/data/catalog.json:2 (product SKU shaped like a CIN) ← Exposure of Moroccan CIN in SKU
@@ -101,7 +101,7 @@
 
 </details>
 
-**Run notes.** BarakaGate + Gemma 4 26B MoE: 30/30 scans answered by the model (engines seen: gemini:gemma-4-26b-a4b-it); run 2026-10-24 14:40:09.
+**Run notes.** Plutonium + Gemma 4 26B MoE: 30/30 scans answered by the model (engines seen: gemini:gemma-4-26b-a4b-it); run 2026-10-24 14:40:09.
 
 **How to read this.** *Strict precision* counts every finding that is not one of the labelled issues as a false positive, including "unlabeled extras" a reviewer might still consider valid (they're listed above for audit). *Traps* are lines that look dangerous but are correct (env-read secrets, `compare_digest`, parameterized `%s`, clamped discounts, CIN-shaped SKUs, `.env.example` placeholders, seeded RNGs, masked sentinels).
 

@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, ConfigDict
-from barakagate.review import ReviewError
+from plutonium.review import ReviewError
 
 STATIC = Path(__file__).parent / 'static'
 

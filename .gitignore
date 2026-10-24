@@ -1,5 +1,5 @@
 .env
-.barakagate/
+.plutonium/
 __pycache__/
 *.pyc
 *.egg-info/

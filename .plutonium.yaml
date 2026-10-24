@@ -1,4 +1,4 @@
-# BarakaGate Policy-as-Code
+# Plutonium Policy-as-Code
 # Edit freely: regex rules feed the deterministic baseline, natural-language
 # rules are injected verbatim into the Gemma 4 system prompt.
 
@@ -23,7 +23,7 @@ allowlist:
 
 ignore_paths:
   - ".git/"
-  - ".barakagate/"
+  - ".plutonium/"
   - "node_modules/"
   - "__pycache__/"
   - ".venv/"

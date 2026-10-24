@@ -48,9 +48,9 @@ def pctl(xs, q):
 
 
 def main() -> int:
-    from barakagate.indexer import CodebaseIndexer
-    from barakagate.models import EngineMode
-    from barakagate.scanner import heuristic_logic_scan, regex_baseline
+    from plutonium.indexer import CodebaseIndexer
+    from plutonium.models import EngineMode
+    from plutonium.scanner import heuristic_logic_scan, regex_baseline
 
     random.seed(0)
     work = Path(tempfile.mkdtemp(prefix="bg_scale_"))
@@ -64,7 +64,7 @@ def main() -> int:
         texts = {f: f.read_text(encoding="utf-8", errors="ignore") for f in files}
         loc = sum(t.count("\n") + 1 for t in texts.values())
         mb = sum(len(t.encode()) for t in texts.values()) / 1e6
-        shutil.rmtree(corpus / ".barakagate", ignore_errors=True)
+        shutil.rmtree(corpus / ".plutonium", ignore_errors=True)
 
         ix = CodebaseIndexer(corpus)
         t = time.perf_counter(); st = ix.build(force=True); cold = time.perf_counter() - t
@@ -73,7 +73,7 @@ def main() -> int:
         victim.write_text(texts[victim] + "\n\ndef _bg_touch():\n    return 1\n", encoding="utf-8")
         t = time.perf_counter(); ix3 = CodebaseIndexer(corpus); st3 = ix3.build(); incr = time.perf_counter() - t
         victim.write_text(texts[victim], encoding="utf-8")
-        index_kb = (corpus / ".barakagate" / "index.json").stat().st_size / 1024
+        index_kb = (corpus / ".plutonium" / "index.json").stat().st_size / 1024
 
         # retrieval: sample real functions as "changed code" and check the packer brings their callees
         funcs = [c for c in ix.chunks if c.chunk_type in ("function", "class") and len(c.called_symbols) >= 2]

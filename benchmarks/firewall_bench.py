@@ -13,7 +13,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
-from barakagate.redactor import sanitize_prompt  # noqa: E402
+from plutonium.redactor import sanitize_prompt  # noqa: E402
 
 F = HERE / "realworld"
 VALUES = {

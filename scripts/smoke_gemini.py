@@ -1,6 +1,6 @@
 import os, sys, time, json
 sys.path.insert(0, ".")
-from barakagate.config import load_dotenv
+from plutonium.config import load_dotenv
 load_dotenv()
 from google import genai
 from google.genai import types

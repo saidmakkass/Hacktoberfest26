@@ -2,9 +2,9 @@
 import subprocess
 from pathlib import Path
 import pytest
-from barakagate.models import Finding, ScanResult
-from barakagate.review_policy import ReviewPolicy
-from barakagate.review import ReviewSession, ReviewError
+from plutonium.models import Finding, ScanResult
+from plutonium.review_policy import ReviewPolicy
+from plutonium.review import ReviewSession, ReviewError
 
 
 def git(root, *args, input=None):
@@ -106,7 +106,7 @@ def test_personal_dismissal_is_bound_to_content(repo):
 
 def test_noninteractive_review_never_applies(repo):
     from typer.testing import CliRunner
-    from barakagate.cli import app
+    from plutonium.cli import app
     (repo / 'app.py').write_text('cin = \"BE847291\"\n')
     git(repo, 'add', 'app.py')
     before = git(repo, 'show', ':app.py')
@@ -117,8 +117,8 @@ def test_noninteractive_review_never_applies(repo):
 
 def test_explicit_terminal_approval_and_cancel(repo, monkeypatch):
     from typer.testing import CliRunner
-    from barakagate.cli import app
-    import barakagate.review as review
+    from plutonium.cli import app
+    import plutonium.review as review
     real = review.ReviewSession
     monkeypatch.setattr(review, 'ReviewSession', lambda root, **kw: real(root, scan_provider=scan, **kw))
     cancelled = CliRunner().invoke(app, ['review', '--root', str(repo), '--interactive'], input='c\n')
@@ -130,8 +130,8 @@ def test_explicit_terminal_approval_and_cancel(repo, monkeypatch):
 
 
 def test_new_policy_rules_have_stable_ids_and_validate():
-    from barakagate.config import BarakaConfig, validate_yaml
-    cfg = BarakaConfig({'presets': {'test': {'nl_rules': [{'id': 'org.auth', 'text': 'Require auth'}, 'Reject leaks']}}})
+    from plutonium.config import PlutoniumConfig, validate_yaml
+    cfg = PlutoniumConfig({'presets': {'test': {'nl_rules': [{'id': 'org.auth', 'text': 'Require auth'}, 'Reject leaks']}}})
     assert '[org.auth]' in cfg.nl_rules('all')[0]
     assert cfg.nl_rules('all')[1].startswith('[nl.test.')
     with pytest.raises(ValueError):
@@ -139,12 +139,12 @@ def test_new_policy_rules_have_stable_ids_and_validate():
 
 
 def test_ci_uses_trusted_policy_and_never_applies(repo):
-    from barakagate.review_check import check_revision
-    (repo / '.barakagate.yaml').write_text('presets: {}\nreview:\n  dismissal:\n    default: false\n')
+    from plutonium.review_check import check_revision
+    (repo / '.plutonium.yaml').write_text('presets: {}\nreview:\n  dismissal:\n    default: false\n')
     git(repo, 'add', '.')
     git(repo, 'commit', '-qm', 'base')
     base = git(repo, 'rev-parse', 'HEAD').decode().strip()
-    (repo / '.barakagate.yaml').write_text('presets: {}\nreview:\n  dismissal:\n    default: true\n')
+    (repo / '.plutonium.yaml').write_text('presets: {}\nreview:\n  dismissal:\n    default: true\n')
     (repo / 'app.py').write_text('secret = "unsafe"\n# changed\n')
     git(repo, 'add', '.')
     git(repo, 'commit', '-qm', 'proposal')
@@ -207,7 +207,7 @@ def test_rollback_restores_written_files(repo, monkeypatch):
         s.validate(s.revision)
         before = (repo / 'app.py').read_bytes()
         index = s.index.read_bytes()
-        import barakagate.review as module
+        import plutonium.review as module
         replace = module.os.replace
         def fail(src, dest):
             if Path(dest) == s.index:
@@ -260,14 +260,14 @@ def test_real_commit_waits_for_terminal_decision(tmp_path, choice, committed):
     """The installed hook must release the ORIGINAL Git process, not run a second commit."""
     import os, pty, select, signal, sys, time, yaml
     from typer.testing import CliRunner
-    from barakagate.cli import app
+    from plutonium.cli import app
     git(tmp_path, 'init', '-q')
     git(tmp_path, 'config', 'user.email', 'test@example.com')
     git(tmp_path, 'config', 'user.name', 'Review Test')
     config = {'default_engine':'cloud_fast','default_preset':'all','review':{'offline':True,'open_browser':False},
               'presets':{'demo':{'regex_rules':[{'id':'demo.secret','category':'privacy_pii',
               'severity':'HIGH','title':'Sensitive value','pattern':'BE847291','action':'synthetic_twin'}]}}}
-    (tmp_path / '.barakagate.yaml').write_text(yaml.safe_dump(config))
+    (tmp_path / '.plutonium.yaml').write_text(yaml.safe_dump(config))
     (tmp_path / 'app.py').write_text('customer = "BE847291"\n')
     git(tmp_path, 'add', '.')
     assert CliRunner().invoke(app, ['install-hook','--root',str(tmp_path)]).exit_code == 0

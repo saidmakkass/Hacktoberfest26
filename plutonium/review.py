@@ -15,9 +15,9 @@ import time
 from typing import Callable
 import yaml
 from PIL import Image
-from barakagate.config import BarakaConfig, find_config, validate_yaml
-from barakagate.models import ScanResult
-from barakagate.review_policy import ReviewPolicy
+from plutonium.config import PlutoniumConfig, find_config, validate_yaml
+from plutonium.models import ScanResult
+from plutonium.review_policy import ReviewPolicy
 
 
 class ReviewError(ValueError):
@@ -43,12 +43,12 @@ def read_policy(root):
 
 
 def scan_snapshot(root, paths, policy):
-    from barakagate.scanner import Scanner
-    from barakagate.llm_router import GemmaRouter
-    cfg = BarakaConfig(policy.raw)
+    from plutonium.scanner import Scanner
+    from plutonium.llm_router import GemmaRouter
+    cfg = PlutoniumConfig(policy.raw)
     router = None if policy.offline else GemmaRouter(
         ollama_url=cfg.models['ollama_url'], offline_safe=policy.allow_fallback,
-        cache_path=root / '.barakagate' / 'demo_cache.json')
+        cache_path=root / '.plutonium' / 'demo_cache.json')
     scanner = Scanner(str(root), router=router, config=cfg, offline=policy.offline)
     results = []
     text_paths = [str(root / p) for p in paths if Path(p).suffix.lower() not in ('.png', '.jpg', '.jpeg', '.webp')]
@@ -73,7 +73,7 @@ def scan_snapshot(root, paths, policy):
     for path in image_paths:
         if Path(path).suffix.lower() in ('.png', '.jpg', '.jpeg', '.webp'):
             # Fixture sidecars are not evidence about the current proposed pixels.
-            image_dir = root / '.barakagate' / 'review-images'
+            image_dir = root / '.plutonium' / 'review-images'
             image_dir.mkdir(parents=True, exist_ok=True)
             target = image_dir / (digest(path.encode()) + Path(path).suffix)
             target.write_bytes((root / path).read_bytes())
@@ -100,7 +100,7 @@ class ReviewSession:
         self.head = git(self.root, 'rev-parse', '--verify', 'HEAD', check=False).stdout
         self.index = Path(git(self.root, 'rev-parse', '--path-format=absolute', '--git-path', 'index').stdout.decode().strip())
         self.index_bytes = self.index.read_bytes() if self.index.exists() else b''
-        self.tmp = tempfile.TemporaryDirectory(prefix='barakagate-review-')
+        self.tmp = tempfile.TemporaryDirectory(prefix='plutonium-review-')
         self.base = Path(self.tmp.name)
         self.snapshot = self.base / 'snapshot'
         self.snapshot.mkdir()
@@ -255,7 +255,7 @@ class ReviewSession:
         return result
 
     def _propose(self):
-        from barakagate.redactor import apply_text_fixes, extract_to_env
+        from plutonium.redactor import apply_text_fixes, extract_to_env
         for path, file in self.files.items():
             findings = [f for f in self.findings if f.file_path == path]
             if file['kind'] == 'image':
@@ -276,7 +276,7 @@ class ReviewSession:
         self._write_proposals()
 
     def _notebook_proposal(self, text, findings):
-        from barakagate.redactor import apply_text_fixes
+        from plutonium.redactor import apply_text_fixes
         doc = json.loads(text)
         # Match snippets in individual sources/outputs instead of patching JSON line offsets.
         def visit(value):
@@ -300,7 +300,7 @@ class ReviewSession:
             raise ReviewError('Not an editable image')
         if not proposed or not f['regions']:
             return f['bytes']
-        from barakagate.redactor import redact_image
+        from plutonium.redactor import redact_image
         source = self.base / 'source-image'
         dest = self.base / 'redacted.png'
         source.write_bytes(f['bytes'])
@@ -470,7 +470,7 @@ class ReviewSession:
         env_path = self.root / '.env'
         env_original = env_path.read_bytes() if env_path.exists() else None
         approved_env = {}
-        from barakagate.redactor import extract_to_env
+        from plutonium.redactor import extract_to_env
         for finding in self.findings:
             if finding.recommended_action.value != 'env_extract' or finding.file_path not in updates:
                 continue

@@ -1,4 +1,4 @@
-"""BarakaGate scanner: regex baseline + cross-file heuristics + Gemma 4 analysis.
+"""Plutonium scanner: regex baseline + cross-file heuristics + Gemma 4 analysis.
 
 Snippet / patch convention (consumed by ``redactor.apply_text_fixes``, which substring-
 replaces ``offending_snippet`` -> ``replacement_snippet`` and re-indents block patches):
@@ -28,9 +28,9 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
-from barakagate.config import BarakaConfig, load_config
-from barakagate.indexer import CodebaseIndexer, render_notebook
-from barakagate.models import (
+from plutonium.config import PlutoniumConfig, load_config
+from plutonium.indexer import CodebaseIndexer, render_notebook
+from plutonium.models import (
     ActionType, CodeChunk, EngineMode, Finding, FindingCategory, ScanResult, Severity,
 )
 
@@ -135,7 +135,7 @@ def _mk(file_path: str, line_start: Optional[int], line_end: Optional[int], rule
 
 def _twin(rule_or_kind: str, value: str, index: int) -> str:
     try:
-        from barakagate.redactor import synthetic_twin  # written concurrently; optional
+        from plutonium.redactor import synthetic_twin  # written concurrently; optional
         return synthetic_twin(rule_or_kind, value, index)
     except Exception:  # noqa: BLE001
         kind = re.sub(r"[^A-Z0-9]+", "_", rule_or_kind.split(".")[-1].upper()).strip("_") or "VALUE"
@@ -156,7 +156,7 @@ _SYNTHETIC_TWIN = re.compile(r"^(ZZ\d{5,6}|Z\d{9}|999[ -]?\d{3}[ -]?\d{16}[ -]?\
                              r"MA\d{2}999\d{21}|cmi_test_SYNTH_\w+|AKIASYNTH\w+)$")
 
 
-def _allowlisted(cfg: BarakaConfig, value: str, line: str) -> bool:
+def _allowlisted(cfg: PlutoniumConfig, value: str, line: str) -> bool:
     if cfg.is_allowlisted(value) or _SYNTHETIC_TWIN.match(value.strip()):
         return True  # explicit allowlist, or a reserved-prefix synthetic twin we generated
     return any(a in line for a in cfg.allowlist if a in _ENV_SAFE_MARKERS)
@@ -172,7 +172,7 @@ def _env_name_from(text: str, fallback: str) -> str:
 
 
 def regex_baseline(text: str, file_path: str, preset: str = "all",
-                   config: Optional[BarakaConfig] = None) -> List[Finding]:
+                   config: Optional[PlutoniumConfig] = None) -> List[Finding]:
     """Gitleaks/Presidio-style deterministic baseline: one finding per (line, value)."""
     cfg = config or load_config()
     rules = cfg.regex_rules(preset)
@@ -215,7 +215,7 @@ def regex_baseline(text: str, file_path: str, preset: str = "all",
                 am = _ASSIGN.match(stripped)
                 if am and (val in am.group("value") or am.group("value") in val):
                     var = am.group("name")
-                    env_name = _env_name_from(var, f"BARAKAGATE_SECRET_{idx}")
+                    env_name = _env_name_from(var, f"PLUTONIUM_SECRET_{idx}")
                     env_value = am.group("value")
                     offending = stripped
                     if is_js or am.group("decl"):
@@ -228,7 +228,7 @@ def regex_baseline(text: str, file_path: str, preset: str = "all",
                     if lit is not None and "f" not in lit.group("prefix").lower():
                         key = re.search(r"""["'](\w+)["']\s*:\s*$""", line[:lit.start()])
                         env_name = _env_name_from(key.group(1) if key else "",
-                                                  f"BARAKAGATE_{r.id.split('.')[-1].upper()}_{idx}")
+                                                  f"PLUTONIUM_{r.id.split('.')[-1].upper()}_{idx}")
                         env_value = lit.group("body")
                         offending = env_value
                         replacement = f"process.env.{env_name}" if is_js else f'os.getenv("{env_name}", "")'
@@ -923,7 +923,7 @@ def normalize_findings(raw: Any, default_file: str, target_type: str = "text") -
     """Tolerant LLM JSON -> List[Finding]. Unknown enums are mapped, junk items dropped."""
     if isinstance(raw, str):
         try:
-            from barakagate.llm_router import repair_json
+            from plutonium.llm_router import repair_json
             raw = repair_json(raw)
         except Exception:  # noqa: BLE001
             return []
@@ -989,7 +989,7 @@ def normalize_findings(raw: Any, default_file: str, target_type: str = "text") -
     return out
 
 
-def compute_verdict(findings: Iterable[Finding], config: Optional[BarakaConfig] = None) -> str:
+def compute_verdict(findings: Iterable[Finding], config: Optional[PlutoniumConfig] = None) -> str:
     cfg = config or load_config()
     block = {s.upper() for s in cfg.block_on}
     warn = {s.upper() for s in cfg.warn_on}
@@ -1007,10 +1007,10 @@ def compute_verdict(findings: Iterable[Finding], config: Optional[BarakaConfig] 
 
 
 # --------------------------------------------------------------------------- prompts
-def build_system_instruction(preset: str = "all", config: Optional[BarakaConfig] = None) -> str:
+def build_system_instruction(preset: str = "all", config: Optional[PlutoniumConfig] = None) -> str:
     cfg = config or load_config()
     rules = "Use the bracketed policy rule ID verbatim as rule_id for matching findings.\n" + "\n".join(f"- {r}" for r in cfg.nl_rules(preset)) or "- Any secret, PII or logical/security bug."
-    return f"""You are BarakaGate, a senior pre-commit security, privacy and correctness auditor (Gemma 4).
+    return f"""You are Plutonium, a senior pre-commit security, privacy and correctness auditor (Gemma 4).
 You audit code BEFORE it reaches production for three categories:
 1. security_leak - secrets, API keys, tokens, credentials, internal hosts/URLs.
 2. privacy_pii   - personal data (Moroccan CIN, 24-digit RIB, MA IBAN, +212 phones, student CNE/Massar,
@@ -1073,10 +1073,10 @@ def build_user_prompt(targets: List[Tuple[str, str]], context: List[CodeChunk],
     return "\n\n".join(parts)
 
 
-def build_image_system(preset: str = "all", config: Optional[BarakaConfig] = None) -> str:
+def build_image_system(preset: str = "all", config: Optional[PlutoniumConfig] = None) -> str:
     cfg = config or load_config()
     rules = "Use the bracketed policy rule ID verbatim as rule_id for matching findings.\n" + "\n".join(f"- {r}" for r in cfg.nl_rules(preset))
-    return ("You are BarakaGate's vision auditor (Gemma 4). Read ALL text in the screenshot (OCR) and find every "
+    return ("You are Plutonium's vision auditor (Gemma 4). Read ALL text in the screenshot (OCR) and find every "
             "visible secret or personal datum: bearer/JWT tokens, API or merchant keys (cmi_live_...), passwords, "
             "Moroccan CIN (e.g. AB654321), 24-digit RIB, phone numbers, student CNE/Massar codes, names next to IDs, "
             "internal hostnames.\nPolicy rules:\n" + rules +
@@ -1214,7 +1214,7 @@ def _sort(findings: List[Finding]) -> List[Finding]:
 
 
 # --------------------------------------------------------------------------- local sanitizer
-def _local_sanitize(text: str, config: BarakaConfig, vault: Optional[Dict[str, str]] = None
+def _local_sanitize(text: str, config: PlutoniumConfig, vault: Optional[Dict[str, str]] = None
                     ) -> Tuple[str, Dict[str, str]]:
     vault = dict(vault or {})
     reverse = {v: k for k, v in vault.items()}
@@ -1282,7 +1282,7 @@ def parse_unified_diff(diff_text: str) -> Dict[str, Dict[int, str]]:
 
 # --------------------------------------------------------------------------- scanner
 class Scanner:
-    def __init__(self, root: str | Path = ".", router=None, config: Optional[BarakaConfig] = None,
+    def __init__(self, root: str | Path = ".", router=None, config: Optional[PlutoniumConfig] = None,
                  offline: bool = False):
         self.root = Path(root).resolve()
         self.config = config or load_config(self.root)
@@ -1303,7 +1303,7 @@ class Scanner:
     @property
     def router(self):
         if self._router is None and not self.offline:
-            from barakagate.llm_router import GemmaRouter
+            from plutonium.llm_router import GemmaRouter
             self._router = GemmaRouter(ollama_url=self.config.models.get("ollama_url", "http://localhost:11434"))
         return self._router
 
@@ -1336,7 +1336,7 @@ class Scanner:
                 for child in sorted(rp.rglob("*")):
                     rel = child.relative_to(rp).as_posix()
                     if child.is_file() and self.indexer._supported(child) and not self.config.is_ignored_path(rel) \
-                            and ".barakagate" not in rel and child.stat().st_size <= 1_000_000:
+                            and ".plutonium" not in rel and child.stat().st_size <= 1_000_000:
                         targets.append(self._load_target(str(child)))
             elif rp.is_file():
                 targets.append(self._load_target(str(rp)))
@@ -1523,7 +1523,7 @@ class Scanner:
         stats_line = (f"{len(findings)} finding(s) [{', '.join(f'{v} {k}' for k, v in sev.items()) or 'none'}] "
                       f"in {len(targets)} file(s): {cats.get('security_leak', 0)} secret leak(s), "
                       f"{cats.get('privacy_pii', 0)} PII, {cats.get('logical_bug', 0)} logical bug(s). "
-                      f"Regex baseline caught {regex_count}; BarakaGate added {gemma_count}.")
+                      f"Regex baseline caught {regex_count}; Plutonium added {gemma_count}.")
         if engine == "offline_heuristic":
             summary = ("Gemma 4 engines unavailable or offline: deterministic offline heuristic engine "
                        "(regex baseline + cross-file AST detectors) used. " + stats_line)
@@ -1531,7 +1531,7 @@ class Scanner:
             summary = (summary.strip() + " " if summary else "") + stats_line
         thinking = "\n".join(trace)
         if llm_trace:
-            thinking = str(llm_trace).strip() + "\n\n--- BarakaGate pipeline ---\n" + thinking
+            thinking = str(llm_trace).strip() + "\n\n--- Plutonium pipeline ---\n" + thinking
         return ScanResult(
             verdict=verdict, engine_used=engine, preset_used=preset, summary=summary, thinking_trace=thinking,
             indexed_chunks_count=len(self.indexer.chunks),
@@ -1543,11 +1543,11 @@ class Scanner:
     def _sanitize(self, text: str) -> Tuple[str, Dict[str, str]]:
         vault: Dict[str, str] = {}
         try:
-            from barakagate.redactor import sanitize_prompt_llm
+            from plutonium.redactor import sanitize_prompt_llm
             text, vault = sanitize_prompt_llm(text, router=self.router, config=self.config)
         except Exception:  # noqa: BLE001
             try:
-                from barakagate.redactor import sanitize_prompt
+                from plutonium.redactor import sanitize_prompt
                 text, vault = sanitize_prompt(text, self.config)
             except Exception:  # noqa: BLE001
                 pass
@@ -1557,7 +1557,7 @@ class Scanner:
     @staticmethod
     def _rehydrate(text: str, vault: Dict[str, str]) -> str:
         try:
-            from barakagate.redactor import rehydrate
+            from plutonium.redactor import rehydrate
             return rehydrate(text, vault)
         except Exception:  # noqa: BLE001
             return _local_rehydrate(text, vault)

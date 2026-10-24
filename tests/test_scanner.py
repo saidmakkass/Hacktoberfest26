@@ -3,10 +3,10 @@ import shutil
 
 import pytest
 
-from barakagate.config import load_config
-from barakagate.llm_router import AllEnginesFailed, GemmaRouter
-from barakagate.models import ActionType, EngineMode, FindingCategory, Severity
-from barakagate.scanner import (
+from plutonium.config import load_config
+from plutonium.llm_router import AllEnginesFailed, GemmaRouter
+from plutonium.models import ActionType, EngineMode, FindingCategory, Severity
+from plutonium.scanner import (
     IMAGE_RESPONSE_SCHEMA, SCAN_RESPONSE_SCHEMA, Scanner, build_system_instruction, compute_verdict,
     heuristic_logic_scan, normalize_findings, parse_unified_diff, regex_baseline,
 )
@@ -15,7 +15,7 @@ from barakagate.scanner import (
 @pytest.fixture
 def samples(tmp_path, project_root):
     dst = tmp_path / "samples"
-    shutil.copytree(project_root / "samples", dst, ignore=shutil.ignore_patterns(".barakagate", "__pycache__"))
+    shutil.copytree(project_root / "samples", dst, ignore=shutil.ignore_patterns(".plutonium", "__pycache__"))
     return dst
 
 
@@ -192,7 +192,7 @@ async def handle_cmi_callback(request):
     if payload["status"] == "APPROVED":
         customer.balance += 1
 '''
-    from barakagate.indexer import CodebaseIndexer  # noqa: F401  (context-free run)
+    from plutonium.indexer import CodebaseIndexer  # noqa: F401  (context-free run)
     assert heuristic_logic_scan(fixed, "fixed.py", []) == []
 
 
@@ -460,22 +460,22 @@ def test_bad_llm_patch_replaced_by_heuristic_patch(samples):
 
 
 def test_code_detectors_skip_config_files():
-    from barakagate.scanner import heuristic_logic_scan
+    from plutonium.scanner import heuristic_logic_scan
     yaml_text = '- "Off-by-one loop bounds (range(len(x)+1), <= length)"\n'
-    assert heuristic_logic_scan(yaml_text, ".barakagate.yaml", []) == []
+    assert heuristic_logic_scan(yaml_text, ".plutonium.yaml", []) == []
     code = "def f(items):\n    for i in range(0, len(items) + 1, 2):\n        pass\n"
     assert any(f.rule_id.startswith("heur.off_by_one") for f in heuristic_logic_scan(code, "a.py", []))
 
 
 def test_darija_latin_script_in_plain_text_log():
-    from barakagate.scanner import heuristic_logic_scan
+    from plutonium.scanner import heuristic_logic_scan
     log = "client: salam khouya, smiti Khadija Berrada, CIN dyali BK482913\nagent: Merci madame.\n"
     hits = heuristic_logic_scan(log, "support_log.txt", [])
     assert [f.line_start for f in hits if f.rule_id == "heur.darija_pii_note"] == [1]
 
 
 def test_darija_line_keeps_value_level_regex_findings(tmp_path):
-    from barakagate.scanner import Scanner
+    from plutonium.scanner import Scanner
     (tmp_path / "log.txt").write_text("client: salam khouya, CIN dyali BK482913\n", encoding="utf-8")
     r = Scanner(tmp_path, offline=True).scan_files([str(tmp_path / "log.txt")])
     rules = {f.rule_id for f in r.findings}

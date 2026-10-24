@@ -35,7 +35,7 @@ async function api(path, opts = {}) {
   }
   let res;
   try { res = await fetch(path, init); }
-  catch (e) { throw new Error('Server unreachable — is `barakagate serve` running?'); }
+  catch (e) { throw new Error('Server unreachable — is `plutonium serve` running?'); }
   if (opts.raw) { if (!res.ok) throw new Error(await errText(res)); return res; }
   const ct = res.headers.get('content-type') || '';
   const data = ct.includes('json') ? await res.json() : await res.text();
@@ -262,7 +262,7 @@ function renderScan() {
   const regex = findings.filter(f => f.caught_by_regex_baseline).length;
   const total = findings.length;
   $('#regexLine').textContent = `Regex Baseline (Gitleaks): ${regex} Caught (0 Logical Bugs, 0 Contextual/Image Leaks)`;
-  $('#gemmaLine').textContent = `BarakaGate (Gemma 4): ${total} Caught (Leaks + PII + Cross-File Logical Bugs)`;
+  $('#gemmaLine').textContent = `Plutonium (Gemma 4): ${total} Caught (Leaks + PII + Cross-File Logical Bugs)`;
   $('#regexNum').textContent = regex; $('#gemmaNum').textContent = total;
   const max = Math.max(total, regex, 1);
   requestAnimationFrame(() => { $('#regexBar').style.setProperty('--w', regex / max); $('#gemmaBar').style.setProperty('--w', total / max); });

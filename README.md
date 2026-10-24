@@ -51,7 +51,7 @@ Classic scanners read one line at a time. They miss:
 | Screenshots and notebook images | Gemma 4 vision finds keys and IDs, then blurs or masks them |
 | Safe-to-Prompt firewall | Replaces real data with tokens locally, asks cloud Gemma 4, restores the values locally |
 | Human-in-the-loop fixes | Fake-but-valid test data, move secret to `.env`, apply bug patch, mask, or keep |
-| Gates everywhere | Pre-commit hook, CLI, GitHub Actions, Agent Skill, Web Studio, all using one `.barakagate.yaml` policy |
+| Gates everywhere | Pre-commit hook, CLI, GitHub Actions, Agent Skill, Web Studio, all using one `.plutonium.yaml` policy |
 
 ## 3. How it works
 
@@ -125,11 +125,11 @@ pip install -e .
 echo "GEMINI_API_KEY=your_key" > .env   # optional: everything also works offline
 # optional, fully local: ollama pull gemma4:e4b
 
-barakagate serve                        # Studio at http://127.0.0.1:8000
-barakagate scan samples/fintech_morocco/checkout.py --root samples/fintech_morocco -p fintech_morocco
-barakagate image samples/screenshots/devtools_leak.png --apply
-echo "CIN BE847291 RIB 230780123456789012345678" | barakagate sanitize -
-barakagate install-hook                 # blocks commits with CRITICAL or HIGH findings
+plutonium serve                        # Studio at http://127.0.0.1:8000
+plutonium scan samples/fintech_morocco/checkout.py --root samples/fintech_morocco -p fintech_morocco
+plutonium image samples/screenshots/devtools_leak.png --apply
+echo "CIN BE847291 RIB 230780123456789012345678" | plutonium sanitize -
+plutonium install-hook                 # blocks commits with CRITICAL or HIGH findings
 ```
 
 Reproduce the numbers:
@@ -149,18 +149,18 @@ python3 benchmarks/firewall_bench.py
 1. Code inspector: findings, cross-file context, and one fix decision per finding.
 2. Image sanitizer: Gemma 4 boxes on screenshots, click to blur or keep.
 3. Safe-to-Prompt firewall: sanitize locally, ask the cloud, restore locally.
-4. Policy and benchmark: edit `.barakagate.yaml` and run the benchmark.
+4. Policy and benchmark: edit `.plutonium.yaml` and run the benchmark.
 
-**Policy as code:** `.barakagate.yaml` has three packs you can combine: General DevSecOps, Moroccan Fintech (Law 09-08), and University & Research Lab. Rules can be written in plain English.
+**Policy as code:** `.plutonium.yaml` has three packs you can combine: General DevSecOps, Moroccan Fintech (Law 09-08), and University & Research Lab. Rules can be written in plain English.
 
-**Agent Skill and CI:** `skills/barakagate/SKILL.md` for coding agents, `.github/workflows/barakagate.yml` as a PR gate, and `barakagate install-hook` for a local pre-commit gate.
+**Agent Skill and CI:** `skills/plutonium/SKILL.md` for coding agents, `.github/workflows/plutonium.yml` as a PR gate, and `plutonium install-hook` for a local pre-commit gate.
 
 ## 11. Repository layout
 
 ```
-barakagate/
+plutonium/
   models.py          shared data contract
-  config.py          .barakagate.yaml loader
+  config.py          .plutonium.yaml loader
   llm_router.py      Gemini API, Ollama, fallback chain
   indexer.py         code chunker, symbol graph, search
   scanner.py         rule checks + Gemma 4 analysis + verdict

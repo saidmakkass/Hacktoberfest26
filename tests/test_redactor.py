@@ -3,9 +3,9 @@ import re
 import pytest
 from PIL import Image, ImageDraw
 
-from barakagate.config import load_config
-from barakagate.models import ActionType, Finding
-from barakagate.redactor import (
+from plutonium.config import load_config
+from plutonium.models import ActionType, Finding
+from plutonium.redactor import (
     apply_text_fixes, apply_to_disk, bbox_to_pixels, extract_to_env, is_valid_iban, is_valid_rib,
     preview_patch, redact_image, rehydrate, rib_key, sanitize_prompt, synthetic_twin,
 )
@@ -161,7 +161,7 @@ def test_env_extract_adds_import_os_and_env_without_duplicates(tmp_path):
     assert 'DB_PASSWORD = os.getenv("DB_PASSWORD", "")' in out
     assert '    API_TOKEN = os.getenv("API_TOKEN", "")' in out
     assert sorted(summary["applied"]) == ["a", "b"] and summary["env_added"] == ["API_TOKEN"]
-    assert summary["backup"] and (tmp_path / ".barakagate" / "backups").is_dir()
+    assert summary["backup"] and (tmp_path / ".plutonium" / "backups").is_dir()
     # second run: nothing new, no duplicate keys
     apply_to_disk(str(src), findings, decisions, env_path=str(env))
     keys = [ln.split("=")[0] for ln in env.read_text().splitlines() if "=" in ln]

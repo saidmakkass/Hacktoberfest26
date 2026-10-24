@@ -4,14 +4,14 @@ import shutil
 
 import pytest
 
-from barakagate.indexer import BM25, CodebaseIndexer, tokenize
-from barakagate.models import EngineMode
+from plutonium.indexer import BM25, CodebaseIndexer, tokenize
+from plutonium.models import EngineMode
 
 
 @pytest.fixture
 def samples(tmp_path, project_root):
     dst = tmp_path / "samples"
-    shutil.copytree(project_root / "samples", dst, ignore=shutil.ignore_patterns(".barakagate", "*.png"))
+    shutil.copytree(project_root / "samples", dst, ignore=shutil.ignore_patterns(".plutonium", "*.png"))
     return dst
 
 
@@ -19,7 +19,7 @@ def samples(tmp_path, project_root):
 def fintech(tmp_path, project_root):
     dst = tmp_path / "fintech"
     shutil.copytree(project_root / "samples" / "fintech_morocco", dst,
-                    ignore=shutil.ignore_patterns(".barakagate", "__pycache__"))
+                    ignore=shutil.ignore_patterns(".plutonium", "__pycache__"))
     return dst
 
 
@@ -57,7 +57,7 @@ def test_python_chunking_and_symbol_map(fintech):
     checkout = ix.symbol_map["checkout"]
     assert "MoroccanCustomer" in checkout.imports and "CMI_WEBHOOK_SECRET" in checkout.imports
     assert "compute_total" in checkout.called_symbols and "wallet_balance_mad" in checkout.called_symbols
-    assert (fintech / ".barakagate" / "index.json").is_file()
+    assert (fintech / ".plutonium" / "index.json").is_file()
 
 
 def test_syntax_error_falls_back_to_windows(tmp_path):
@@ -102,7 +102,7 @@ def test_notebook_cells_outputs_and_images(tmp_path):
     assert "R139482710" in cells[0].code  # text outputs are visible to scanners
     assert len(stats.notebook_images) == 1
     img = stats.notebook_images[0]
-    assert img.endswith("lab_cell2_1.png") and ".barakagate/tmp_nb_images" in img.replace("\\", "/")
+    assert img.endswith("lab_cell2_1.png") and ".plutonium/tmp_nb_images" in img.replace("\\", "/")
     assert ix.notebook_images_for(tmp_path / "lab.ipynb") == [img]
 
 

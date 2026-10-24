@@ -1,4 +1,4 @@
-# BarakaGate: pitch cheat sheet
+# Plutonium: pitch cheat sheet
 
 Every number here is reproducible from the repo (see README §7). Each one has a short answer ready for skeptical PhD questions.
 

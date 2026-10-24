@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from barakagate.cli import app
+from plutonium.cli import app
 
 ROOT = Path(__file__).resolve().parent.parent
 runner = CliRunner()
@@ -48,12 +48,12 @@ def test_scan_rich_output_and_yes_fix(fintech, monkeypatch):
     monkeypatch.chdir(fintech)
     res = runner.invoke(app, ["scan", "checkout.py", "--offline", "--root", str(fintech)])
     assert res.exit_code == 1
-    assert "BarakaGate v1.0" in res.stdout and "BLOCK" in res.stdout and "Regex baseline:" in res.stdout
+    assert "Plutonium v1.0" in res.stdout and "BLOCK" in res.stdout and "Regex baseline:" in res.stdout
     res = runner.invoke(app, ["scan", "checkout.py", "--offline", "--yes", "--root", str(fintech)])
     patched = (fintech / "checkout.py").read_text()
     assert "BE847291" not in patched
     compile(patched, "checkout.py", "exec")
-    assert list((fintech / ".barakagate" / "backups").glob("checkout.py.*.bak"))
+    assert list((fintech / ".plutonium" / "backups").glob("checkout.py.*.bak"))
 
 
 def test_install_hook(tmp_path):
@@ -64,7 +64,7 @@ def test_install_hook(tmp_path):
     res = runner.invoke(app, ["install-hook", "--root", str(tmp_path)])
     assert res.exit_code == 0, res.output
     hook = hooks / "pre-commit"
-    assert "barakagate review" in hook.read_text()
+    assert "plutonium review" in hook.read_text()
     assert os.access(hook, os.X_OK)
     assert (hooks / "pre-commit.bak").read_text() == "#!/bin/sh\necho old\n"
 

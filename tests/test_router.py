@@ -3,9 +3,9 @@ import json
 import httpx
 import pytest
 
-from barakagate import llm_router
-from barakagate.llm_router import AllEnginesFailed, GemmaRouter, clean_json_text, repair_json
-from barakagate.models import EngineMode
+from plutonium import llm_router
+from plutonium.llm_router import AllEnginesFailed, GemmaRouter, clean_json_text, repair_json
+from plutonium.models import EngineMode
 
 SCHEMA = {"type": "object", "properties": {"findings": {"type": "array"}}}
 

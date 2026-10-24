@@ -1,9 +1,9 @@
-"""BarakaGate Studio backend (FastAPI).
+"""Plutonium Studio backend (FastAPI).
 
-Run:  uvicorn barakagate.server:app --port 8000   (or `barakagate serve`)
+Run:  uvicorn plutonium.server:app --port 8000   (or `plutonium serve`)
 
 Design rules:
-* Repo root = env ``BARAKAGATE_ROOT`` or the current working directory.
+* Repo root = env ``PLUTONIUM_ROOT`` or the current working directory.
 * Scanner / redactor / indexer are imported lazily inside endpoints so the server
   boots even while teammates' modules are still being written.
 * Engine failures never surface as HTTP 500: scans degrade to the deterministic
@@ -32,8 +32,8 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from barakagate.config import CONFIG_FILENAME, PROJECT_ROOT, find_config, load_config, validate_yaml
-from barakagate.models import ActionType, EngineMode, Finding, ScanResult
+from plutonium.config import CONFIG_FILENAME, PROJECT_ROOT, find_config, load_config, validate_yaml
+from plutonium.models import ActionType, EngineMode, Finding, ScanResult
 
 VERSION = "1.0.0"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -85,7 +85,7 @@ ENGINE_LABELS = {
 
 # --------------------------------------------------------------------------- state
 def repo_root() -> Path:
-    return Path(os.environ.get("BARAKAGATE_ROOT") or os.getcwd()).resolve()
+    return Path(os.environ.get("PLUTONIUM_ROOT") or os.getcwd()).resolve()
 
 
 def samples_dir() -> Path:
@@ -100,7 +100,7 @@ def policy_path() -> Path:
 
 
 def work_dir() -> Path:
-    d = repo_root() / ".barakagate"
+    d = repo_root() / ".plutonium"
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -126,7 +126,7 @@ MAX_SCANS = 64
 
 
 def get_router():
-    from barakagate.llm_router import GemmaRouter
+    from plutonium.llm_router import GemmaRouter
 
     root = repo_root()
     key = str(root)
@@ -136,7 +136,7 @@ def get_router():
             cfg = load_config(root)
             r = GemmaRouter(
                 ollama_url=cfg.models.get("ollama_url", "http://localhost:11434"),
-                cache_path=root / ".barakagate" / "demo_cache.json",
+                cache_path=root / ".plutonium" / "demo_cache.json",
                 offline_safe=True,
             )
             STATE.routers[key] = r
@@ -145,7 +145,7 @@ def get_router():
 
 def get_scanner(root: Optional[Path] = None, offline: bool = False):
     """One Scanner per (root, offline) — lazily imported and built."""
-    from barakagate.scanner import Scanner  # lazy: Builder A
+    from plutonium.scanner import Scanner  # lazy: Builder A
 
     root = Path(root or repo_root()).resolve()
     key = (str(root), bool(offline))
@@ -231,7 +231,7 @@ def _empty_result(preset: str, summary: str) -> ScanResult:
 
 def _verdict(findings: List[Finding]) -> str:
     try:
-        from barakagate.scanner import compute_verdict
+        from plutonium.scanner import compute_verdict
 
         return compute_verdict(findings)
     except Exception:  # noqa: BLE001
@@ -272,7 +272,7 @@ def _run_scan(fn_name: str, args: tuple, kwargs: dict, root: Path, offline: bool
 
 
 # --------------------------------------------------------------------------- app
-app = FastAPI(title="BarakaGate Studio", version=VERSION)
+app = FastAPI(title="Plutonium Studio", version=VERSION)
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
@@ -286,7 +286,7 @@ async def _unhandled(request: Request, exc: Exception):  # never leak a bare 500
 def index_page():
     page = STATIC_DIR / "index.html"
     if not page.is_file():
-        return HTMLResponse("<h1>BarakaGate Studio</h1><p>static/index.html missing</p>")
+        return HTMLResponse("<h1>Plutonium Studio</h1><p>static/index.html missing</p>")
     return FileResponse(str(page), media_type="text/html")
 
 
@@ -372,7 +372,7 @@ def _scenario_files(name: str) -> Dict[str, str]:
     d = samples_dir() / name
     files: Dict[str, str] = {}
     for p in sorted(d.rglob("*")):
-        if not p.is_file() or ".barakagate" in p.parts or "__pycache__" in p.parts:
+        if not p.is_file() or ".plutonium" in p.parts or "__pycache__" in p.parts:
             continue
         rel = p.relative_to(d).as_posix()
         if p.suffix == ".ipynb":
@@ -606,7 +606,7 @@ def preview(body: DecisionsBody):
     warnings: List[str] = []
     out: Dict[str, Any] = {}
     try:
-        from barakagate import redactor
+        from plutonium import redactor
     except ImportError as e:
         redactor = None
         warnings.append(f"redactor unavailable, using simple patcher: {e}")
@@ -638,7 +638,7 @@ def apply(body: DecisionsBody):
     decisions = _decisions_for(entry, body.decisions)
     warnings: List[str] = []
     try:
-        from barakagate import redactor
+        from plutonium import redactor
     except ImportError as e:
         raise HTTPException(503, f"redactor module unavailable: {e}")
     root = repo_root()
@@ -652,7 +652,7 @@ def apply(body: DecisionsBody):
         src = Path(entry["file_map"].get(key, ""))
         original = entry["texts"][key]
         # Sample fixtures are never overwritten unless explicitly asked; ad-hoc text always goes
-        # to .barakagate/patched; real repo files (files/staged scans) are patched in place.
+        # to .plutonium/patched; real repo files (files/staged scans) are patched in place.
         if entry["kind"] == "text":
             safe_copy = True
         elif entry["kind"] == "scenario":
@@ -739,7 +739,7 @@ def _extract_notebook_images() -> List[Path]:
     out: List[Path] = []
     dest = work_dir() / "tmp_nb_images"
     for nb in sorted(samples_dir().rglob("*.ipynb")):
-        if ".barakagate" in nb.parts or ".ipynb_checkpoints" in nb.parts:
+        if ".plutonium" in nb.parts or ".ipynb_checkpoints" in nb.parts:
             continue
         try:
             data = json.loads(nb.read_text(encoding="utf-8"))
@@ -805,7 +805,7 @@ def list_images():
             add(p, "sample")
     for p in _extract_notebook_images():
         add(p, "notebook", _nb_label(p))
-    for d in [work_dir() / "tmp_nb_images", *samples_dir().glob("*/.barakagate/tmp_nb_images")]:
+    for d in [work_dir() / "tmp_nb_images", *samples_dir().glob("*/.plutonium/tmp_nb_images")]:
         if d.is_dir():
             for p in sorted(d.glob("*.png")):
                 add(p, "notebook", _nb_label(p))
@@ -896,7 +896,7 @@ def image_redact(body: RedactBody):
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{src.stem}.redacted.png"
     try:
-        from barakagate import redactor
+        from plutonium import redactor
 
         res_path = redactor.redact_image(str(src), boxes, style=style, out_path=str(out_path))
         res_path = Path(res_path or out_path)
@@ -935,7 +935,7 @@ class SanitizeBody(BaseModel):
 
 @app.post("/api/sanitize")
 def sanitize(body: SanitizeBody):
-    from barakagate import redactor  # lazy: Builder B
+    from plutonium import redactor  # lazy: Builder B
 
     warnings: List[str] = []
     engine = "local deterministic tokenizer"
@@ -983,7 +983,7 @@ def _offline_firewall_answer(prompt: str, vault: Dict[str, str]):
     tokens = list(vault.keys())
     tok_line = ", ".join(tokens) if tokens else "(no sensitive entities)"
     answer = (
-        "Cloud Gemma 4 is unavailable (offline-safe mode), so this is BarakaGate's deterministic local answer.\n\n"
+        "Cloud Gemma 4 is unavailable (offline-safe mode), so this is Plutonium's deterministic local answer.\n\n"
         f"Your sanitized prompt referenced {len(tokens)} protected value(s): {tok_line}. None of them left this machine.\n\n"
         "Likely root cause: monetary amounts (MAD/TVA) are computed with IEEE-754 float arithmetic "
         "(e.g. `amount * 0.20` then `round(x, 2)`), which drifts by 1 centime during reconciliation. "
@@ -1035,7 +1035,7 @@ def firewall_ask(body: FirewallBody):
     raw = str(data.get("answer", ""))
     code = str(data.get("fixed_code", ""))
     try:
-        from barakagate.redactor import rehydrate
+        from plutonium.redactor import rehydrate
     except ImportError:
         def rehydrate(text, vault):  # type: ignore[no-redef]
             for k, v in vault.items():
@@ -1094,7 +1094,7 @@ def _import_benchmark():
     for root in (str(repo_root()), str(PROJECT_ROOT)):
         if root not in sys.path:
             sys.path.insert(0, root)
-    for name in ("evaluate_benchmark", "barakagate.evaluate_benchmark"):
+    for name in ("evaluate_benchmark", "plutonium.evaluate_benchmark"):
         try:
             return importlib.import_module(name)
         except ImportError:
@@ -1156,7 +1156,7 @@ def _split_bench(res: Any, mod: Any):
 
 @app.get("/api/benchmark/last")
 def benchmark_last():
-    for p in (work_dir() / "benchmark.json", PROJECT_ROOT / ".barakagate" / "benchmark.json"):
+    for p in (work_dir() / "benchmark.json", PROJECT_ROOT / ".plutonium" / "benchmark.json"):
         if p.is_file():
             try:
                 data = json.loads(p.read_text(encoding="utf-8"))

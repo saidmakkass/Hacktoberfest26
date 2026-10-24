@@ -1,4 +1,4 @@
-"""BarakaGate remediation engine.
+"""Plutonium remediation engine.
 
 * Synthetic twins: format-valid but obviously fake Moroccan PII / secrets.
 * Text patcher: applies twins, `.env` extraction and bug-fix patches (pitfall #5 safe).
@@ -18,7 +18,7 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
-from barakagate.models import ActionType, Finding
+from plutonium.models import ActionType, Finding
 
 # --------------------------------------------------------------------------- twins
 
@@ -384,7 +384,7 @@ def preview_patch(text: str, findings: List[Finding], decisions: Dict[str, Actio
 
 def _project_root_for(path: Path) -> Path:
     for d in [path.parent, *path.parent.parents]:
-        if (d / ".git" / "HEAD").is_file() or (d / ".git").is_file() or (d / ".barakagate.yaml").is_file():
+        if (d / ".git" / "HEAD").is_file() or (d / ".git").is_file() or (d / ".plutonium.yaml").is_file():
             return d
     return path.parent
 
@@ -409,21 +409,21 @@ def _append_env(env_path: Path, env_vars: List[Tuple[str, str]]) -> List[str]:
         if content and not content.endswith("\n"):
             content += "\n"
         if not content:
-            content = "# Secrets extracted by BarakaGate - never commit this file\n"
+            content = "# Secrets extracted by Plutonium - never commit this file\n"
         env_path.write_text(content + "\n".join(new_lines) + "\n", encoding="utf-8")
     return added
 
 
 def apply_to_disk(path: str, findings: List[Finding], decisions: Dict[str, ActionType | str],
                   env_path: Optional[str] = None, root: Optional[str] = None) -> Dict[str, Any]:
-    """Patch `path` in place (backup under `<root>/.barakagate/backups/`) and append `.env` vars."""
+    """Patch `path` in place (backup under `<root>/.plutonium/backups/`) and append `.env` vars."""
     p = Path(path)
     original = p.read_text(encoding="utf-8")
     patched, applied, skipped, env_vars = _apply(original, findings, decisions)
     base = Path(root) if root else _project_root_for(p.resolve())
     backup = None
     if patched != original:
-        bdir = base / ".barakagate" / "backups"
+        bdir = base / ".plutonium" / "backups"
         bdir.mkdir(parents=True, exist_ok=True)
         backup = bdir / f"{p.name}.{time.strftime('%Y%m%d-%H%M%S')}.bak"
         shutil.copy2(p, backup)
@@ -620,7 +620,7 @@ def sanitize_prompt_llm(text: str, router=None, config=None) -> Tuple[str, Dict[
     sanitized, vault = sanitize_prompt(text, config)
     try:
         if router is None:
-            from barakagate.llm_router import GemmaRouter
+            from plutonium.llm_router import GemmaRouter
             router = GemmaRouter()
         if not router.ollama_available():
             return sanitized, vault

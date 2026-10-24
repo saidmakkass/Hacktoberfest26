@@ -1,8 +1,8 @@
 import pytest
 from pydantic import ValidationError
 
-from barakagate.config import load_config, validate_yaml, load_dotenv
-from barakagate.models import ActionType, Finding, FindingCategory, ScanResult, Severity
+from plutonium.config import load_config, validate_yaml, load_dotenv
+from plutonium.models import ActionType, Finding, FindingCategory, ScanResult, Severity
 
 
 def test_finding_confidence_bounds():

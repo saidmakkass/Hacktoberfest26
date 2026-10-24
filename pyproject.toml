@@ -3,7 +3,7 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "barakagate"
+name = "plutonium"
 version = "1.0.0"
 description = "Open-weight multimodal pre-flight security, privacy & cross-file logical bug gate powered by Gemma 4"
 readme = "README.md"
@@ -18,13 +18,13 @@ dependencies = [
 dev = ["pytest>=7"]
 
 [project.scripts]
-barakagate = "barakagate.cli:app"
+plutonium = "plutonium.cli:app"
 
 [tool.setuptools]
-packages = ["barakagate"]
+packages = ["plutonium"]
 
 [tool.setuptools.package-data]
-barakagate = ["static/*"]
+plutonium = ["static/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

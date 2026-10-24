@@ -30,11 +30,11 @@ MARK_START, MARK_END = "<!-- REALWORLD_BENCH_START -->", "<!-- REALWORLD_BENCH_E
 
 ENGINE_LABELS = {
     "regex": "Regex baseline (Gitleaks-style)",
-    "offline": "BarakaGate offline heuristics (no LLM)",
-    "cloud_fast": "BarakaGate + Gemma 4 26B MoE",
-    "cloud_deep": "BarakaGate + Gemma 4 31B dense",
-    "local_edge": "BarakaGate + Gemma 4 E4B (Ollama)",
-    "hybrid_smart": "BarakaGate hybrid (local redact → 31B)",
+    "offline": "Plutonium offline heuristics (no LLM)",
+    "cloud_fast": "Plutonium + Gemma 4 26B MoE",
+    "cloud_deep": "Plutonium + Gemma 4 31B dense",
+    "local_edge": "Plutonium + Gemma 4 E4B (Ollama)",
+    "hybrid_smart": "Plutonium hybrid (local redact → 31B)",
 }
 KIND_WORDS = {
     "stripe_key": ["stripe", "sk_live"], "db_uri": ["database", "uri", "mysql", "password", "connection"],
@@ -89,9 +89,9 @@ def _finding_dict(f, scanned: str) -> Dict[str, Any]:
 
 
 def run_engine(engine: str, L, retries: int = 2) -> Dict[str, Any]:
-    from barakagate.models import EngineMode
-    from barakagate.scanner import Scanner, regex_baseline
-    from barakagate.llm_router import GemmaRouter
+    from plutonium.models import EngineMode
+    from plutonium.scanner import Scanner, regex_baseline
+    from plutonium.llm_router import GemmaRouter
 
     work = Path(tempfile.mkdtemp(prefix="bg_realworld_"))
     shutil.copytree(FIX, work / "fx", ignore=shutil.ignore_patterns("labels.json", "_truth.json", "make_screenshots.py"))
@@ -355,7 +355,7 @@ def to_markdown(scores: List[Dict[str, Any]], L) -> str:
         out.append(f"| {S[e]['label']} | {len(cs)}/{n_items} | {100 * len(cs) / n_items:.0f}% [{100 * lo:.0f}–{100 * hi:.0f}%] | {b} / {c} | "
                    f"{'%.1e' % pv if pv < 0.001 else '%.3f' % pv} |")
     out += ["", "<details><summary><b>Per-issue results (edge-case by edge-case)</b></summary>", "",
-            "| ID | Edge case | Type | " + " | ".join(ENGINE_LABELS[e].split(" (")[0].replace("BarakaGate + ", "") for e in order) + " |",
+            "| ID | Edge case | Type | " + " | ".join(ENGINE_LABELS[e].split(" (")[0].replace("Plutonium + ", "") for e in order) + " |",
             "| :-: | :--- | :-: | " + " | ".join(":-:" for _ in order) + " |"]
     for p in L["positives"]:
         cells = []
@@ -396,7 +396,7 @@ def write_report(L) -> str:
         raise SystemExit("no raw results yet; run with --engines first")
     md = to_markdown(scores, L)
     OUT_MD.parent.mkdir(parents=True, exist_ok=True)
-    OUT_MD.write_text("# BarakaGate — Held-out Real-World Benchmark\n\n" + md + "\n", encoding="utf-8")
+    OUT_MD.write_text("# Plutonium — Held-out Real-World Benchmark\n\n" + md + "\n", encoding="utf-8")
     (OUT_MD.with_suffix(".json")).write_text(json.dumps(scores, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
     if README.exists():
         r = README.read_text(encoding="utf-8")
@@ -412,7 +412,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--engines", default="", help="comma list: regex,offline,cloud_fast,cloud_deep,local_edge,hybrid_smart")
     ap.add_argument("--report", action="store_true", help="only rebuild the report from raw results")
     a = ap.parse_args(argv)
-    from barakagate.config import load_dotenv
+    from plutonium.config import load_dotenv
     load_dotenv()
     L = load_truth()
     RAW.mkdir(parents=True, exist_ok=True)

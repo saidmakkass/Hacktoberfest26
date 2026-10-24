@@ -3,22 +3,22 @@ import os
 from pathlib import Path
 import tempfile
 import yaml
-from barakagate.review import git, scan_snapshot, ReviewError
-from barakagate.review_policy import ReviewPolicy
-from barakagate.config import validate_yaml
+from plutonium.review import git, scan_snapshot, ReviewError
+from plutonium.review_policy import ReviewPolicy
+from plutonium.config import validate_yaml
 
 
 def check_revision(root, base, head='HEAD', *, scan_provider=scan_snapshot):
     root = Path(root).resolve()
     base = git(root, 'rev-parse', '--verify', base + '^{commit}').stdout.decode().strip()
     head = git(root, 'rev-parse', '--verify', head + '^{commit}').stdout.decode().strip()
-    policy_blob = git(root, 'show', base + ':.barakagate.yaml', check=False)
+    policy_blob = git(root, 'show', base + ':.plutonium.yaml', check=False)
     if policy_blob.returncode:
-        raise ReviewError('Trusted base must contain .barakagate.yaml')
+        raise ReviewError('Trusted base must contain .plutonium.yaml')
     policy = ReviewPolicy.from_raw(validate_yaml(policy_blob.stdout.decode()))
     changed = set(git(root, 'diff', '--name-only', '--diff-filter=ACMRT', '-z', base + '...' + head).stdout.split(b'\0'))
     coverage, targets = [], []
-    with tempfile.TemporaryDirectory(prefix='barakagate-check-') as tmp:
+    with tempfile.TemporaryDirectory(prefix='plutonium-check-') as tmp:
         snapshot = Path(tmp)
         for entry in git(root, 'ls-tree', '-r', '-z', head).stdout.split(b'\0'):
             if not entry:

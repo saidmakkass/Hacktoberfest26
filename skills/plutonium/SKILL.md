@@ -1,5 +1,5 @@
 ---
-name: barakagate
+name: plutonium
 description: >-
   Pre-flight security, privacy and cross-file logical bug gate powered by Gemma 4. Use it BEFORE
   committing or pushing code, BEFORE pasting prompts, stack traces or logs into a cloud AI, and
@@ -14,29 +14,29 @@ metadata:
   version: "1.0"
 ---
 
-# BarakaGate
+# Plutonium
 
-BarakaGate indexes the repository (AST chunks + symbol graph + BM25), pulls the cross-file
+Plutonium indexes the repository (AST chunks + symbol graph + BM25), pulls the cross-file
 definitions a change depends on, and asks Gemma 4 to find **leaks/PII** and **logical bugs**. A
 deterministic regex baseline and an offline heuristic engine always run, so the gate works with no
 network at all.
 
-Install once: `pip install -e .` (provides the `barakagate` command; `python -m barakagate.cli` also works).
+Install once: `pip install -e .` (provides the `plutonium` command; `python -m plutonium.cli` also works).
 
 ## When to run it
 
 | Situation | Command |
 | :--- | :--- |
-| About to commit | `barakagate staged` (or install the hook: `barakagate install-hook`) |
-| Reviewing / editing specific files | `barakagate scan path/to/file.py other/dir --json` |
-| About to paste a prompt, log or stack trace into a cloud LLM | `barakagate sanitize - < prompt.txt` |
-| Sharing a screenshot or notebook image | `barakagate image shot.png --apply --style solid_mask` |
+| About to commit | `plutonium staged` (or install the hook: `plutonium install-hook`) |
+| Reviewing / editing specific files | `plutonium scan path/to/file.py other/dir --json` |
+| About to paste a prompt, log or stack trace into a cloud LLM | `plutonium sanitize - < prompt.txt` |
+| Sharing a screenshot or notebook image | `plutonium image shot.png --apply --style solid_mask` |
 | No network / air-gapped | add `--offline` (regex + heuristics) or `--mode local_edge` (Ollama gemma4:e4b) |
 
 Engines (`--mode`): `cloud_fast` (gemma-4-26b-a4b-it, default), `cloud_deep` (gemma-4-31b-it),
 `local_edge` (gemma4:e4b via Ollama, nothing leaves the machine), `hybrid_smart` (local redaction,
 then a cloud audit of the sanitized code). Presets (`--preset`): `all`, `fintech_morocco`,
-`research_lab`, `general_devsecops`. Policy lives in `.barakagate.yaml`.
+`research_lab`, `general_devsecops`. Policy lives in `.plutonium.yaml`.
 
 ## Interpreting results
 
@@ -51,27 +51,27 @@ Prefer `--json`; it prints a `ScanResult`:
 
 ## Applying fixes
 
-- `barakagate scan FILES --yes` applies every `recommended_action`; `--fix` asks per finding.
+- `plutonium scan FILES --yes` applies every `recommended_action`; `--fix` asks per finding.
   - `synthetic_twin`: swaps real PII for format-valid fakes (`ZZ123456` CIN, RIB with bank code
     `999` and a valid key, `+2126000000NN`, `SYNTH_*` secrets).
   - `env_extract`: replaces the literal with `os.getenv("NAME", "")` / `process.env.NAME`, adds
     `import os` if needed and appends `NAME=value` to `.env` (never duplicated). Make sure `.env` is
     git-ignored and tell the user to rotate any secret that was already pushed.
   - `code_patch`: applies the proposed bug fix; review the diff and run the tests afterwards.
-  - Backups of every patched file go to `.barakagate/backups/`.
+  - Backups of every patched file go to `.plutonium/backups/`.
 - Keep a finding only if it is a genuine false positive; add the value to `allowlist` in
-  `.barakagate.yaml` rather than ignoring it silently.
+  `.plutonium.yaml` rather than ignoring it silently.
 - Re-run the scan after fixing until the verdict is PASS (or WARN with a justification).
 
 ## Safe-to-Prompt firewall
 
-`barakagate sanitize FILE --json` returns `{"sanitized": ..., "vault": {...}}`. Send only
+`plutonium sanitize FILE --json` returns `{"sanitized": ..., "vault": {...}}`. Send only
 `sanitized` to the cloud model; tokens look like `[CIN_TOKEN_1]`, `[RIB_TOKEN_1]`,
 `[CNE_TOKEN_1]`, `[PHONE_TOKEN_1]`, `[SECRET_KEY_1]`, `[URL_TOKEN_1]`. Keep the vault local and
-restore the answer with `barakagate.redactor.rehydrate(answer, vault)`. Add `--local-llm` to also let
+restore the answer with `plutonium.redactor.rehydrate(answer, vault)`. Add `--local-llm` to also let
 on-device gemma4:e4b tokenize names, addresses and Darija PII.
 
 ## Other commands
 
-`barakagate index [--force]` (refresh `.barakagate/index.json`), `barakagate benchmark [--offline]`
-(regex vs Gemma 4 matrix), `barakagate serve` (BarakaGate Studio web UI on http://127.0.0.1:8000).
+`plutonium index [--force]` (refresh `.plutonium/index.json`), `plutonium benchmark [--offline]`
+(regex vs Gemma 4 matrix), `plutonium serve` (Plutonium Studio web UI on http://127.0.0.1:8000).
