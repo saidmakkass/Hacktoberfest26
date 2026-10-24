@@ -1,0 +1,294 @@
+{
+ "_doc": "Ground truth for evaluate_benchmark.py. line = 1-based line in the file (for .ipynb: raw JSON line; for images: null, matched by kind).",
+ "fintech_morocco": [
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 10,
+   "category": "privacy_pii",
+   "kind": "cin",
+   "regex_detectable": true,
+   "note": "TEST_CLIENT CIN BE847291"
+  },
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 10,
+   "category": "privacy_pii",
+   "kind": "rib",
+   "regex_detectable": true,
+   "note": "TEST_CLIENT 24-digit RIB"
+  },
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 10,
+   "category": "privacy_pii",
+   "kind": "phone",
+   "regex_detectable": true,
+   "note": "TEST_CLIENT +212 phone"
+  },
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 10,
+   "category": "privacy_pii",
+   "kind": "darija_pii",
+   "regex_detectable": false,
+   "note": "Darija/Arabic support note with card + bank account context"
+  },
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 14,
+   "category": "logical_bug",
+   "kind": "negative_qty",
+   "regex_detectable": false,
+   "note": "quantity never bounds-checked (negative totals / refunds)"
+  },
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 15,
+   "category": "logical_bug",
+   "kind": "float_currency",
+   "regex_detectable": false,
+   "note": "round(subtotal * 0.20, 2) float MAD arithmetic"
+  },
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 21,
+   "category": "privacy_pii",
+   "kind": "dict_log_pii",
+   "regex_detectable": false,
+   "note": "logs customer.__dict__ -> MoroccanCustomer holds cin_number/rib_account (models.py)"
+  },
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 22,
+   "category": "logical_bug",
+   "kind": "toctou",
+   "regex_detectable": false,
+   "note": "balance check then deduct without lock (double spend)"
+  },
+  {
+   "file": "samples/fintech_morocco/checkout.py",
+   "line": 30,
+   "category": "logical_bug",
+   "kind": "webhook_hmac",
+   "regex_detectable": false,
+   "note": "CMI callback trusts payload status without HMAC check vs CMI_WEBHOOK_SECRET"
+  },
+  {
+   "file": "samples/fintech_morocco/models.py",
+   "line": 4,
+   "category": "security_leak",
+   "kind": "cmi_key",
+   "regex_detectable": true,
+   "note": "CMI_WEBHOOK_SECRET live key hardcoded"
+  },
+  {
+   "file": "samples/fintech_morocco/models.py",
+   "line": 11,
+   "category": "privacy_pii",
+   "kind": "cin",
+   "regex_detectable": true,
+   "note": "real-looking CIN in comment"
+  },
+  {
+   "file": "samples/fintech_morocco/fees.py",
+   "line": 7,
+   "category": "logical_bug",
+   "kind": "float_currency",
+   "regex_detectable": false,
+   "note": "calculate_tva float rounding"
+  },
+  {
+   "file": "samples/fintech_morocco/fees.py",
+   "line": 12,
+   "category": "logical_bug",
+   "kind": "promo_bypass",
+   "regex_detectable": false,
+   "note": "stacked discounts > 100% -> negative price"
+  }
+ ],
+ "research_lab_um6p": [
+  {
+   "file": "samples/research_lab_um6p/config.py",
+   "line": 3,
+   "category": "security_leak",
+   "kind": "internal_host",
+   "regex_detectable": true,
+   "note": "hpc-staging.internal.um6p.ma"
+  },
+  {
+   "file": "samples/research_lab_um6p/config.py",
+   "line": 4,
+   "category": "security_leak",
+   "kind": "hpc_token",
+   "regex_detectable": true,
+   "note": "HPC_TOKEN hardcoded"
+  },
+  {
+   "file": "samples/research_lab_um6p/loader.py",
+   "line": 7,
+   "category": "privacy_pii",
+   "kind": "cnes",
+   "regex_detectable": true,
+   "note": "student CNE R139482710 + GPA/scholarship"
+  },
+  {
+   "file": "samples/research_lab_um6p/loader.py",
+   "line": 8,
+   "category": "privacy_pii",
+   "kind": "cnes",
+   "regex_detectable": true,
+   "note": "student CNE G130045892"
+  },
+  {
+   "file": "samples/research_lab_um6p/train_pipeline.py",
+   "line": 13,
+   "category": "logical_bug",
+   "kind": "sentinel_avg",
+   "regex_detectable": false,
+   "note": "average ignores MISSING_SENTINEL=-999 from config.py via loader"
+  },
+  {
+   "file": "samples/research_lab_um6p/train_pipeline.py",
+   "line": 17,
+   "category": "logical_bug",
+   "kind": "missing_seed",
+   "regex_detectable": false,
+   "note": "random.shuffle / train_test_split without config.SEED"
+  },
+  {
+   "file": "samples/research_lab_um6p/train_pipeline.py",
+   "line": 18,
+   "category": "logical_bug",
+   "kind": "ml_leakage",
+   "regex_detectable": false,
+   "note": "StandardScaler fit on full data before train_test_split"
+  },
+  {
+   "file": "samples/research_lab_um6p/exploration.ipynb",
+   "line": 25,
+   "category": "security_leak",
+   "kind": "hpc_token",
+   "regex_detectable": true,
+   "note": "HPC token in notebook cell"
+  },
+  {
+   "file": "samples/research_lab_um6p/exploration.ipynb",
+   "line": 37,
+   "category": "privacy_pii",
+   "kind": "cnes",
+   "regex_detectable": true,
+   "note": "df.head() output prints student CNEs"
+  }
+ ],
+ "general_devsecops": [
+  {
+   "file": "samples/general_devsecops/settings.py",
+   "line": 1,
+   "category": "security_leak",
+   "kind": "db_uri",
+   "regex_detectable": true,
+   "note": "postgres URI with inline password"
+  },
+  {
+   "file": "samples/general_devsecops/settings.py",
+   "line": 1,
+   "category": "security_leak",
+   "kind": "internal_host",
+   "regex_detectable": true,
+   "note": "internal IP 10.0.12.7"
+  },
+  {
+   "file": "samples/general_devsecops/settings.py",
+   "line": 2,
+   "category": "security_leak",
+   "kind": "aws",
+   "regex_detectable": true,
+   "note": "AWS access key id"
+  },
+  {
+   "file": "samples/general_devsecops/settings.py",
+   "line": 3,
+   "category": "security_leak",
+   "kind": "jwt",
+   "regex_detectable": true,
+   "note": "JWT signing secret"
+  },
+  {
+   "file": "samples/general_devsecops/settings.py",
+   "line": 4,
+   "category": "security_leak",
+   "kind": "jwt",
+   "regex_detectable": true,
+   "note": "admin JWT"
+  },
+  {
+   "file": "samples/general_devsecops/api.py",
+   "line": 12,
+   "category": "logical_bug",
+   "kind": "none_deref",
+   "regex_detectable": false,
+   "note": "find_user() (db.py) may return None"
+  },
+  {
+   "file": "samples/general_devsecops/api.py",
+   "line": 17,
+   "category": "logical_bug",
+   "kind": "sqli",
+   "regex_detectable": false,
+   "note": "f-string SQL"
+  },
+  {
+   "file": "samples/general_devsecops/api.py",
+   "line": 20,
+   "category": "logical_bug",
+   "kind": "missing_auth",
+   "regex_detectable": false,
+   "note": "delete_user lacks @require_auth used by sibling routes"
+  },
+  {
+   "file": "samples/general_devsecops/api.py",
+   "line": 28,
+   "category": "logical_bug",
+   "kind": "off_by_one",
+   "regex_detectable": false,
+   "note": "range(0, len(items)+1, ...) adds an empty trailing page"
+  }
+ ],
+ "screenshots": [
+  {
+   "file": "samples/screenshots/devtools_leak.png",
+   "line": null,
+   "category": "security_leak",
+   "kind": "jwt",
+   "regex_detectable": false
+  },
+  {
+   "file": "samples/screenshots/devtools_leak.png",
+   "line": null,
+   "category": "privacy_pii",
+   "kind": "cin",
+   "regex_detectable": false
+  },
+  {
+   "file": "samples/screenshots/devtools_leak.png",
+   "line": null,
+   "category": "privacy_pii",
+   "kind": "rib",
+   "regex_detectable": false
+  },
+  {
+   "file": "samples/screenshots/devtools_leak.png",
+   "line": null,
+   "category": "security_leak",
+   "kind": "cmi_key",
+   "regex_detectable": false
+  },
+  {
+   "file": "samples/screenshots/notebook_cne_table.png",
+   "line": null,
+   "category": "privacy_pii",
+   "kind": "cnes",
+   "regex_detectable": false
+  }
+ ]
+}
