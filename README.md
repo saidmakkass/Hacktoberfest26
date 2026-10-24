@@ -81,7 +81,13 @@ barakagate benchmark
 3. **Safe-to-Prompt Outbound Firewall** — sanitize locally → ask cloud Gemma 4 31B → auto-rehydrate.
 4. **Policy & Benchmark** — live-edit `.barakagate.yaml`, run the benchmark matrix.
 
-<!-- SCREENSHOTS -->
+<p align="center">
+  <img src="docs/screenshots/studio_inspector.png" alt="Tab 1 — Code Diff, Leak & Logical Bug Inspector" width="100%"/>
+</p>
+
+| Screenshot & notebook sanitizer (Gemma 4 vision boxes) | Safe-to-Prompt firewall (0 bytes of PII to the cloud) |
+|---|---|
+| ![vision](docs/screenshots/studio_vision.png) | ![firewall](docs/screenshots/studio_firewall.png) |
 
 ## 📏 Policy-as-Code (`.barakagate.yaml`)
 
@@ -95,7 +101,32 @@ Each pack has **regex rules** (deterministic baseline) and **natural-language ru
 
 ## 📊 Benchmark — Regex vs. Gemma 4
 
-<!-- BENCHMARK -->
+12 labelled cases · 39 planted issues (26 leaks/PII + 13 logical bugs) · 1 clean negative control
+(ground truth: [`samples/expected_findings.json`](samples/expected_findings.json)).
+
+| Engine | Leaks/PII caught | Logic bugs caught | Cross-file proofs | Recall | Precision | FP on clean control | Avg latency |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Regex Baseline (Gitleaks-style) | 17/26 | **0/13** | 0 | 44% | 100% | 0 | 0.01s |
+| BarakaGate Offline Heuristic (no LLM) | 25/26 | 13/13 | 10 | 97% | 100% | 0 | 0.01s |
+| **BarakaGate + Gemma 4 26B** (`cloud_fast`) | **25/26** | **13/13** | **13** | **97%** | 96% | **0** | 39s |
+| BarakaGate + Gemma 4 E4B (`local_edge`) | n/a — Ollama not installed on the benchmark machine | | | | | | |
+
+| # | Case | Regex | Offline | Gemma 4 26B |
+| :-: | :--- | :---: | :---: | :---: |
+| 1 | Fintech checkout (PII fixture + cross-file bugs) | 3/9 | 9/9 | 9/9 |
+| 2 | Fintech models (CMI live key) | 2/2 | 2/2 | 2/2 |
+| 3 | Fintech fees (float MAD + promo bypass) | 0/2 | 2/2 | 2/2 |
+| 4 | Lab loader (student CNEs) | 2/2 | 2/2 | 2/2 † |
+| 5 | Lab train pipeline (ML leakage, seed, sentinel) | 0/3 | 3/3 | 3/3 † |
+| 6 | Lab config (HPC token, internal host) | 2/2 | 2/2 | 2/2 |
+| 7 | Lab notebook (.ipynb output leak) | 1/2 | 2/2 | 2/2 |
+| 8 | DevSecOps API (SQLi, off-by-one, auth, None) | 0/4 | 4/4 | 4/4 |
+| 9 | DevSecOps settings (JWT, AWS, DB URI) | 4/5 | 4/5 | 4/5 |
+| 10 | Darija support log (multilingual PII) | 3/4 | 4/4 | 4/4 |
+| 11 | DevTools screenshot (vision OCR + bbox) | 0/4 | 4/4 ‡ | 4/4 |
+| 12 | Clean pricing module (negative control) | PASS | PASS | PASS |
+
+**Honest notes.** † In the live run (2026-10-24), these two cases hit Gemini API errors/timeouts and were answered by the automatic offline fallback — exactly the stage-safety path, but not Gemma output; the other 10 cases (including the screenshot) are real `gemma-4-26b-a4b-it` responses. ‡ The offline vision column uses the deterministic `*.boxes.json` cache generated alongside the sample screenshots, so it is an upper bound, not OCR. The offline row was re-run after a Darija-detector fix (it scored 95% in the original live run). The heuristic detectors were written knowing these fixtures, so the regex-vs-Gemma gap is the meaningful comparison; Gemma's advantage is that it generalises beyond hand-written rules and writes the cross-file reasoning + patches.
 
 Reproduce: `python evaluate_benchmark.py` (add `--engines regex,offline,cloud_fast,local_edge`).
 
