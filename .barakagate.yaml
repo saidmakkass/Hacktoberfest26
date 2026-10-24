@@ -28,6 +28,7 @@ ignore_paths:
   - "__pycache__/"
   - ".venv/"
   - "venv/"
+  - "expected_findings.json"
 
 presets:
   general_devsecops:
