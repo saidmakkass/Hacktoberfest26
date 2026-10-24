@@ -1,0 +1,853 @@
+{
+ "engine": "offline",
+ "ran_at": "2026-10-24 14:22:44",
+ "files": [
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "src/webhooks.ts:verifyCmi",
+    "src/webhooks.ts:verifyCmiV2"
+   ],
+   "file": "atlas_wallet_ts/src/config.ts",
+   "latency_s": 0.01,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "src/wallet.ts:debit",
+    "src/users.ts:findById",
+    "src/users.ts:findByEmail",
+    "src/wallet.ts:creditCentimes"
+   ],
+   "file": "atlas_wallet_ts/src/db.ts",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "src/wallet.ts:debit",
+    "src/wallet.ts:creditCentimes",
+    "src/db.ts:db.ts#L1-3",
+    "src/webhooks.ts:verifyCmiV2",
+    "src/wallet.ts:withVat",
+    "src/webhooks.ts:verifyCmi"
+   ],
+   "file": "atlas_wallet_ts/src/users.ts",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "src/users.ts:findById",
+    "src/users.ts:findByEmail",
+    "src/db.ts:db.ts#L1-3",
+    "src/webhooks.ts:verifyCmi",
+    "src/users.ts:pageOf",
+    "src/webhooks.ts:verifyCmiV2"
+   ],
+   "file": "atlas_wallet_ts/src/wallet.ts",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "src/config.ts:legacyKey",
+    "src/users.ts:pageOf",
+    "src/wallet.ts:creditCentimes",
+    "src/wallet.ts:debit",
+    "src/wallet.ts:withVat",
+    "src/users.ts:findById",
+    "src/users.ts:findByEmail"
+   ],
+   "file": "atlas_wallet_ts/src/webhooks.ts",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "309dc777d5",
+     "category": "security_leak",
+     "target_type": "text",
+     "file_path": ".env.example",
+     "line_start": 1,
+     "line_end": 1,
+     "rule_id": "ma.cmi_key",
+     "severity": "CRITICAL",
+     "confidence": 0.9,
+     "title": "CMI / Payzone / Stripe live merchant key",
+     "reason": "CMI / Payzone / Stripe live merchant key matched by the deterministic regex baseline (ma.cmi_key); violates Moroccan Law 09-08 / CNDP.",
+     "cross_file_context_used": null,
+     "offending_snippet": "sk_live_xxxxxxxxxxxxxxxxxxxxxxxx",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "cmi_test_SYNTH_f9712d3a8e",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "clean_controls/.env.example"
+    },
+    {
+     "id": "d5a6d3682c",
+     "category": "security_leak",
+     "target_type": "text",
+     "file_path": ".env.example",
+     "line_start": 2,
+     "line_end": 2,
+     "rule_id": "gen.db_uri",
+     "severity": "HIGH",
+     "confidence": 0.9,
+     "title": "Database URI with inline password",
+     "reason": "Database URI with inline password matched by the deterministic regex baseline (gen.db_uri); violates DevSecOps secret-hygiene policy.",
+     "cross_file_context_used": null,
+     "offending_snippet": "postgres://user:password@localhost:5432/app",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "postgres://synth_user:SYNTH_PASSWORD@db.example.com:5432/app",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "clean_controls/.env.example"
+    }
+   ],
+   "context": [
+    "queries.py:find_orders",
+    "queries.py:find_user",
+    "routes.py:create_note",
+    "routes.py:delete_note"
+   ],
+   "file": "clean_controls/.env.example",
+   "latency_s": 0.01,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "d71969fcb3",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "build_info.py",
+     "line_start": 5,
+     "line_end": 5,
+     "rule_id": "ma.cin",
+     "severity": "HIGH",
+     "confidence": 0.85,
+     "title": "Moroccan CIN (Carte Nationale d'Identite)",
+     "reason": "Moroccan CIN (Carte Nationale d'Identite) matched by the deterministic regex baseline (ma.cin); violates Moroccan Law 09-08 / CNDP.",
+     "cross_file_context_used": null,
+     "offending_snippet": "FA20241",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "ZZ93840",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "clean_controls/build_info.py"
+    }
+   ],
+   "context": [
+    "queries.py:find_orders",
+    "queries.py:find_user"
+   ],
+   "file": "clean_controls/build_info.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "queries.py:chunks"
+   ],
+   "file": "clean_controls/experiments.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "queries.py:find_orders",
+    "queries.py:chunks"
+   ],
+   "file": "clean_controls/money.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "build_info.py:BUILD_ID",
+    "experiments.py:shuffled",
+    "experiments.py:noise",
+    "money.py:split_bill"
+   ],
+   "file": "clean_controls/queries.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [],
+   "file": "clean_controls/routes.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "data.py:load_sensors",
+    "train.py:masked_average_temperature",
+    "train.py:run"
+   ],
+   "file": "oasis_ml_lab/config.py",
+   "latency_s": 0.01,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "config.py:NA_VALUE",
+    "notebooks/explore.ipynb:cell_1",
+    "train.py:masked_average_temperature",
+    "train.py:run",
+    "train.py:average_temperature",
+    "features.py:make_features",
+    "students.csv:students.csv#L1-3"
+   ],
+   "file": "oasis_ml_lab/data.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "train.py:run",
+    "train.py:average_temperature",
+    "train.py:masked_average_temperature",
+    "train.py:fit",
+    "train.py:FEATURES",
+    "data.py:load_sensors",
+    "notebooks/explore.ipynb:cell_1"
+   ],
+   "file": "oasis_ml_lab/features.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "data.py:load_sensors",
+    "train.py:FEATURES",
+    "train.py:average_temperature",
+    "train.py:masked_average_temperature",
+    "students.csv:students.csv#L1-3",
+    "features.py:make_features",
+    "train.py:run",
+    "train.py:fit"
+   ],
+   "file": "oasis_ml_lab/notebooks/explore.ipynb",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "649c3a4ce9",
+     "category": "security_leak",
+     "target_type": "text",
+     "file_path": "slurm/train.sbatch",
+     "line_start": 5,
+     "line_end": 5,
+     "rule_id": "lab.internal_host",
+     "severity": "MEDIUM",
+     "confidence": 0.9,
+     "title": "Internal campus / HPC host",
+     "reason": "Internal campus / HPC host matched by the deterministic regex baseline (lab.internal_host); violates student-privacy (Law 09-08) and lab security policy.",
+     "cross_file_context_used": null,
+     "offending_snippet": "gpu-node03.hpc.um6p.ma",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "SYNTH_VALUE_da6589a2",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "oasis_ml_lab/slurm/train.sbatch"
+    }
+   ],
+   "context": [
+    "config.py:WANDB_PROJECT",
+    "students.csv:students.csv#L1-3",
+    "data.py:load_sensors",
+    "notebooks/explore.ipynb:cell_1",
+    "notebooks/explore.ipynb:cell_0",
+    "train.py:run"
+   ],
+   "file": "oasis_ml_lab/slurm/train.sbatch",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "88d287d75e",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "students.csv",
+     "line_start": 2,
+     "line_end": 2,
+     "rule_id": "lab.cne",
+     "severity": "HIGH",
+     "confidence": 0.9,
+     "title": "Student CNE / Massar code",
+     "reason": "Student CNE / Massar code matched by the deterministic regex baseline (lab.cne); violates student-privacy (Law 09-08) and lab security policy.",
+     "cross_file_context_used": null,
+     "offending_snippet": "R139482711",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "Z104796190",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "oasis_ml_lab/students.csv"
+    },
+    {
+     "id": "2d70b1616a",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "students.csv",
+     "line_start": 3,
+     "line_end": 3,
+     "rule_id": "lab.cne",
+     "severity": "HIGH",
+     "confidence": 0.9,
+     "title": "Student CNE / Massar code",
+     "reason": "Student CNE / Massar code matched by the deterministic regex baseline (lab.cne); violates student-privacy (Law 09-08) and lab security policy.",
+     "cross_file_context_used": null,
+     "offending_snippet": "D132457890",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "Z107220707",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "oasis_ml_lab/students.csv"
+    }
+   ],
+   "context": [
+    "notebooks/explore.ipynb:cell_0"
+   ],
+   "file": "oasis_ml_lab/students.csv",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "e62da2f2ef",
+     "category": "logical_bug",
+     "target_type": "text",
+     "file_path": "train.py",
+     "line_start": 28,
+     "line_end": 28,
+     "rule_id": "heur.missing_seed",
+     "severity": "MEDIUM",
+     "confidence": 0.8,
+     "title": "Stochastic step without reproducibility seed",
+     "reason": "`np.random.permutation(...)` runs without seeding the RNG although the project defines `SEED` in config.py; experiments are not reproducible and results cannot be audited.",
+     "cross_file_context_used": "config.py:SEED",
+     "offending_snippet": "idx = np.random.permutation(len(X_tr))",
+     "recommended_action": "code_patch",
+     "replacement_snippet": "from config import SEED  # global seed (config.py)\nnp.random.seed(SEED)\nidx = np.random.permutation(len(X_tr))",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": false,
+     "scanned_file": "oasis_ml_lab/train.py"
+    }
+   ],
+   "context": [
+    "config.py:NA_VALUE",
+    "config.py:SEED",
+    "data.py:load_sensors",
+    "features.py:make_features",
+    "notebooks/explore.ipynb:cell_1",
+    "config.py:WANDB_PROJECT",
+    "students.csv:students.csv#L1-3"
+   ],
+   "file": "oasis_ml_lab/train.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "8c7545f623",
+     "category": "security_leak",
+     "target_type": "text",
+     "file_path": "config.py",
+     "line_start": 5,
+     "line_end": 5,
+     "rule_id": "ma.cmi_key",
+     "severity": "CRITICAL",
+     "confidence": 0.9,
+     "title": "CMI / Payzone / Stripe live merchant key",
+     "reason": "CMI / Payzone / Stripe live merchant key matched by the deterministic regex baseline (ma.cmi_key); violates Moroccan Law 09-08 / CNDP. Same value also matches: Hardcoded secret assignment.",
+     "cross_file_context_used": null,
+     "offending_snippet": "STRIPE_SECRET_KEY = \"sk_live_51NxQe2LkT9vB3mZ0pQwErTyUiOp\"",
+     "recommended_action": "env_extract",
+     "replacement_snippet": "STRIPE_SECRET_KEY = os.getenv(\"STRIPE_SECRET_KEY\", \"\")",
+     "env_var_name": "STRIPE_SECRET_KEY",
+     "env_var_value": "sk_live_51NxQe2LkT9vB3mZ0pQwErTyUiOp",
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "souk_shop/config.py"
+    },
+    {
+     "id": "b080e00cac",
+     "category": "security_leak",
+     "target_type": "text",
+     "file_path": "config.py",
+     "line_start": 6,
+     "line_end": 6,
+     "rule_id": "gen.db_uri",
+     "severity": "HIGH",
+     "confidence": 0.9,
+     "title": "Database URI with inline password",
+     "reason": "Database URI with inline password matched by the deterministic regex baseline (gen.db_uri); violates DevSecOps secret-hygiene policy.",
+     "cross_file_context_used": null,
+     "offending_snippet": "DATABASE_URL = \"mysql://souk:Atlas2026!@db-primary.internal:3306/souk\"",
+     "recommended_action": "env_extract",
+     "replacement_snippet": "DATABASE_URL = os.getenv(\"DATABASE_URL\", \"\")",
+     "env_var_name": "DATABASE_URL",
+     "env_var_value": "mysql://souk:Atlas2026!@db-primary.internal:3306/souk",
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "souk_shop/config.py"
+    }
+   ],
+   "context": [
+    "payments.py:verify_signature",
+    "orders.py:order_total",
+    "routes.py:payzone_notify",
+    "payments.py:mark_paid",
+    "routes.py:refund_order",
+    "orders.py:refund",
+    "routes.py:search",
+    "routes.py:show_order",
+    "routes.py:cancel_order",
+    "data/test_buyers.json:test_buyers.json#L1-4",
+    "data/catalog.json:catalog.json#L1-5"
+   ],
+   "file": "souk_shop/config.py",
+   "latency_s": 0.01,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "orders.py:order_total",
+    "data/catalog.json:catalog.json#L1-5",
+    "routes.py:payzone_notify",
+    "routes.py:search",
+    "routes.py:show_order",
+    "routes.py:refund_order"
+   ],
+   "file": "souk_shop/coupons.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "9b81d9b114",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "data/catalog.json",
+     "line_start": 2,
+     "line_end": 2,
+     "rule_id": "ma.cin",
+     "severity": "HIGH",
+     "confidence": 0.85,
+     "title": "Moroccan CIN (Carte Nationale d'Identite)",
+     "reason": "Moroccan CIN (Carte Nationale d'Identite) matched by the deterministic regex baseline (ma.cin); violates Moroccan Law 09-08 / CNDP.",
+     "cross_file_context_used": null,
+     "offending_snippet": "MA204511",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "ZZ214695",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "souk_shop/data/catalog.json"
+    },
+    {
+     "id": "394250b4b0",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "data/catalog.json",
+     "line_start": 3,
+     "line_end": 3,
+     "rule_id": "ma.cin",
+     "severity": "HIGH",
+     "confidence": 0.85,
+     "title": "Moroccan CIN (Carte Nationale d'Identite)",
+     "reason": "Moroccan CIN (Carte Nationale d'Identite) matched by the deterministic regex baseline (ma.cin); violates Moroccan Law 09-08 / CNDP.",
+     "cross_file_context_used": null,
+     "offending_snippet": "TB30117",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "ZZ14842",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "souk_shop/data/catalog.json"
+    }
+   ],
+   "context": [
+    "coupons.py:apply_coupon",
+    "coupons.py:add_to_cart",
+    "routes.py:search",
+    "orders.py:order_total",
+    "models.py:Buyer",
+    "data/test_buyers.json:test_buyers.json#L1-4",
+    "routes.py:cancel_order",
+    "payments.py:mark_paid",
+    "support/tickets.csv:tickets.csv#L1-4"
+   ],
+   "file": "souk_shop/data/catalog.json",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "77e5efef0e",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "data/test_buyers.json",
+     "line_start": 2,
+     "line_end": 2,
+     "rule_id": "ma.iban",
+     "severity": "CRITICAL",
+     "confidence": 0.9,
+     "title": "Moroccan IBAN",
+     "reason": "Moroccan IBAN matched by the deterministic regex baseline (ma.iban); violates Moroccan Law 09-08 / CNDP.",
+     "cross_file_context_used": null,
+     "offending_snippet": "MA64 0117 8000 0001 2345 6789 0123",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "MA64999113552207739328295652",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "souk_shop/data/test_buyers.json"
+    },
+    {
+     "id": "04ff977606",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "data/test_buyers.json",
+     "line_start": 2,
+     "line_end": 2,
+     "rule_id": "ma.cin",
+     "severity": "HIGH",
+     "confidence": 0.85,
+     "title": "Moroccan CIN (Carte Nationale d'Identite)",
+     "reason": "Moroccan CIN (Carte Nationale d'Identite) matched by the deterministic regex baseline (ma.cin); violates Moroccan Law 09-08 / CNDP.",
+     "cross_file_context_used": null,
+     "offending_snippet": "JK129834",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "ZZ748518",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "souk_shop/data/test_buyers.json"
+    }
+   ],
+   "context": [
+    "models.py:Buyer",
+    "routes.py:search",
+    "data/catalog.json:catalog.json#L1-5",
+    "payments.py:mark_paid",
+    "routes.py:show_order",
+    "orders.py:refund",
+    "models.py:Order",
+    "routes.py:cancel_order",
+    "routes.py:payzone_notify",
+    "support/tickets.csv:tickets.csv#L1-4"
+   ],
+   "file": "souk_shop/data/test_buyers.json",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "orders.py:refund",
+    "payments.py:mark_paid",
+    "data/test_buyers.json:test_buyers.json#L1-4",
+    "routes.py:show_order",
+    "routes.py:cancel_order",
+    "orders.py:order_total",
+    "routes.py:search",
+    "routes.py:payzone_notify",
+    "routes.py:refund_order",
+    "data/catalog.json:catalog.json#L1-5",
+    "support/tickets.csv:tickets.csv#L1-4"
+   ],
+   "file": "souk_shop/models.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "models.py:Order",
+    "config.py:VAT_RATE",
+    "routes.py:refund_order",
+    "payments.py:mark_paid",
+    "routes.py:payzone_notify",
+    "routes.py:show_order",
+    "routes.py:cancel_order",
+    "coupons.py:add_to_cart",
+    "models.py:Buyer",
+    "routes.py:search",
+    "coupons.py:apply_coupon",
+    "config.py:DATABASE_URL",
+    "data/catalog.json:catalog.json#L1-5",
+    "data/test_buyers.json:test_buyers.json#L1-4",
+    "support/tickets.csv:tickets.csv#L1-4"
+   ],
+   "file": "souk_shop/orders.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "context": [
+    "config.py:PAYZONE_MERCHANT_SECRET",
+    "orders.py:refund",
+    "routes.py:payzone_notify",
+    "routes.py:cancel_order",
+    "models.py:Order",
+    "routes.py:show_order",
+    "routes.py:refund_order",
+    "routes.py:search",
+    "config.py:STRIPE_SECRET_KEY",
+    "orders.py:order_total",
+    "config.py:DATABASE_URL",
+    "models.py:Buyer",
+    "data/test_buyers.json:test_buyers.json#L1-4",
+    "data/catalog.json:catalog.json#L1-5",
+    "support/tickets.csv:tickets.csv#L1-4"
+   ],
+   "file": "souk_shop/payments.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "3b5074d48d",
+     "category": "logical_bug",
+     "target_type": "text",
+     "file_path": "routes.py",
+     "line_start": 43,
+     "line_end": 43,
+     "rule_id": "heur.sql_injection",
+     "severity": "CRITICAL",
+     "confidence": 0.95,
+     "title": "SQL injection via string interpolation",
+     "reason": "User-controlled input is interpolated directly into the SQL string passed to execute(); an input such as `' OR '1'='1` dumps or drops the table. Use bound parameters.",
+     "cross_file_context_used": null,
+     "offending_snippet": "rows = db.execute(\"SELECT id, name FROM products WHERE name LIKE '%%%s%%'\" % q).fetchall()",
+     "recommended_action": "code_patch",
+     "replacement_snippet": "rows = db.execute(\"SELECT id, name FROM products WHERE name LIKE '%%%s%%'\", (q,)).fetchall()",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": false,
+     "scanned_file": "souk_shop/routes.py"
+    },
+    {
+     "id": "89d2e22a94",
+     "category": "logical_bug",
+     "target_type": "text",
+     "file_path": "routes.py",
+     "line_start": 26,
+     "line_end": 26,
+     "rule_id": "heur.missing_auth",
+     "severity": "HIGH",
+     "confidence": 0.85,
+     "title": "State-mutating endpoint `cancel_order` missing @login_required",
+     "reason": "Sibling routes such as `show_order` are protected with `@login_required`, but `cancel_order` mutates data without any authentication/authorization check (broken access control).",
+     "cross_file_context_used": "routes.py:show_order",
+     "offending_snippet": "def cancel_order(oid):",
+     "recommended_action": "code_patch",
+     "replacement_snippet": "@login_required\ndef cancel_order(oid):",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": false,
+     "scanned_file": "souk_shop/routes.py"
+    }
+   ],
+   "context": [
+    "orders.py:refund",
+    "payments.py:mark_paid",
+    "models.py:Order",
+    "models.py:Buyer",
+    "config.py:PAYZONE_MERCHANT_SECRET",
+    "orders.py:order_total",
+    "data/test_buyers.json:test_buyers.json#L1-4",
+    "data/catalog.json:catalog.json#L1-5",
+    "config.py:DATABASE_URL",
+    "coupons.py:add_to_cart",
+    "payments.py:verify_signature",
+    "support/tickets.csv:tickets.csv#L1-4"
+   ],
+   "file": "souk_shop/routes.py",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [
+    {
+     "id": "11c72994c1",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "support/tickets.csv",
+     "line_start": 2,
+     "line_end": 2,
+     "rule_id": "ma.cin",
+     "severity": "HIGH",
+     "confidence": 0.85,
+     "title": "Moroccan CIN (Carte Nationale d'Identite)",
+     "reason": "Moroccan CIN (Carte Nationale d'Identite) matched by the deterministic regex baseline (ma.cin); violates Moroccan Law 09-08 / CNDP.",
+     "cross_file_context_used": null,
+     "offending_snippet": "K394817",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "ZZ683236",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "souk_shop/support/tickets.csv"
+    },
+    {
+     "id": "cb601f2648",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "support/tickets.csv",
+     "line_start": 2,
+     "line_end": 2,
+     "rule_id": "heur.darija_pii_note",
+     "severity": "MEDIUM",
+     "confidence": 0.8,
+     "title": "Darija / Arabic customer-support note with card & bank details",
+     "reason": "Free-text customer note in Moroccan Darija (Latin/Arabic script) references card and bank account numbers; regex scanners ignore multilingual context. Personal data under Law 09-08 must not live in fixtures or logs.",
+     "cross_file_context_used": null,
+     "offending_snippet": "السلام عليكم، رقم البطاقة الوطنية ديالي K394817 والتيليفون 0612-345-678، عافاكم رجعو ليا الفلوس",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "[SYNTH_DARIJA_NOTE_1] synthetic support note (redacted)",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": false,
+     "scanned_file": "souk_shop/support/tickets.csv"
+    },
+    {
+     "id": "c7c3fdee02",
+     "category": "privacy_pii",
+     "target_type": "text",
+     "file_path": "support/tickets.csv",
+     "line_start": 2,
+     "line_end": 2,
+     "rule_id": "ma.phone",
+     "severity": "MEDIUM",
+     "confidence": 0.9,
+     "title": "Moroccan phone number",
+     "reason": "Moroccan phone number matched by the deterministic regex baseline (ma.phone); violates Moroccan Law 09-08 / CNDP.",
+     "cross_file_context_used": null,
+     "offending_snippet": "0612-345-678",
+     "recommended_action": "synthetic_twin",
+     "replacement_snippet": "0600000011",
+     "env_var_name": null,
+     "env_var_value": null,
+     "bbox_2d": null,
+     "caught_by_regex_baseline": true,
+     "scanned_file": "souk_shop/support/tickets.csv"
+    }
+   ],
+   "context": [
+    "models.py:Buyer",
+    "payments.py:mark_paid",
+    "routes.py:show_order",
+    "data/catalog.json:catalog.json#L1-5",
+    "orders.py:refund",
+    "models.py:Order",
+    "routes.py:search",
+    "routes.py:cancel_order",
+    "routes.py:payzone_notify",
+    "data/test_buyers.json:test_buyers.json#L1-4"
+   ],
+   "file": "souk_shop/support/tickets.csv",
+   "latency_s": 0.0,
+   "attempts": 1
+  }
+ ],
+ "images": [
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "file": "screenshots/terminal_env.png",
+   "latency_s": 0.01,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "file": "screenshots/cin_card.png",
+   "latency_s": 0.0,
+   "attempts": 1
+  },
+  {
+   "engine_used": "offline_heuristic",
+   "findings": [],
+   "file": "screenshots/clean_dashboard.png",
+   "latency_s": 0.0,
+   "attempts": 1
+  }
+ ]
+}
