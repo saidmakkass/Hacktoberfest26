@@ -1,185 +1,339 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BarakaGate Studio</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg fill='%2310b981'%3E%3Crect x='14' y='14' width='36' height='36' rx='3'/%3E%3Crect x='14' y='14' width='36' height='36' rx='3' transform='rotate(45 32 32)'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='9' fill='%23020617'/%3E%3C/svg%3E">
+<meta name="description" content="BarakaGate Studio — open-weight pre-flight security, privacy and cross-file logical bug gate powered by Gemma 4.">
+<meta name="theme-color" content="#FAF9F6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='6' width='52' height='52' rx='12' fill='%23C8432B'/%3E%3Cpath d='M22 46V26a10 10 0 0120 0v20' fill='none' stroke='%23FAF9F6' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M17 46h30' stroke='%23FAF9F6' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   if (window.tailwind) tailwind.config = {
-    darkMode: 'class',
     theme: { extend: {
-      fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'], mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'] },
+      fontFamily: {
+        sans: ['Geist', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Bricolage Grotesque"', 'Geist', 'ui-sans-serif', 'sans-serif'],
+        mono: ['"Geist Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      },
+      colors: {
+        paper: '#FAF9F6', ink: '#16150F', ink2: '#3D3B35', muted: '#77756E', faint: '#A8A59D',
+        line: '#E6E3DC', accent: '#C8432B', good: '#346538', warnc: '#956400', bugc: '#4B3FA6', proof: '#1F6C9F',
+      },
     } }
   };
 </script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <style>
   :root {
-    --bg: #020617; --panel: #0b1222; --panel2: #0f172a; --line: #1e293b; --line2: #334155;
-    --text: #e2e8f0; --muted: #94a3b8; --brand: #10b981; --brand2: #14b8a6;
-    --leak: #f43f5e; --bug: #8b5cf6; --warn: #f59e0b;
+    --paper: #FAF9F6; --panel: #FFFFFF; --sunk: #F5F3EE; --code: #FCFBF8;
+    --ink: #16150F; --ink2: #3D3B35; --muted: #77756E; --faint: #A8A59D;
+    --line: #E6E3DC; --line2: #D6D2C8;
+    --accent: #C8432B; --accent-soft: #FBEAE5; --accent-ink: #9F2F2D;
+    --red-bg: #FDEBEC; --red-tx: #9F2F2D;
+    --bug-bg: #EEEDFB; --bug-tx: #4B3FA6;
+    --blue-bg: #E1F3FE; --blue-tx: #1F6C9F; --blue-bd: #BFDDF2;
+    --green-bg: #EDF3EC; --green-tx: #346538;
+    --yellow-bg: #FBF3DB; --yellow-tx: #956400;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+    --frame-shadow: 3px 3px 0 var(--ink);
   }
-  html, body { background: var(--bg); color: var(--text); }
-  body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; min-height: 100vh; }
-  .font-mono, code, pre, .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace; }
+  html { scroll-behavior: smooth; }
+  html, body { background: var(--paper); color: var(--ink); }
+  body {
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif; min-height: 100dvh; font-size: 14px; line-height: 1.55;
+    background-image: radial-gradient(circle, rgba(22,21,15,.085) 1px, transparent 1.2px);
+    background-size: 22px 22px; background-position: -11px -11px;
+  }
+  .font-mono, code, pre, .mono { font-family: "Geist Mono", ui-monospace, SFMono-Regular, monospace; }
   .font-mono, code, pre, textarea, .codebox, .diff-line, .tok, .gutter { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
-  ::selection { background: rgba(16,185,129,.35); }
-  * { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
-  ::-webkit-scrollbar { width: 9px; height: 9px; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9px; }
-  .zellige {
-    background-color: #030a17;
-    background-image:
-      radial-gradient(1200px 300px at 10% -40%, rgba(16,185,129,.18), transparent 60%),
-      radial-gradient(900px 260px at 95% -60%, rgba(20,184,166,.14), transparent 60%),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%2310b981' stroke-opacity='.10' stroke-width='1'%3E%3Cpath d='M28 6l6.5 15.5L50 28l-15.5 6.5L28 50l-6.5-15.5L6 28l15.5-6.5z'/%3E%3Crect x='17' y='17' width='22' height='22' transform='rotate(45 28 28)'/%3E%3Crect x='17' y='17' width='22' height='22'/%3E%3Cpath d='M0 0l6 6M56 0l-6 6M0 56l6-6M56 56l-6-6'/%3E%3C/g%3E%3C/svg%3E");
-  }
-  .glass { background: linear-gradient(180deg, rgba(15,23,42,.88), rgba(11,18,34,.92)); border: 1px solid var(--line); }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
-  .btn { display:inline-flex; align-items:center; gap:.5rem; border-radius: 10px; padding:.55rem .9rem; font-weight:600; font-size:.85rem; transition: all .15s ease; border:1px solid transparent; cursor:pointer; white-space: nowrap; }
-  .btn:disabled { opacity:.45; cursor:not-allowed; }
-  .btn-brand { background: linear-gradient(135deg,#10b981,#0d9488); color:#022c22; box-shadow: 0 0 0 1px rgba(16,185,129,.3), 0 8px 24px -10px rgba(16,185,129,.7); }
-  .btn-brand:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
-  .btn-ghost { background:#0f172a; border-color: var(--line2); color:#cbd5e1; }
-  .btn-ghost:hover:not(:disabled) { border-color:#10b981; color:#ecfdf5; }
-  .btn-rose { background: linear-gradient(135deg,#e11d48,#be123c); color:#fff1f2; }
-  .btn-rose:hover:not(:disabled) { filter: brightness(1.1); }
-  .sel { background:#0b1222; border:1px solid var(--line2); color:#e2e8f0; border-radius:10px; padding:.45rem .6rem; font-size:.8rem; }
-  .sel:focus, .btn:focus-visible, textarea:focus { outline: 2px solid rgba(16,185,129,.6); outline-offset: 1px; }
-  .tab-btn { position:relative; padding:.8rem 1rem; color:#94a3b8; font-weight:600; font-size:.86rem; border-bottom:2px solid transparent; transition: all .15s; white-space: nowrap; }
-  .tab-btn:hover { color:#e2e8f0; }
-  .tab-btn.active { color:#ecfdf5; border-bottom-color:#10b981; background: linear-gradient(180deg, transparent, rgba(16,185,129,.08)); }
-  .tab-panel { display:none; animation: fadein .25s ease; }
-  .tab-panel.active { display:block; }
-  @keyframes fadein { from { opacity:0; transform: translateY(4px);} to { opacity:1; transform:none; } }
-  .chip { display:inline-flex; align-items:center; gap:.3rem; font-size:.7rem; font-weight:700; letter-spacing:.02em; padding:.18rem .5rem; border-radius:999px; border:1px solid; white-space: nowrap; }
-  .chip-leak { color:#fda4af; border-color:rgba(244,63,94,.45); background:rgba(244,63,94,.12); }
-  .chip-bug { color:#c4b5fd; border-color:rgba(139,92,246,.5); background:rgba(139,92,246,.14); }
-  .chip-pass { color:#6ee7b7; border-color:rgba(16,185,129,.45); background:rgba(16,185,129,.12); }
-  .chip-warn { color:#fcd34d; border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.12); }
-  .chip-mute { color:#cbd5e1; border-color:#334155; background:#0f172a; }
-  .chip-cyan { color:#67e8f9; border-color:rgba(34,211,238,.4); background:rgba(34,211,238,.1); }
-  .sev-CRITICAL { color:#fff1f2; background:#be123c; border-color:#fb7185; }
-  .sev-HIGH { color:#ffe4e6; background:rgba(225,29,72,.35); border-color:rgba(251,113,133,.6); }
-  .sev-MEDIUM { color:#fef3c7; background:rgba(217,119,6,.3); border-color:rgba(251,191,36,.55); }
-  .sev-LOW { color:#e2e8f0; background:#1e293b; border-color:#475569; }
-  /* code viewer */
-  .codebox { background:#060c1a; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12.5px; line-height:1.6; counter-reset: none; }
-  .cl { display:flex; min-width: max-content; border-left: 3px solid transparent; }
-  .cl:hover { background: rgba(148,163,184,.05); }
-  .cl .ln { width: 3.2rem; flex: none; text-align:right; padding-right:.9rem; color:#475569; user-select:none; }
-  .cl .lc { white-space: pre; padding-right: 1.5rem; color:#cbd5e1; }
-  .cl.hl-leak { background: rgba(244,63,94,.10); border-left-color:#f43f5e; }
-  .cl.hl-bug { background: rgba(139,92,246,.12); border-left-color:#8b5cf6; }
-  .cl.hl-leak .ln { color:#fb7185; } .cl.hl-bug .ln { color:#a78bfa; }
-  .cl.flash { animation: flash 1.4s ease; }
-  @keyframes flash { 0%,30% { background: rgba(250,204,21,.35); } 100% { } }
-  .hljs { background: transparent !important; padding: 0 !important; }
-  /* diff */
-  .diff-line { white-space: pre; font-family:"JetBrains Mono", monospace; font-size:12px; line-height:1.55; padding: 0 .75rem; min-width: max-content; }
-  .diff-add { background: rgba(16,185,129,.13); color:#a7f3d0; }
-  .diff-del { background: rgba(244,63,94,.13); color:#fecdd3; }
-  .diff-hunk { color:#67e8f9; background: rgba(34,211,238,.06); }
-  .diff-meta { color:#64748b; }
-  /* decisions */
-  .seg { display:flex; flex-wrap:wrap; gap:.35rem; }
-  .seg label { cursor:pointer; }
-  .seg input { position:absolute; opacity:0; pointer-events:none; }
-  .seg span { display:inline-block; font-size:.72rem; font-weight:600; padding:.38rem .6rem; border-radius:8px; border:1px solid #334155; color:#94a3b8; background:#0b1222; transition: all .12s; }
-  .seg label:hover span { border-color:#64748b; color:#e2e8f0; }
-  .seg input:checked + span { color:#ecfdf5; border-color:#10b981; background: rgba(16,185,129,.16); box-shadow: inset 0 0 0 1px rgba(16,185,129,.35); }
-  .seg input:checked + span.keep { color:#fef3c7; border-color:#f59e0b; background: rgba(245,158,11,.14); box-shadow:none; }
-  .seg input:focus-visible + span { outline: 2px solid #10b981; }
-  .finding { transition: border-color .15s, transform .15s, box-shadow .15s; }
-  .finding:hover { border-color:#334155; }
-  .finding.leak { box-shadow: inset 3px 0 0 #f43f5e; }
-  .finding.bug { box-shadow: inset 3px 0 0 #8b5cf6; }
-  .finding.ignored { opacity:.6; }
-  .filter-chip { font-size:.75rem; font-weight:600; padding:.3rem .7rem; border-radius:999px; border:1px solid #334155; color:#94a3b8; background:#0b1222; }
-  .filter-chip.active { color:#022c22; background:#10b981; border-color:#10b981; }
-  /* skeleton */
-  .skel { background: linear-gradient(90deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); background-size: 200% 100%; animation: shimmer 1.3s infinite linear; border-radius: 8px; }
+  .font-display { font-family: "Bricolage Grotesque", Geist, sans-serif; }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+  h1, h2, h3, h4 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  ::selection { background: rgba(200,67,43,.18); }
+  * { scrollbar-width: thin; scrollbar-color: #D6D2C8 transparent; }
+  ::-webkit-scrollbar { width: 9px; height: 9px; } ::-webkit-scrollbar-thumb { background: #D6D2C8; border-radius: 9px; border: 2px solid transparent; background-clip: padding-box; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  .skip { position: absolute; left: -999px; top: 8px; z-index: 70; background: var(--ink); color: #fff; padding: .5rem .8rem; border-radius: 8px; }
+  .skip:focus { left: 12px; }
+
+  /* ---------- header ---------- */
+  .topbar { background: rgba(250,249,246,.86); backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1.5px solid var(--ink); }
+  .brandmark { width: 38px; height: 38px; flex: none; border-radius: 10px; background: var(--accent); display: grid; place-items: center; box-shadow: 2px 2px 0 var(--ink); border: 1.5px solid var(--ink); }
+  .status-pill { display: inline-flex; align-items: center; gap: .45rem; font-size: 11.5px; color: var(--ink2); padding: .15rem .55rem .15rem .45rem; border: 1px solid var(--line2); border-radius: 999px; background: #fff; max-width: 100%; }
+  .status-pill.is-offline { border-color: #E9D49A; background: var(--yellow-bg); color: var(--yellow-tx); }
+  .tabs { display: flex; gap: .25rem; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { display: inline-flex; align-items: center; gap: .5rem; padding: .5rem .85rem; border-radius: 10px; color: var(--muted); font-weight: 500; font-size: 13.5px; white-space: nowrap; border: 1.5px solid transparent; transition: color .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease); min-height: 40px; }
+  .tab-btn .num { font-family: "Geist Mono", monospace; font-size: 11px; color: var(--faint); transition: color .2s; }
+  .tab-btn:hover { color: var(--ink); background: rgba(22,21,15,.04); }
+  .tab-btn.active { color: var(--ink); background: #fff; border-color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+  .tab-btn.active .num { color: var(--accent); }
+  .toolbar { border-top: 1px solid var(--line); }
+  .tool { display: flex; align-items: center; gap: .5rem; height: 36px; padding: 0 .6rem; border: 1px solid var(--line2); border-radius: 9px; background: #fff; font-size: 12px; color: var(--ink2); }
+
+  /* ---------- panels (manga frames) ---------- */
+  .panel { background: var(--panel); border: 1.5px solid var(--ink); border-radius: 14px; box-shadow: var(--frame-shadow); }
+  .panel-soft { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+  .panel-head { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .85rem 1.1rem; border-bottom: 1px solid var(--line); }
+  .panel-title { font-family: "Bricolage Grotesque", Geist, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -.01em; color: var(--ink); }
+  .panel-sub { font-size: 12px; color: var(--muted); }
+  .eyebrow { font-family: "Geist Mono", monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .frame-no { font-family: "Geist Mono", monospace; font-size: 11px; font-weight: 600; width: 26px; height: 26px; flex: none; display: grid; place-items: center; border-radius: 7px; border: 1.5px solid var(--ink); background: #fff; }
+  .frame-no.red { background: var(--accent); color: #fff; }
+  .tone { position: relative; }
+  .tone::before { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+    background-image: radial-gradient(circle, rgba(22,21,15,.16) 1px, transparent 1.3px); background-size: 7px 7px;
+    -webkit-mask-image: linear-gradient(225deg, #000 0%, transparent 55%); mask-image: linear-gradient(225deg, #000 0%, transparent 55%); }
+  .tone > * { position: relative; }
+
+  .section-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .75rem 2rem; margin: .25rem 0 1.25rem; }
+  .section-title { font-family: "Bricolage Grotesque", Geist, sans-serif; font-weight: 800; font-size: clamp(24px, 3vw, 34px); line-height: 1.05; letter-spacing: -.03em; }
+  .section-desc { max-width: 62ch; color: var(--ink2); font-size: 14px; }
+
+  /* ---------- buttons & inputs ---------- */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 10px; padding: .6rem 1rem; min-height: 40px; font-weight: 600; font-size: 13.5px; cursor: pointer; white-space: nowrap; border: 1.5px solid var(--ink);
+    transition: transform .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease), color .18s var(--ease); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
+  .btn-primary { background: var(--ink); color: #fff; box-shadow: 2px 2px 0 var(--accent); }
+  .btn-primary:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--accent); }
+  .btn-primary:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--accent); }
+  .btn-secondary { background: #fff; color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+  .btn-secondary:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+  .btn-secondary:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink); }
+  .btn-accent { background: var(--accent); color: #fff; box-shadow: 2px 2px 0 var(--ink); }
+  .btn-accent:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+  .btn-accent:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink); }
+  .btn-quiet { background: transparent; border-color: var(--line2); color: var(--ink2); min-height: 32px; padding: .3rem .65rem; font-size: 12px; font-weight: 500; }
+  .btn-quiet:hover:not(:disabled) { border-color: var(--ink); color: var(--ink); background: #fff; }
+  .sel { appearance: none; -webkit-appearance: none; height: 36px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2316150F' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right .6rem center;
+    border: 1px solid var(--line2); color: var(--ink); border-radius: 9px; padding: 0 2rem 0 .7rem; font-size: 12.5px; font-weight: 500; cursor: pointer; transition: border-color .2s; text-overflow: ellipsis; }
+  .sel:hover { border-color: var(--ink); }
+
+  /* ---------- chips ---------- */
+  .chip { display: inline-flex; align-items: center; gap: .35rem; font-size: 11px; font-weight: 600; letter-spacing: .01em; padding: .16rem .55rem; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+  .chip .dot { width: 6px; height: 6px; border-radius: 2px; background: currentColor; }
+  .chip-red { color: var(--red-tx); background: var(--red-bg); }
+  .chip-bug { color: var(--bug-tx); background: var(--bug-bg); }
+  .chip-blue { color: var(--blue-tx); background: var(--blue-bg); }
+  .chip-green { color: var(--green-tx); background: var(--green-bg); }
+  .chip-yellow { color: var(--yellow-tx); background: var(--yellow-bg); }
+  .chip-grey { color: var(--ink2); background: var(--sunk); border-color: var(--line); }
+  .sev-CRITICAL { color: #fff; background: var(--accent); }
+  .sev-HIGH { color: var(--red-tx); background: var(--red-bg); border-color: #F3C9C4; }
+  .sev-MEDIUM { color: var(--yellow-tx); background: var(--yellow-bg); border-color: #EFDDA6; }
+  .sev-LOW { color: var(--ink2); background: var(--sunk); border-color: var(--line); }
+
+  /* ---------- hanko verdict stamp ---------- */
+  .stamp { display: inline-grid; place-items: center; min-width: 92px; padding: .3rem .8rem; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 15px; letter-spacing: .12em; text-transform: uppercase;
+    border: 2.5px solid currentColor; border-radius: 8px; outline: 1.5px solid currentColor; outline-offset: 2px; transform: rotate(-5deg); color: var(--faint); background: transparent; }
+  .stamp.block { color: var(--accent); background: rgba(200,67,43,.05); }
+  .stamp.warn { color: #B07A0C; background: rgba(176,122,12,.05); }
+  .stamp.pass { color: var(--green-tx); background: rgba(52,101,56,.05); }
+  .stamp.hit { animation: stamp .55s var(--ease) both; }
+  @keyframes stamp { 0% { opacity: 0; transform: rotate(-12deg) scale(1.8); } 60% { opacity: 1; transform: rotate(-4deg) scale(.94); } 100% { transform: rotate(-5deg) scale(1); } }
+
+  /* ---------- speech bubble (reasoning) ---------- */
+  .bubble { position: relative; background: #fff; border: 1.5px solid var(--ink); border-radius: 16px; box-shadow: var(--frame-shadow); }
+  .bubble::after { content: ''; position: absolute; left: 34px; bottom: -11px; width: 18px; height: 18px; background: #fff; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); transform: skewX(-30deg) rotate(45deg); border-bottom-right-radius: 3px; }
+
+  /* ---------- scenarios ---------- */
+  .scenario { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; text-align: left; padding: .85rem .9rem; border-radius: 12px; border: 1.5px solid var(--line2); background: #fff; min-height: 92px;
+    transition: border-color .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease); }
+  .scenario:hover:not(:disabled) { border-color: var(--ink); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+  .scenario:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 0 0 0 var(--ink); }
+  .scenario:disabled { opacity: .55; cursor: progress; }
+  .scenario.is-active { border-color: var(--ink); box-shadow: 3px 3px 0 var(--accent); }
+  .scenario .s-title { font-weight: 600; font-size: 13.5px; line-height: 1.3; color: var(--ink); }
+  .scenario .s-meta { font-family: "Geist Mono", monospace; font-size: 10.5px; color: var(--muted); }
+  .scenario .s-icon { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--sunk); border: 1px solid var(--line); color: var(--ink); }
+  .scenario.is-active .s-icon { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ---------- code viewer ---------- */
+  .window-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .6rem .9rem; border-bottom: 1.5px solid var(--ink); background: #fff; border-radius: 12px 12px 0 0; }
+  .lights { display: flex; gap: 6px; margin-right: .35rem; } .lights i { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); background: #fff; display: block; }
+  .lights i:first-child { background: var(--accent); }
+  .codebox { background: var(--code); font-family: "Geist Mono", ui-monospace, monospace; font-size: 12.5px; line-height: 1.7; }
+  .cl { display: flex; min-width: max-content; border-left: 3px solid transparent; }
+  .cl:hover { background: rgba(22,21,15,.025); }
+  .cl .ln { width: 3.4rem; flex: none; text-align: right; padding-right: 1rem; color: #B9B5AB; user-select: none; }
+  .cl .lc { white-space: pre; padding-right: 1.5rem; color: var(--ink); }
+  .cl.hl-leak { background: var(--red-bg); border-left-color: var(--accent); }
+  .cl.hl-bug { background: var(--bug-bg); border-left-color: var(--bug-tx); }
+  .cl.hl-leak .ln { color: var(--accent); } .cl.hl-bug .ln { color: var(--bug-tx); }
+  .cl.flash { animation: flash 1.4s var(--ease); }
+  @keyframes flash { 0%, 35% { background: #FFE9A8; } 100% { } }
+  .hljs { background: transparent !important; padding: 0 !important; color: var(--ink); }
+  .file-tab { font-family: "Geist Mono", monospace; font-size: 11.5px; padding: .28rem .6rem; border-radius: 7px; border: 1px solid var(--line2); color: var(--muted); background: #fff; transition: all .2s var(--ease); }
+  .file-tab:hover { color: var(--ink); border-color: var(--ink); }
+  .file-tab.on { color: #fff; background: var(--ink); border-color: var(--ink); }
+  .file-tab .count { margin-left: .35rem; padding: 0 .35rem; border-radius: 5px; background: var(--accent); color: #fff; font-size: 10px; }
+
+  /* ---------- diff ---------- */
+  .diffbox { background: var(--code); border: 1px solid var(--line); border-radius: 10px; }
+  .diff-line { white-space: pre; font-family: "Geist Mono", monospace; font-size: 12px; line-height: 1.6; padding: 0 .8rem; min-width: max-content; }
+  .diff-add { background: var(--green-bg); color: #24502A; }
+  .diff-del { background: var(--red-bg); color: #8E2A28; }
+  .diff-hunk { color: var(--blue-tx); background: #F1F8FD; }
+  .diff-meta { color: var(--muted); }
+
+  /* ---------- findings ---------- */
+  .finding { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: .95rem 1rem .95rem 1.15rem; transition: border-color .2s var(--ease), box-shadow .25s var(--ease), opacity .2s; overflow: hidden; }
+  .finding::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); }
+  .finding.bug::before { background: var(--bug-tx); }
+  .finding:hover { border-color: var(--line2); box-shadow: 0 6px 18px -10px rgba(22,21,15,.18); }
+  .finding.ignored { opacity: .55; }
+  .finding .f-title { font-weight: 600; font-size: 14.5px; line-height: 1.35; letter-spacing: -.005em; }
+  .finding .jump { font-family: "Geist Mono", monospace; font-size: 11.5px; color: var(--blue-tx); border-radius: 4px; }
+  .finding .jump:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .seg { display: flex; flex-wrap: wrap; gap: .35rem; }
+  .seg label { cursor: pointer; position: relative; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg span { display: inline-flex; align-items: center; min-height: 32px; font-size: 12px; font-weight: 500; padding: .3rem .65rem; border-radius: 8px; border: 1px solid var(--line2); color: var(--ink2); background: #fff; transition: all .18s var(--ease); }
+  .seg label:hover span { border-color: var(--ink); color: var(--ink); }
+  .seg input:checked + span { color: #fff; border-color: var(--ink); background: var(--ink); }
+  .seg input:checked + span.keep { color: var(--yellow-tx); border-color: #E2C674; background: var(--yellow-bg); }
+  .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .filter-chip { font-size: 12px; font-weight: 500; padding: .25rem .7rem; min-height: 30px; border-radius: 999px; border: 1px solid var(--line2); color: var(--ink2); background: #fff; transition: all .18s var(--ease); }
+  .filter-chip:hover { border-color: var(--ink); }
+  .filter-chip.active { color: #fff; background: var(--ink); border-color: var(--ink); }
+
+  /* ---------- scoreboard ---------- */
+  .score-row { border: 1px solid var(--line); border-radius: 12px; padding: .8rem .9rem; background: #fff; }
+  .score-row.hero { border: 1.5px solid var(--ink); }
+  .score-num { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 34px; line-height: 1; letter-spacing: -.03em; }
+  .track { height: 8px; border-radius: 99px; background: var(--sunk); overflow: hidden; border: 1px solid var(--line); }
+  .bar { height: 100%; transition: transform .9s var(--ease); transform-origin: left; width: 100% !important; transform: scaleX(var(--w, 0)); }
+  .bar.grey { background: var(--faint); }
+  .bar.red { background: repeating-linear-gradient(-45deg, var(--accent) 0 6px, #D9573F 6px 12px); }
+
+  /* ---------- loaders ---------- */
+  .skel { background: linear-gradient(90deg, #F1EFEA 0%, #E7E4DC 50%, #F1EFEA 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite linear; border-radius: 8px; }
   @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-  .spinner { width:18px; height:18px; border-radius:50%; border:2px solid rgba(16,185,129,.25); border-top-color:#10b981; animation: spin .8s linear infinite; }
+  .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(22,21,15,.15); border-top-color: var(--accent); animation: spin .8s linear infinite; flex: none; }
+  .spinner.sm { width: 14px; height: 14px; }
+  .btn-primary .spinner, .btn-accent .spinner { border-color: rgba(255,255,255,.3); border-top-color: #fff; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .pulse-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
-  .pulse-dot.on { background:#10b981; box-shadow: 0 0 0 0 rgba(16,185,129,.6); animation: ping 2s infinite; }
-  .pulse-dot.off { background:#f43f5e; }
-  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,.55);} 70% { box-shadow: 0 0 0 7px rgba(16,185,129,0);} 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0);} }
-  /* toggle */
-  .toggle { position:relative; width:38px; height:22px; border-radius:999px; background:#1e293b; border:1px solid #334155; transition: all .15s; flex:none; }
-  .toggle::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#94a3b8; transition: all .15s; }
-  input:checked + .toggle { background: rgba(16,185,129,.35); border-color:#10b981; }
-  input:checked + .toggle::after { left:18px; background:#10b981; }
-  /* token chips */
-  .tok { display:inline-block; font-family:"JetBrains Mono", monospace; font-size:.78em; font-weight:700; color:#99f6e4; background: rgba(20,184,166,.14); border:1px solid rgba(45,212,191,.45); border-radius:6px; padding:0 .3rem; margin: 0 1px; }
-  .restored { color:#bbf7d0; background: rgba(16,185,129,.18); border-bottom: 2px solid #10b981; border-radius: 3px; padding: 0 2px; }
+  .thinking { position: absolute; inset: 0; z-index: 10; background: rgba(255,255,255,.93); padding: 1.1rem; display: flex; flex-direction: column; gap: .75rem; border-radius: inherit; }
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+  .pulse-dot.on { background: #3E8E4F; animation: ping 2.2s infinite; }
+  .pulse-dot.off { background: var(--faint); }
+  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(62,142,79,.45); } 70% { box-shadow: 0 0 0 6px rgba(62,142,79,0); } 100% { box-shadow: 0 0 0 0 rgba(62,142,79,0); } }
+
+  /* ---------- toggle ---------- */
+  .toggle { position: relative; width: 36px; height: 20px; border-radius: 999px; background: #fff; border: 1.5px solid var(--ink); transition: background .2s var(--ease); flex: none; }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--ink); transition: transform .25s var(--ease); }
+  input:checked + .toggle { background: var(--accent); }
+  input:checked + .toggle::after { transform: translateX(16px); background: #fff; }
+  input:focus-visible + .toggle { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- tokens ---------- */
+  .tok { display: inline-block; font-family: "Geist Mono", monospace; font-size: .8em; font-weight: 600; color: var(--blue-tx); background: var(--blue-bg); border: 1px solid var(--blue-bd); border-radius: 5px; padding: 0 .3rem; margin: 0 1px; line-height: 1.5; }
+  .restored { color: #24502A; background: var(--green-bg); box-shadow: inset 0 -2px 0 #6FA577; border-radius: 3px; padding: 0 2px; }
   .pre-wrap { white-space: pre-wrap; word-break: break-word; }
-  /* markdown */
-  .md table { width:100%; border-collapse: collapse; font-size:.8rem; margin: .75rem 0; }
-  .md th { text-align:left; color:#a7f3d0; background:#0f172a; font-weight:700; padding:.5rem .6rem; border-bottom:1px solid #334155; position: sticky; top: 0; }
-  .md td { padding:.45rem .6rem; border-bottom:1px solid #1e293b; color:#cbd5e1; vertical-align: top; }
-  .md tr:hover td { background: rgba(148,163,184,.05); }
-  .md h1,.md h2,.md h3 { font-weight:700; color:#ecfdf5; margin: 1rem 0 .4rem; }
-  .md h1 { font-size:1.15rem; } .md h2 { font-size:1.02rem; } .md h3 { font-size:.92rem; }
-  .md p, .md li { color:#cbd5e1; font-size:.85rem; line-height:1.6; }
+  .stat { min-width: 120px; padding: .6rem .9rem; border-radius: 12px; border: 1px solid var(--line); background: #fff; }
+  .stat.hero { border: 1.5px solid var(--ink); box-shadow: 2px 2px 0 var(--accent); }
+  .stat .v { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 28px; line-height: 1.05; letter-spacing: -.03em; }
+
+  /* ---------- markdown ---------- */
+  .md table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: .75rem 0; }
+  .md th { text-align: left; color: var(--ink); background: var(--sunk); font-weight: 600; padding: .5rem .6rem; border-bottom: 1.5px solid var(--ink); position: sticky; top: 0; }
+  .md td { padding: .45rem .6rem; border-bottom: 1px solid var(--line); color: var(--ink2); vertical-align: top; font-variant-numeric: tabular-nums; }
+  .md tr:hover td { background: #FCFBF8; }
+  .md h1, .md h2, .md h3 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; color: var(--ink); margin: 1rem 0 .4rem; letter-spacing: -.01em; }
+  .md h1 { font-size: 18px; } .md h2 { font-size: 16px; } .md h3 { font-size: 14px; }
+  .md p, .md li { color: var(--ink2); font-size: 13px; line-height: 1.6; }
   .md ul { list-style: disc; padding-left: 1.2rem; }
-  .md code { background:#0f172a; border:1px solid #1e293b; padding: 0 .3rem; border-radius:5px; font-size:.8em; color:#a7f3d0; }
-  .md pre code { display:block; padding:.75rem; overflow:auto; }
-  /* yaml editor */
-  .editor-wrap { display:flex; background:#060c1a; border:1px solid #1e293b; border-radius:12px; overflow:hidden; }
-  .gutter { flex:none; padding:.75rem .5rem .75rem .75rem; color:#475569; text-align:right; user-select:none; font-family:"JetBrains Mono", monospace; font-size:12.5px; line-height:1.6; overflow:hidden; white-space: pre; background:#050a16; border-right:1px solid #111a2e; }
-  .yaml-ta { flex:1; resize:none; background:transparent; color:#d1fae5; font-family:"JetBrains Mono", monospace; font-size:12.5px; line-height:1.6; padding:.75rem; white-space: pre; overflow:auto; border:0; outline:none; tab-size: 2; }
-  /* canvas */
-  #imgCanvas { touch-action: none; cursor: crosshair; display:block; max-width:100%; border-radius: 10px; }
-  .compare { position:relative; overflow:hidden; border-radius:10px; user-select:none; }
-  .compare img { display:block; width:100%; height:auto; }
-  .compare .before { position:absolute; inset:0; overflow:hidden; border-right: 2px solid #10b981; }
+  .md code { background: var(--sunk); border: 1px solid var(--line); padding: 0 .3rem; border-radius: 5px; font-size: .85em; }
+  .md pre code { display: block; padding: .75rem; overflow: auto; }
+
+  /* ---------- yaml editor ---------- */
+  .editor-wrap { display: flex; background: var(--code); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .gutter { flex: none; padding: .8rem .55rem .8rem .8rem; color: #B9B5AB; text-align: right; user-select: none; font-family: "Geist Mono", monospace; font-size: 12.5px; line-height: 1.7; overflow: hidden; white-space: pre; background: var(--sunk); border-right: 1px solid var(--line); }
+  .yaml-ta { flex: 1; resize: none; background: transparent; color: var(--ink); font-family: "Geist Mono", monospace; font-size: 12.5px; line-height: 1.7; padding: .8rem; white-space: pre; overflow: auto; border: 0; outline: none; tab-size: 2; }
+  .kbd { font-family: "Geist Mono", monospace; font-size: 11px; padding: .05rem .4rem; border-radius: 5px; border: 1px solid var(--line2); border-bottom-width: 2px; background: #fff; color: var(--ink2); }
+
+  /* ---------- image tab ---------- */
+  #imgCanvas { touch-action: none; cursor: crosshair; display: block; max-width: 100%; border-radius: 8px; }
+  .canvas-stage { background-color: var(--code); background-image: linear-gradient(45deg, #F1EFEA 25%, transparent 25%), linear-gradient(-45deg, #F1EFEA 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #F1EFEA 75%), linear-gradient(-45deg, transparent 75%, #F1EFEA 75%); background-size: 18px 18px; background-position: 0 0, 0 9px, 9px -9px, -9px 0; }
+  .img-item { width: 100%; display: flex; align-items: center; gap: .75rem; padding: .5rem; border-radius: 12px; border: 1.5px solid var(--line); background: #fff; text-align: left; transition: all .2s var(--ease); }
+  .img-item:hover { border-color: var(--ink); }
+  .img-item.is-active { border-color: var(--ink); box-shadow: 2px 2px 0 var(--accent); }
+  .dropzone { border: 1.5px dashed var(--line2); border-radius: 14px; background: #fff; transition: border-color .2s, background .2s; }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: var(--accent-soft); }
+  .region { border: 1px solid var(--line); border-radius: 12px; padding: .65rem .75rem; background: #fff; transition: opacity .2s; }
+  .compare { position: relative; overflow: hidden; border-radius: 10px; user-select: none; border: 1px solid var(--line); }
+  .compare img { display: block; width: 100%; height: auto; }
+  .compare .before { position: absolute; inset: 0; overflow: hidden; border-right: 2px solid var(--accent); }
   .compare .before img { width: auto; height: 100%; max-width: none; }
-  .modal-bg { background: rgba(2,6,23,.78); backdrop-filter: blur(6px); }
+  input[type=range] { accent-color: var(--accent); }
+  input[type=checkbox] { accent-color: var(--ink); }
+
+  /* ---------- modal & toasts ---------- */
+  .modal-bg { background: rgba(250,249,246,.72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   details > summary { list-style: none; cursor: pointer; }
-  details > summary::-webkit-details-marker { display:none; }
-  details[open] .chev { transform: rotate(90deg); }
-  .chev { transition: transform .15s; display:inline-block; }
-  .toast { animation: toastin .25s ease; }
-  @keyframes toastin { from { opacity:0; transform: translateY(8px) scale(.98);} to { opacity:1; transform:none; } }
-  .thinking-glow { background: radial-gradient(500px 120px at 50% 0%, rgba(16,185,129,.12), transparent 70%); }
-  .bar { transition: width .8s cubic-bezier(.2,.8,.2,1); }
-  .kbd { font-family:"JetBrains Mono", monospace; font-size:.7rem; padding:.05rem .35rem; border-radius:5px; border:1px solid #334155; background:#0f172a; color:#94a3b8; }
+  details > summary::-webkit-details-marker { display: none; }
+  .chev { transition: transform .25s var(--ease); display: inline-block; flex: none; }
+  details[open] > summary .chev { transform: rotate(90deg); }
+  .toast { animation: toastin .35s var(--ease); background: #fff; border: 1.5px solid var(--ink); border-radius: 12px; box-shadow: var(--frame-shadow); }
+  .toast .mark { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; flex: none; font-size: 12px; font-weight: 700; color: #fff; }
+  @keyframes toastin { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- tabs & motion ---------- */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .tab-panel.active .rise { animation: rise .6s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+    @keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+  @media (max-width: 767px) {
+    .panel { box-shadow: 2px 2px 0 var(--ink); }
+    .stamp { min-width: 76px; font-size: 13px; }
+  }
 </style>
 </head>
 <body class="antialiased">
+<a href="#main" class="skip">Skip to content</a>
 
 <!-- ============================== HEADER ============================== -->
-<header class="zellige border-b border-slate-800/80 lg:sticky lg:top-0 z-40 backdrop-blur">
-  <div class="max-w-[1680px] mx-auto px-4 lg:px-6 py-3 flex flex-wrap items-center gap-x-5 gap-y-3">
-    <div class="flex items-center gap-3 mr-auto min-w-0">
-      <svg class="w-10 h-10 flex-none drop-shadow-[0_0_12px_rgba(16,185,129,.45)]" viewBox="0 0 64 64" aria-hidden="true">
-        <defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#0d9488"/></linearGradient></defs>
-        <g fill="url(#bg1)"><rect x="13" y="13" width="38" height="38" rx="4"/><rect x="13" y="13" width="38" height="38" rx="4" transform="rotate(45 32 32)"/></g>
-        <path d="M32 18l10 4v8c0 7-4.4 12.2-10 14-5.6-1.8-10-7-10-14v-8z" fill="#020617"/>
-        <path d="M27.5 31.5l3.2 3.2 6-6.4" stroke="#34d399" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+<header class="topbar lg:sticky lg:top-0 z-40">
+  <div class="max-w-[1480px] mx-auto px-4 lg:px-8 pt-3 pb-2.5 flex flex-wrap items-center gap-x-6 gap-y-3">
+    <div class="flex items-center gap-3 min-w-0 mr-auto">
+      <div class="brandmark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 64 64"><path d="M20 50V28a12 12 0 0124 0v22" fill="none" stroke="#FAF9F6" stroke-width="6" stroke-linecap="round"/><path d="M13 50h38" stroke="#FAF9F6" stroke-width="6" stroke-linecap="round"/></svg>
+      </div>
       <div class="min-w-0">
-        <div class="flex items-center gap-2">
-          <h1 class="text-lg font-extrabold tracking-tight text-white">Baraka<span class="text-emerald-400">Gate</span> <span class="text-slate-400 font-semibold">Studio</span></h1>
-          <span class="hidden sm:inline text-[11px] text-slate-500 font-mono" dir="rtl" title="Baraka — blessing">بركة</span>
+        <div class="flex items-baseline gap-2">
+          <h1 class="font-display text-[19px] font-extrabold tracking-tight leading-none">BarakaGate <span class="font-semibold text-muted">Studio</span></h1>
+          <span class="hidden sm:inline text-[12px] text-faint" dir="rtl" lang="ar" title="Baraka: blessing">بركة</span>
         </div>
-        <div id="statusPill" class="mt-0.5 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300 max-w-full">
+        <div id="statusPill" class="status-pill mt-1.5">
           <span class="pulse-dot on"></span><span class="truncate">BarakaGate v1.0 — Open-Weight Pre-Flight Security, Privacy &amp; Bug Gate</span>
         </div>
       </div>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2">
+    <nav class="tabs order-3 lg:order-none w-full lg:w-auto" role="tablist" aria-label="Studio sections">
+      <button class="tab-btn active" data-tab="tab-code" role="tab" id="tabbtn-code"><span class="num">01</span>Inspector</button>
+      <button class="tab-btn" data-tab="tab-image" role="tab" id="tabbtn-image"><span class="num">02</span>Images</button>
+      <button class="tab-btn" data-tab="tab-firewall" role="tab" id="tabbtn-firewall"><span class="num">03</span>Prompt firewall</button>
+      <button class="tab-btn" data-tab="tab-policy" role="tab" id="tabbtn-policy"><span class="num">04</span>Rules &amp; benchmark</button>
+    </nav>
+  </div>
+
+  <div class="toolbar">
+    <div class="max-w-[1480px] mx-auto px-4 lg:px-8 py-2 flex flex-wrap items-center gap-2">
       <label class="sr-only" for="engineMode">Model engine</label>
-      <select id="engineMode" class="sel max-w-[19rem]" title="Model engine">
+      <select id="engineMode" class="sel max-w-[min(100%,21rem)]" title="Model engine">
         <option value="cloud_fast">⚡ Cloud Fast: gemma-4-26b-a4b-it (Gemini API MoE)</option>
         <option value="cloud_deep">🧠 Cloud Deep: gemma-4-31b-it (Gemini API 256K)</option>
         <option value="local_edge">🔒 Local Air-Gapped: gemma4:e4b (Laptop Ollama)</option>
@@ -192,83 +346,97 @@
         <option value="research_lab">🎓 University &amp; Research Lab</option>
         <option value="general_devsecops">🌐 General DevSecOps</option>
       </select>
-    </div>
 
-    <div class="flex flex-wrap items-center gap-2">
-      <div class="flex items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-900/70 pl-3 pr-1 py-1">
-        <svg class="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
-        <span class="text-xs text-slate-300 font-mono" id="indexIndicator">Indexed: – Chunks / – Symbols</span>
-        <button id="reindexBtn" class="btn btn-ghost !py-1 !px-2 !text-[11px]" title="POST /api/index">Re-Index Codebase</button>
+      <div class="tool ml-auto">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>
+        <span class="font-mono text-[11.5px] tabular-nums" id="indexIndicator">Indexed: – Chunks / – Symbols</span>
+        <button id="reindexBtn" class="btn btn-quiet !min-h-[26px] !py-0.5 !px-2 !text-[11px]" title="POST /api/index">Re-Index Codebase</button>
       </div>
-      <div class="flex items-center gap-3 rounded-xl border border-slate-700/80 bg-slate-900/70 px-3 py-1.5 text-[11px] font-semibold">
-        <span class="flex items-center gap-1.5" id="cloudDot" title="Gemini API (GEMINI_API_KEY)"><span class="pulse-dot off"></span><span class="text-slate-300">Cloud</span><span class="mark text-slate-500">…</span></span>
-        <span class="flex items-center gap-1.5" id="ollamaDot" title="Local Ollama gemma4:e4b"><span class="pulse-dot off"></span><span class="text-slate-300">Ollama</span><span class="mark text-slate-500">…</span></span>
+      <div class="tool gap-3">
+        <span class="flex items-center gap-1.5" id="cloudDot" title="Gemini API (GEMINI_API_KEY)"><span class="pulse-dot off"></span><span>Cloud</span><span class="mark text-faint">…</span></span>
+        <span class="flex items-center gap-1.5" id="ollamaDot" title="Local Ollama gemma4:e4b"><span class="pulse-dot off"></span><span>Ollama</span><span class="mark text-faint">…</span></span>
       </div>
-      <label class="flex items-center gap-2 cursor-pointer rounded-xl border border-slate-700/80 bg-slate-900/70 px-3 py-1.5" title="Offline-safe: deterministic regex + heuristic engine and demo cache only — zero network calls">
+      <label class="tool cursor-pointer" title="Offline-safe: deterministic regex + heuristic engine and demo cache only — zero network calls">
         <input type="checkbox" id="offlineToggle" class="sr-only">
         <span class="toggle"></span>
-        <span class="text-[11px] font-semibold text-slate-300">Offline-safe</span>
+        <span class="font-medium">Offline-safe</span>
       </label>
     </div>
   </div>
-
-  <!-- tabs -->
-  <nav class="max-w-[1680px] mx-auto px-2 lg:px-4 flex overflow-x-auto border-t border-slate-800/60" role="tablist">
-    <button class="tab-btn active" data-tab="tab-code" role="tab" id="tabbtn-code"><span class="text-emerald-400 mr-1">01</span> Code Diff, Leak &amp; Logical Bug Inspector</button>
-    <button class="tab-btn" data-tab="tab-image" role="tab" id="tabbtn-image"><span class="text-emerald-400 mr-1">02</span> Multimodal Screenshot &amp; Notebook Image Sanitizer</button>
-    <button class="tab-btn" data-tab="tab-firewall" role="tab" id="tabbtn-firewall"><span class="text-emerald-400 mr-1">03</span> "Safe-to-Prompt" Outbound Agent Firewall</button>
-    <button class="tab-btn" data-tab="tab-policy" role="tab" id="tabbtn-policy"><span class="text-emerald-400 mr-1">04</span> Custom Rules &amp; Benchmark</button>
-  </nav>
 </header>
 
-<main class="max-w-[1680px] mx-auto px-4 lg:px-6 py-5">
+<main id="main" class="max-w-[1480px] mx-auto px-4 lg:px-8 pt-8 pb-16">
 
 <!-- ============================== TAB 1: CODE ============================== -->
-<section id="tab-code" class="tab-panel active" role="tabpanel">
-  <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+<section id="tab-code" class="tab-panel active" role="tabpanel" aria-labelledby="tabbtn-code">
+  <div class="section-head rise" style="--i:0">
+    <div>
+      <div class="eyebrow mb-2">Chapter 01</div>
+      <h2 class="section-title">Code diff, leak &amp; logical bug inspector</h2>
+    </div>
+    <p class="section-desc pb-1">Pick a pull request. BarakaGate indexes the repo, pulls the definitions it depends on from other files, and asks Gemma 4 what a regex can't see. Nothing touches disk until you decide.</p>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
     <!-- left -->
-    <div class="xl:col-span-7 space-y-4 min-w-0">
-      <div class="card p-4">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-sm font-bold text-slate-200 tracking-wide uppercase">Quick Demo Scenarios</h2>
-          <span class="text-[11px] text-slate-500">Each scan indexes the scenario repo → pulls cross-file chunks → Gemma 4</span>
+    <div class="xl:col-span-7 space-y-6 min-w-0">
+      <div class="panel rise" style="--i:1">
+        <div class="panel-head">
+          <span class="frame-no">A</span>
+          <h3 class="panel-title mr-auto">Demo scenarios</h3>
+          <span class="panel-sub hidden sm:inline">index → cross-file retrieval → Gemma 4</span>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <button class="scenario-btn btn btn-ghost !justify-start !py-3 text-left" data-scenario="fintech_morocco">
-            <span class="text-lg">🇲🇦</span><span class="whitespace-normal">[Load Moroccan Fintech Checkout PR]</span></button>
-          <button class="scenario-btn btn btn-ghost !justify-start !py-3 text-left" data-scenario="research_lab_um6p">
-            <span class="text-lg">🎓</span><span class="whitespace-normal">[Load Research Lab Notebook &amp; Pipeline]</span></button>
-          <button class="scenario-btn btn btn-ghost !justify-start !py-3 text-left" data-scenario="general_devsecops">
-            <span class="text-lg">🌐</span><span class="whitespace-normal">[Load General DevSecOps API]</span></button>
-          <button class="scenario-btn btn btn-ghost !justify-start !py-3 text-left" id="stagedBtn" data-scenario="__staged">
-            <span class="text-lg">⎇</span><span class="whitespace-normal">[Scan Live Git Staged Diff]</span></button>
+        <div class="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 gap-3 p-4">
+          <button class="scenario scenario-btn" data-scenario="fintech_morocco" data-spec-label="[Load Moroccan Fintech Checkout PR]">
+            <span class="s-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg></span>
+            <span class="s-title">Load Moroccan Fintech Checkout PR</span>
+            <span class="s-meta">checkout.py · CIN · RIB · CMI</span>
+          </button>
+          <button class="scenario scenario-btn" data-scenario="research_lab_um6p" data-spec-label="[Load Research Lab Notebook &amp; Pipeline]">
+            <span class="s-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5.5 9.5A1.7 1.7 0 006 21h12a1.7 1.7 0 001.5-2.5L14 9V3"/><path d="M7.5 15h9"/></svg></span>
+            <span class="s-title">Load Research Lab Notebook &amp; Pipeline</span>
+            <span class="s-meta">train_pipeline.py · .ipynb · CNE</span>
+          </button>
+          <button class="scenario scenario-btn" data-scenario="general_devsecops" data-spec-label="[Load General DevSecOps API]">
+            <span class="s-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span>
+            <span class="s-title">Load General DevSecOps API</span>
+            <span class="s-meta">api.py · SQLi · AWS · JWT</span>
+          </button>
+          <button class="scenario scenario-btn" id="stagedBtn" data-scenario="__staged" data-spec-label="[Scan Live Git Staged Diff]">
+            <span class="s-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M6 8.5v7M18 11.5c0 3-3 4-7.5 4.5"/></svg></span>
+            <span class="s-title">Scan Live Git Staged Diff</span>
+            <span class="s-meta">git diff --cached</span>
+          </button>
         </div>
       </div>
 
-      <div class="card overflow-hidden">
-        <div class="flex flex-wrap items-center gap-2 px-4 py-2.5 border-b border-slate-800 bg-slate-900/40">
-          <div class="flex gap-1.5 mr-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500/70"></span><span class="w-2.5 h-2.5 rounded-full bg-amber-400/70"></span><span class="w-2.5 h-2.5 rounded-full bg-emerald-500/70"></span></div>
-          <div id="fileTabs" class="flex flex-wrap gap-1"></div>
-          <span id="codeTitle" class="ml-auto text-[11px] text-slate-500 font-mono truncate">no file loaded</span>
+      <div class="panel rise" style="--i:2">
+        <div class="window-bar">
+          <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div id="fileTabs" class="flex flex-wrap gap-1.5"></div>
+          <span id="codeTitle" class="ml-auto text-[11.5px] text-muted font-mono truncate">no file loaded</span>
         </div>
-        <div id="codeViewer" class="codebox overflow-auto max-h-[560px] min-h-[320px] py-3">
-          <div class="h-[300px] flex flex-col items-center justify-center text-center px-6 text-slate-500">
-            <svg class="w-12 h-12 mb-3 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13.5 6l-3 12"/></svg>
-            <p class="text-sm font-sans">Load a demo scenario to see the target file, the cross-file context the indexer pulls, and Gemma 4's findings.</p>
+        <div id="codeViewer" class="codebox overflow-auto max-h-[560px] min-h-[320px] py-3 rounded-b-[12px]">
+          <div class="h-[290px] flex flex-col items-center justify-center text-center px-6">
+            <div class="tone w-16 h-16 rounded-2xl border-[1.5px] border-ink bg-white grid place-items-center mb-4" style="box-shadow:2px 2px 0 #16150F">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16150F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9l-3 3 3 3M16 9l3 3-3 3M13.5 6l-3 12"/></svg>
+            </div>
+            <p class="font-display text-[17px] font-bold">No file loaded yet</p>
+            <p class="text-[13px] text-muted mt-1 max-w-[44ch]">Choose a scenario above. The target file appears here with every finding marked on its line.</p>
           </div>
         </div>
       </div>
 
-      <div class="card">
+      <div class="panel rise" style="--i:3">
         <details id="ctxDetails" open>
-          <summary class="flex items-center gap-2 px-4 py-3">
-            <span class="chev text-slate-500">▶</span>
-            <h3 class="text-sm font-bold text-slate-200">Retrieved Cross-File Context</h3>
-            <span id="ctxCount" class="chip chip-cyan">0 chunks</span>
-            <span class="ml-auto text-[11px] text-slate-500 hidden sm:inline">AST symbol graph (1-hop) + BM25 → packed into the Gemma 4 prompt</span>
+          <summary class="panel-head !border-b-0">
+            <svg class="chev text-muted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+            <h3 class="panel-title">Retrieved cross-file context</h3>
+            <span id="ctxCount" class="chip chip-blue">0 chunks</span>
+            <span class="ml-auto panel-sub hidden sm:inline">AST symbol graph (1-hop) + BM25 → packed into the prompt</span>
           </summary>
-          <div id="ctxList" class="px-4 pb-4 space-y-2">
-            <p class="text-xs text-slate-500">No context yet.</p>
+          <div id="ctxList" class="px-4 pb-4 space-y-2.5 border-t border-line pt-3">
+            <p class="text-[13px] text-muted">No context yet. After a scan, the exact definitions Gemma 4 saw from other files are listed here.</p>
           </div>
         </details>
       </div>
@@ -276,51 +444,54 @@
 
     <!-- right -->
     <div class="xl:col-span-5 min-w-0">
-      <div class="xl:sticky xl:top-[196px] space-y-4">
-        <div id="scoreboard" class="card p-4 relative overflow-hidden">
-          <div class="absolute inset-0 pointer-events-none opacity-60" style="background: radial-gradient(400px 120px at 100% 0%, rgba(16,185,129,.12), transparent 70%);"></div>
-          <div class="relative space-y-3">
-            <div class="flex items-center justify-between">
-              <h2 class="text-sm font-bold uppercase tracking-wide text-slate-200">Comparison Scoreboard</h2>
-              <div id="verdictBadge" class="chip chip-mute text-sm !px-3 !py-1">NO SCAN</div>
-            </div>
-            <div class="rounded-xl border border-slate-700/70 bg-slate-900/60 p-3">
-              <div class="flex items-center justify-between gap-3">
-                <div class="text-[13px] text-slate-300 font-semibold" id="regexLine">Regex Baseline (Gitleaks): – Caught (0 Logical Bugs, 0 Contextual/Image Leaks)</div>
-                <div class="text-2xl font-extrabold text-slate-400 tabular-nums" id="regexNum">–</div>
+      <div class="space-y-6">
+        <div id="scoreboard" class="panel tone rise" style="--i:2">
+          <div class="p-5 space-y-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="eyebrow">Verdict</div>
+                <h3 class="panel-title mt-1">Comparison scoreboard</h3>
               </div>
-              <div class="mt-2 h-2 rounded-full bg-slate-800 overflow-hidden"><div id="regexBar" class="bar h-full bg-slate-500" style="width:0%"></div></div>
+              <div id="verdictBadge" class="stamp">No scan</div>
             </div>
-            <div class="rounded-xl border border-emerald-500/40 bg-emerald-500/[.07] p-3">
+            <div class="score-row">
               <div class="flex items-center justify-between gap-3">
-                <div class="text-[13px] text-emerald-100 font-semibold" id="gemmaLine">BarakaGate (Gemma 4): – Caught (Leaks + PII + Cross-File Logical Bugs)</div>
-                <div class="text-2xl font-extrabold text-emerald-400 tabular-nums" id="gemmaNum">–</div>
+                <div class="text-[13px] text-ink2" id="regexLine">Regex Baseline (Gitleaks): – Caught (0 Logical Bugs, 0 Contextual/Image Leaks)</div>
+                <div class="score-num text-faint tabular-nums" id="regexNum">–</div>
               </div>
-              <div class="mt-2 h-2 rounded-full bg-slate-800 overflow-hidden"><div id="gemmaBar" class="bar h-full bg-gradient-to-r from-emerald-500 to-teal-400" style="width:0%"></div></div>
-              <div id="breakdown" class="mt-2 flex flex-wrap gap-1.5"></div>
+              <div class="track mt-2.5"><div id="regexBar" class="bar grey" style="--w:0"></div></div>
             </div>
-            <div id="scanMeta" class="text-[11px] text-slate-500 font-mono"></div>
-            <p id="scanSummary" class="text-xs text-slate-400 leading-relaxed"></p>
+            <div class="score-row hero">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-[13px] font-medium" id="gemmaLine">BarakaGate (Gemma 4): – Caught (Leaks + PII + Cross-File Logical Bugs)</div>
+                <div class="score-num text-accent tabular-nums" id="gemmaNum">–</div>
+              </div>
+              <div class="track mt-2.5"><div id="gemmaBar" class="bar red" style="--w:0"></div></div>
+              <div id="breakdown" class="mt-3 flex flex-wrap gap-1.5"></div>
+            </div>
+            <div id="scanMeta" class="text-[11.5px] text-muted font-mono"></div>
+            <p id="scanSummary" class="text-[13px] text-ink2 leading-relaxed"></p>
             <div id="scanWarnings"></div>
           </div>
         </div>
 
-        <div class="card">
+        <div class="bubble rise" style="--i:3">
           <details id="thinkBox">
-            <summary class="flex items-center gap-2 px-4 py-3">
-              <span class="chev text-slate-500">▶</span>
-              <span class="font-mono text-xs text-violet-300">&lt;|think|&gt;</span>
-              <h3 class="text-sm font-bold text-slate-200">Reasoning Trace</h3>
-              <span class="ml-auto text-[11px] text-slate-500" id="thinkLen"></span>
+            <summary class="flex items-center gap-2.5 px-4 py-3.5">
+              <svg class="chev text-muted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+              <span class="font-mono text-[11.5px] px-1.5 py-0.5 rounded-md bg-ink text-white">&lt;|think|&gt;</span>
+              <h3 class="panel-title !text-[15px]">Reasoning trace</h3>
+              <span class="ml-auto text-[11.5px] text-muted tabular-nums" id="thinkLen"></span>
             </summary>
-            <pre id="thinkTrace" class="mx-4 mb-4 max-h-64 overflow-auto rounded-lg bg-[#060c1a] border border-slate-800 p-3 text-[11.5px] leading-relaxed text-slate-300 font-mono pre-wrap">No reasoning trace yet.</pre>
+            <pre id="thinkTrace" class="mx-4 mb-4 max-h-64 overflow-auto rounded-xl bg-[#FCFBF8] border border-line p-3.5 text-[12px] leading-relaxed text-ink2 font-mono pre-wrap">No reasoning trace yet.</pre>
           </details>
         </div>
 
-        <div class="card flex flex-col min-h-[320px]">
-          <div class="flex flex-wrap items-center gap-2 px-4 pt-3 pb-2 border-b border-slate-800">
-            <h3 class="text-sm font-bold text-slate-200 mr-auto">Findings &amp; Human-in-the-Loop Triage</h3>
-            <div class="flex gap-1.5" id="filterChips">
+        <div class="panel flex flex-col min-h-[320px] rise" style="--i:4">
+          <div class="panel-head">
+            <span class="frame-no red">B</span>
+            <h3 class="panel-title mr-auto">Findings &amp; human-in-the-loop triage</h3>
+            <div class="flex gap-1.5" id="filterChips" role="group" aria-label="Filter findings">
               <button class="filter-chip active" data-filter="all">All</button>
               <button class="filter-chip" data-filter="security_leak">Leaks</button>
               <button class="filter-chip" data-filter="privacy_pii">PII</button>
@@ -328,16 +499,19 @@
             </div>
           </div>
           <div id="findingsWrap" class="relative flex-1">
-            <div id="findings" class="p-3 space-y-3 max-h-[640px] overflow-auto">
-              <div class="py-12 text-center text-slate-500 text-sm">Findings will appear here. Every card gets a human decision before anything touches disk.</div>
+            <div id="findings" class="p-4 space-y-3 max-h-[640px] overflow-auto">
+              <div class="py-12 px-6 text-center">
+                <p class="font-display text-[16px] font-bold">Waiting for a scan</p>
+                <p class="text-[13px] text-muted mt-1 max-w-[40ch] mx-auto">Every finding gets a decision from you before anything is written.</p>
+              </div>
             </div>
           </div>
-          <div class="sticky bottom-0 flex flex-wrap gap-2 p-3 border-t border-slate-800 bg-[#0b1222]/95 backdrop-blur rounded-b-[14px]">
-            <button id="previewBtn" class="btn btn-ghost flex-1 justify-center" disabled>
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          <div class="sticky bottom-0 flex flex-wrap gap-2.5 p-4 border-t border-line bg-white/95 rounded-b-[12px]">
+            <button id="previewBtn" class="btn btn-secondary flex-1" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
               Preview Combined Patched File</button>
-            <button id="applyBtn" class="btn btn-brand flex-1 justify-center" disabled>
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg>
+            <button id="applyBtn" class="btn btn-primary flex-1" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
               Apply Selected Fixes to Disk</button>
           </div>
         </div>
@@ -347,226 +521,252 @@
 </section>
 
 <!-- ============================== TAB 2: IMAGE ============================== -->
-<section id="tab-image" class="tab-panel" role="tabpanel">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-    <div class="lg:col-span-3 space-y-4 min-w-0">
-      <div class="card p-4">
-        <h2 class="text-sm font-bold uppercase tracking-wide text-slate-200 mb-3">Images</h2>
-        <div id="imageList" class="space-y-2"><div class="skel h-14"></div><div class="skel h-14"></div></div>
+<section id="tab-image" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-image">
+  <div class="section-head rise" style="--i:0">
+    <div>
+      <div class="eyebrow mb-2">Chapter 02</div>
+      <h2 class="section-title">Screenshot &amp; notebook image sanitizer</h2>
+    </div>
+    <p class="section-desc pb-1">Gemma 4 reads the pixels and returns boxes around keys, CINs and student IDs. Click a box to keep it, drag to add your own, then export a clean PNG.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div class="lg:col-span-3 space-y-6 min-w-0">
+      <div class="panel rise" style="--i:1">
+        <div class="panel-head"><span class="frame-no">A</span><h3 class="panel-title">Images</h3></div>
+        <div id="imageList" class="space-y-2 p-3"><div class="skel h-14"></div><div class="skel h-14"></div></div>
       </div>
-      <label id="dropzone" class="card p-5 flex flex-col items-center justify-center text-center border-dashed !border-2 !border-slate-700 hover:!border-emerald-500/70 transition cursor-pointer">
-        <svg class="w-9 h-9 text-emerald-400 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
-        <span class="text-sm font-semibold text-slate-200">Drop a screenshot here</span>
-        <span class="text-[11px] text-slate-500 mt-1">or click to upload (PNG / JPG) — scanned with the selected engine</span>
+      <label id="dropzone" class="dropzone p-6 flex flex-col items-center justify-center text-center cursor-pointer rise" style="--i:2">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#16150F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="mb-2"><path d="M12 15V4m0 0l-4 4m4-4l4 4M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+        <span class="text-[14px] font-semibold">Drop a screenshot</span>
+        <span class="text-[12px] text-muted mt-1">or click to upload a PNG or JPG. It is scanned with the selected engine.</span>
         <input type="file" id="fileInput" accept="image/*" class="hidden">
       </label>
     </div>
 
-    <div class="lg:col-span-6 min-w-0 space-y-4">
-      <div class="card p-3">
-        <div class="flex flex-wrap items-center gap-2 mb-3">
-          <button id="visionScanBtn" class="btn btn-brand" disabled>
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></svg>
+    <div class="lg:col-span-6 min-w-0 space-y-6">
+      <div class="panel rise" style="--i:2">
+        <div class="panel-head">
+          <button id="visionScanBtn" class="btn btn-primary" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8V5a2 2 0 012-2h3M16 3h3a2 2 0 012 2v3M21 16v3a2 2 0 01-2 2h-3M8 21H5a2 2 0 01-2-2v-3"/><circle cx="12" cy="12" r="3.5"/></svg>
             Run Gemma 4 Vision Scan</button>
           <label class="sr-only" for="blurStyle">Blur style</label>
           <select id="blurStyle" class="sel">
             <option value="gaussian_blur">Gaussian Blur</option>
             <option value="solid_mask">Solid Cyber Redact Box</option>
           </select>
-          <button id="redactBtn" class="btn btn-rose" disabled>
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+          <button id="redactBtn" class="btn btn-accent ml-auto" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
             Apply Redaction &amp; Download PNG</button>
-          <span class="ml-auto text-[11px] text-slate-500">Click a box to toggle blur/keep · drag to draw a custom box</span>
         </div>
-        <div id="canvasWrap" class="relative rounded-xl bg-[#060c1a] border border-slate-800 min-h-[360px] flex items-center justify-center overflow-hidden">
-          <canvas id="imgCanvas" class="hidden"></canvas>
-          <div id="canvasEmpty" class="text-slate-500 text-sm p-10 text-center">Select a sample screenshot or drop your own.</div>
-          <div id="imgThinking" class="hidden absolute inset-0"></div>
+        <div class="p-4">
+          <div id="canvasWrap" class="canvas-stage relative rounded-xl border border-line min-h-[360px] flex items-center justify-center overflow-hidden">
+            <canvas id="imgCanvas" class="hidden"></canvas>
+            <div id="canvasEmpty" class="text-muted text-[13px] p-10 text-center">Select a sample screenshot or drop your own.</div>
+            <div id="imgThinking" class="hidden absolute inset-0"></div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 mt-2.5">
+            <div id="imgMeta" class="text-[11.5px] text-muted font-mono"></div>
+            <span class="ml-auto text-[11.5px] text-muted">Click a box to toggle · drag to draw</span>
+          </div>
         </div>
-        <div id="imgMeta" class="mt-2 text-[11px] text-slate-500 font-mono"></div>
       </div>
-      <div id="resultCard" class="card p-3 hidden">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-sm font-bold text-slate-200">Before / After</h3>
-          <a id="downloadLink" class="btn btn-ghost !py-1 !text-xs" download>Download again</a>
+      <div id="resultCard" class="panel hidden">
+        <div class="panel-head">
+          <h3 class="panel-title mr-auto">Before / after</h3>
+          <a id="downloadLink" class="btn btn-quiet" download>Download again</a>
         </div>
-        <div class="compare" id="compare">
-          <img id="afterImg" alt="Redacted image">
-          <div class="before" id="beforeClip"><img id="beforeImg" alt="Original image"></div>
+        <div class="p-4">
+          <div class="compare" id="compare">
+            <img id="afterImg" alt="Redacted image">
+            <div class="before" id="beforeClip"><img id="beforeImg" alt="Original image"></div>
+          </div>
+          <input type="range" min="0" max="100" value="50" id="compareRange" class="w-full mt-3" aria-label="Before/after slider">
+          <div class="flex justify-between text-[11.5px] text-muted"><span>original</span><span>redacted</span></div>
         </div>
-        <input type="range" min="0" max="100" value="50" id="compareRange" class="w-full mt-2 accent-emerald-500" aria-label="Before/after slider">
-        <div class="flex justify-between text-[11px] text-slate-500"><span>◀ original</span><span>redacted ▶</span></div>
       </div>
     </div>
 
-    <div class="lg:col-span-3 min-w-0 space-y-4">
-      <div class="card p-4">
-        <div class="flex items-center justify-between mb-2">
-          <h2 class="text-sm font-bold uppercase tracking-wide text-slate-200">Detected Regions</h2>
-          <span id="boxCount" class="chip chip-mute">0</span>
+    <div class="lg:col-span-3 min-w-0 space-y-6">
+      <div class="panel rise" style="--i:3">
+        <div class="panel-head">
+          <span class="frame-no red">B</span>
+          <h3 class="panel-title mr-auto">Detected regions</h3>
+          <span id="boxCount" class="chip chip-grey tabular-nums">0</span>
         </div>
-        <div id="imgVerdict" class="mb-2"></div>
-        <div id="boxList" class="space-y-2 max-h-[520px] overflow-auto"><p class="text-xs text-slate-500">Run a vision scan or draw boxes on the image.</p></div>
+        <div class="p-3">
+          <div id="imgVerdict" class="mb-2"></div>
+          <div id="boxList" class="space-y-2 max-h-[520px] overflow-auto"><p class="text-[13px] text-muted p-1">Run a vision scan or draw boxes on the image.</p></div>
+        </div>
       </div>
-      <div class="card p-4 text-[11px] text-slate-400 leading-relaxed">
-        <div class="font-semibold text-slate-300 mb-1">Coordinate contract</div>
-        Gemma 4 returns <code class="text-emerald-300">bbox_2d = [ymin, xmin, ymax, xmax]</code> normalized 0–1000. The canvas converts with <code class="text-emerald-300">y = ymin/1000·H</code>; the server pads 15% before blurring.
+      <div class="panel-soft p-4 text-[12px] text-ink2 leading-relaxed rise" style="--i:4">
+        <div class="eyebrow mb-1.5">Coordinate contract</div>
+        Gemma 4 returns <code class="text-[11.5px] px-1 rounded bg-[#F5F3EE]">bbox_2d = [ymin, xmin, ymax, xmax]</code> on a 0–1000 scale. The canvas maps it with <code class="text-[11.5px] px-1 rounded bg-[#F5F3EE]">y = ymin/1000·H</code>; the server pads each box by 15% before blurring.
       </div>
     </div>
   </div>
 </section>
 
 <!-- ============================== TAB 3: FIREWALL ============================== -->
-<section id="tab-firewall" class="tab-panel" role="tabpanel">
-  <div class="card p-4 mb-5 flex flex-wrap items-center gap-4 thinking-glow">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-300">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6z"/></svg>
-      </div>
-      <div>
-        <div class="text-sm font-bold text-slate-100">Outbound Agent Firewall</div>
-        <div class="text-[11px] text-slate-400">Redact locally → ask the cloud with tokens only → rehydrate locally.</div>
-      </div>
+<section id="tab-firewall" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-firewall">
+  <div class="section-head rise" style="--i:0">
+    <div>
+      <div class="eyebrow mb-2">Chapter 03</div>
+      <h2 class="section-title">"Safe-to-Prompt" outbound agent firewall</h2>
     </div>
-    <div class="ml-auto flex flex-wrap gap-3">
-      <div class="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-center">
-        <div class="text-[10px] uppercase tracking-wider text-emerald-300 font-bold">bytes of PII sent to cloud</div>
-        <div id="piiBytes" class="text-2xl font-extrabold text-emerald-400 tabular-nums">0</div>
+    <div class="flex flex-wrap gap-3 ml-auto">
+      <div class="stat hero">
+        <div class="eyebrow !text-[10px]">PII bytes sent to cloud</div>
+        <div id="piiBytes" class="v text-accent tabular-nums">0</div>
       </div>
-      <div class="rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2 text-center">
-        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">entities protected</div>
-        <div id="entCount" class="text-2xl font-extrabold text-teal-300 tabular-nums">0</div>
+      <div class="stat">
+        <div class="eyebrow !text-[10px]">Entities protected</div>
+        <div id="entCount" class="v tabular-nums">0</div>
       </div>
-      <div class="rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-2 text-center">
-        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">sanitized bytes sent</div>
-        <div id="sentBytes" class="text-2xl font-extrabold text-slate-300 tabular-nums">0</div>
+      <div class="stat">
+        <div class="eyebrow !text-[10px]">Sanitized bytes sent</div>
+        <div id="sentBytes" class="v text-ink2 tabular-nums">0</div>
       </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-    <div class="card flex flex-col min-w-0">
-      <div class="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
-        <span class="w-6 h-6 rounded-md bg-rose-500/15 text-rose-300 text-xs font-bold flex items-center justify-center">1</span>
-        <h3 class="text-sm font-bold text-slate-200">Raw Developer Prompt / Stack Trace</h3>
-        <span class="ml-auto chip chip-leak">contains PII</span>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="panel flex flex-col min-w-0 rise" style="--i:1">
+      <div class="panel-head">
+        <span class="frame-no red">1</span>
+        <h3 class="panel-title mr-auto">Raw developer prompt</h3>
+        <span class="chip chip-red"><span class="dot"></span>contains PII</span>
       </div>
-      <textarea id="rawPrompt" class="mono flex-1 min-h-[420px] bg-[#060c1a] text-[12.5px] leading-relaxed text-slate-200 p-4 resize-y outline-none" spellcheck="false"></textarea>
-      <div class="p-3 border-t border-slate-800">
-        <button id="sanitizeBtn" class="btn btn-brand w-full justify-center">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      <textarea id="rawPrompt" class="mono flex-1 min-h-[420px] bg-[#FCFBF8] text-[12.5px] leading-relaxed text-ink p-4 resize-y outline-none focus-visible:!outline-0" spellcheck="false" aria-label="Raw developer prompt"></textarea>
+      <div class="p-4 border-t border-line">
+        <button id="sanitizeBtn" class="btn btn-primary w-full">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
           Sanitize with Local gemma4:e4b</button>
       </div>
     </div>
 
-    <div class="card flex flex-col min-w-0">
-      <div class="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
-        <span class="w-6 h-6 rounded-md bg-teal-500/15 text-teal-300 text-xs font-bold flex items-center justify-center">2</span>
-        <h3 class="text-sm font-bold text-slate-200">Sanitized Prompt + Local Token Vault</h3>
-        <span id="sanEngine" class="ml-auto text-[10px] text-slate-500 font-mono"></span>
+    <div class="panel flex flex-col min-w-0 rise" style="--i:2">
+      <div class="panel-head">
+        <span class="frame-no">2</span>
+        <h3 class="panel-title mr-auto">Sanitized prompt &amp; vault</h3>
+        <span id="sanEngine" class="text-[11px] text-muted font-mono"></span>
       </div>
-      <div id="sanitizedOut" class="mono text-[12.5px] leading-relaxed text-slate-200 p-4 pre-wrap min-h-[220px] max-h-[300px] overflow-auto bg-[#060c1a]">
-        <span class="text-slate-500 font-sans text-sm">Sanitized text appears here — every sensitive entity is replaced by a token.</span>
+      <div id="sanitizedOut" class="mono text-[12.5px] leading-relaxed text-ink p-4 pre-wrap min-h-[200px] max-h-[290px] overflow-auto bg-[#FCFBF8]">
+        <span class="text-muted font-sans text-[13px]">The sanitized text appears here, with every sensitive value swapped for a token.</span>
       </div>
-      <div class="px-4 pt-3 pb-2 border-t border-slate-800">
-        <div class="flex items-center gap-2 mb-2">
-          <svg class="w-4 h-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
-          <span class="text-xs font-bold text-slate-200">Local Token Vault</span>
-          <label class="ml-auto flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" id="revealVault" class="accent-emerald-500"> reveal</label>
+      <div class="px-4 pt-3.5 pb-3 border-t border-line">
+        <div class="flex items-center gap-2 mb-1.5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16150F" stroke-width="2" stroke-linecap="round"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="2.5"/><path d="M12 16v1.5M7 7V5.5A1.5 1.5 0 018.5 4h7A1.5 1.5 0 0117 5.5V7"/></svg>
+          <span class="text-[13px] font-semibold">Local token vault</span>
+          <label class="ml-auto flex items-center gap-1.5 text-[12px] text-ink2 cursor-pointer"><input type="checkbox" id="revealVault"> reveal</label>
         </div>
-        <p class="text-[11px] text-amber-200/80 mb-2">🔐 Kept in this browser tab's memory only — never written to disk, never sent to the cloud.</p>
-        <div class="max-h-[180px] overflow-auto rounded-lg border border-slate-800">
-          <table class="w-full text-[11.5px]"><thead><tr class="text-left text-slate-400 bg-slate-900/70"><th class="px-2 py-1.5">Token</th><th class="px-2 py-1.5">Original value</th></tr></thead>
-          <tbody id="vaultTable"><tr><td colspan="2" class="px-2 py-3 text-slate-500 text-center">empty</td></tr></tbody></table>
+        <p class="text-[12px] text-muted mb-2.5">Held in this tab's memory only. Never written to disk, never sent to the cloud.</p>
+        <div class="max-h-[180px] overflow-auto rounded-xl border border-line">
+          <table class="w-full text-[12px]"><thead><tr class="text-left text-muted bg-[#F5F3EE]"><th class="px-2.5 py-1.5 font-medium">Token</th><th class="px-2.5 py-1.5 font-medium">Original value</th></tr></thead>
+          <tbody id="vaultTable"><tr><td colspan="2" class="px-2.5 py-3 text-muted text-center">empty</td></tr></tbody></table>
         </div>
       </div>
-      <div class="p-3 border-t border-slate-800 mt-auto">
-        <button id="askBtn" class="btn btn-brand w-full justify-center" disabled>
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 18a4.5 4.5 0 01-.9-8.9A6 6 0 0117.7 8 4 4 0 0118 16"/><path d="M12 12v9m0 0l-3-3m3 3l3-3"/></svg>
+      <div class="p-4 border-t border-line mt-auto">
+        <button id="askBtn" class="btn btn-accent w-full" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 01-.9-8.9A6 6 0 0117.7 8 4 4 0 0118 16"/><path d="M12 21v-8m0 0l-3 3m3-3l3 3"/></svg>
           Ask Cloud Gemma 4 31B &amp; Restore Context</button>
       </div>
     </div>
 
-    <div class="card flex flex-col min-w-0">
-      <div class="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
-        <span class="w-6 h-6 rounded-md bg-emerald-500/15 text-emerald-300 text-xs font-bold flex items-center justify-center">3</span>
-        <h3 class="text-sm font-bold text-slate-200">Send to Cloud AI &amp; Auto-Rehydrate</h3>
-        <span id="fwEngine" class="ml-auto text-[10px] text-slate-500 font-mono"></span>
+    <div class="panel flex flex-col min-w-0 rise" style="--i:3">
+      <div class="panel-head">
+        <span class="frame-no">3</span>
+        <h3 class="panel-title mr-auto">Cloud answer, rehydrated</h3>
+        <span id="fwEngine" class="text-[11px] text-muted font-mono"></span>
       </div>
-      <div id="fwOut" class="p-4 space-y-3 overflow-auto max-h-[640px] relative min-h-[420px]">
-        <div class="text-slate-500 text-sm">The cloud only ever receives the tokenized prompt. Its answer is rehydrated here, locally.</div>
+      <div id="fwOut" class="p-4 space-y-3 overflow-auto max-h-[640px] relative min-h-[420px] rounded-b-[12px]">
+        <p class="text-[13px] text-muted">The cloud only ever receives the tokenized prompt. Its answer is restored here, on your machine.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ============================== TAB 4: POLICY ============================== -->
-<section id="tab-policy" class="tab-panel" role="tabpanel">
-  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
-    <div class="card flex flex-col min-w-0">
-      <div class="px-4 py-3 border-b border-slate-800 flex flex-wrap items-center gap-2">
-        <h2 class="text-sm font-bold text-slate-200">Live Policy-as-Code Editor</h2>
-        <span class="chip chip-mute font-mono">.barakagate.yaml</span>
-        <span id="policyStats" class="text-[11px] text-slate-500"></span>
-        <button id="reloadPolicyBtn" class="btn btn-ghost !py-1 !text-xs ml-auto">Reload</button>
-        <button id="savePolicyBtn" class="btn btn-brand !py-1.5">Save Policy</button>
+<section id="tab-policy" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-policy">
+  <div class="section-head rise" style="--i:0">
+    <div>
+      <div class="eyebrow mb-2">Chapter 04</div>
+      <h2 class="section-title">Custom rules &amp; benchmark</h2>
+    </div>
+    <p class="section-desc pb-1">Edit the policy in plain YAML: regex rules power the deterministic baseline, natural-language rules go straight into Gemma 4's instructions. Then measure both.</p>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div class="panel flex flex-col min-w-0 rise" style="--i:1">
+      <div class="panel-head">
+        <span class="frame-no">A</span>
+        <h3 class="panel-title">Policy-as-code</h3>
+        <span class="chip chip-grey font-mono">.barakagate.yaml</span>
+        <span id="policyStats" class="text-[11.5px] text-muted basis-full order-last"></span>
+        <button id="reloadPolicyBtn" class="btn btn-quiet ml-auto">Reload</button>
+        <button id="savePolicyBtn" class="btn btn-primary !min-h-[34px] !py-1.5">Save Policy</button>
       </div>
       <div id="policyMsg" class="hidden mx-4 mt-3"></div>
       <div class="p-4 flex-1">
-        <div class="editor-wrap h-[640px]">
+        <div class="editor-wrap h-[620px]">
           <div id="yamlGutter" class="gutter">1</div>
           <textarea id="yamlEditor" class="yaml-ta" spellcheck="false" wrap="off" aria-label="Policy YAML"></textarea>
         </div>
-        <p class="text-[11px] text-slate-500 mt-2"><span class="text-emerald-300">regex_rules</span> feed the deterministic baseline; <span class="text-violet-300">nl_rules</span> are injected verbatim into the Gemma 4 system prompt. <span class="kbd">Ctrl</span>+<span class="kbd">S</span> saves.</p>
+        <p class="text-[12px] text-muted mt-2.5"><span class="font-mono text-ink">regex_rules</span> feed the baseline; <span class="font-mono text-ink">nl_rules</span> go verbatim into the system prompt. <span class="kbd">Ctrl</span> + <span class="kbd">S</span> saves.</p>
       </div>
     </div>
 
-    <div class="space-y-5 min-w-0">
-      <div class="card p-4">
-        <div class="flex flex-wrap items-center gap-2 mb-3">
-          <h2 class="text-sm font-bold text-slate-200 mr-auto">Phase 1 Benchmark Matrix</h2>
-          <label class="flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" id="benchOffline" class="accent-emerald-500" checked> offline (regex + heuristic + cache)</label>
-          <button id="benchBtn" class="btn btn-brand">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+    <div class="space-y-6 min-w-0">
+      <div class="panel tone rise" style="--i:2">
+        <div class="panel-head">
+          <span class="frame-no red">B</span>
+          <h3 class="panel-title mr-auto">Benchmark matrix</h3>
+          <label class="flex items-center gap-1.5 text-[12px] text-ink2 cursor-pointer"><input type="checkbox" id="benchOffline" checked> offline only</label>
+          <button id="benchBtn" class="btn btn-primary !min-h-[34px] !py-1.5">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M11 20V5M17 20v-6M3 20h18"/></svg>
             Run Full Benchmark Suite</button>
         </div>
-        <div id="benchChart" class="space-y-2.5"><p class="text-xs text-slate-500">Recall per engine appears here after a run.</p></div>
-        <div id="benchMeta" class="text-[11px] text-slate-500 font-mono mt-3"></div>
+        <div class="p-5">
+          <div id="benchChart" class="space-y-3.5"><p class="text-[13px] text-muted">Recall per engine appears here after a run.</p></div>
+          <div id="benchMeta" class="text-[11.5px] text-muted font-mono mt-4"></div>
+        </div>
       </div>
-      <div class="card p-4 relative">
-        <h3 class="text-sm font-bold text-slate-200 mb-2">Results Table</h3>
-        <div id="benchMd" class="md overflow-auto max-h-[560px]"><p class="text-xs text-slate-500">Run the suite (12 cases × Regex vs gemma-4-26b-a4b-it vs gemma4:e4b).</p></div>
+      <div class="panel rise" style="--i:3">
+        <div class="panel-head"><h3 class="panel-title">Results table</h3></div>
+        <div id="benchMd" class="md overflow-auto max-h-[560px] px-4 pb-4 relative"><p class="text-[13px] text-muted pt-3">Run the suite: 12 cases, Regex vs gemma-4-26b-a4b-it vs gemma4:e4b.</p></div>
       </div>
     </div>
   </div>
 </section>
 </main>
 
-<footer class="border-t border-slate-800/80 mt-6">
-  <div class="max-w-[1680px] mx-auto px-4 lg:px-6 py-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-slate-500">
-    <span class="font-semibold text-slate-400">BarakaGate</span>
+<footer class="border-t-[1.5px] border-ink bg-paper">
+  <div class="max-w-[1480px] mx-auto px-4 lg:px-8 py-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12.5px] text-muted">
+    <span class="font-display font-bold text-ink">BarakaGate</span>
     <span>MIT License</span>
     <span>Built for Hacktoberfest26 Rabat Hack Day</span>
-    <span>Powered by Google <span class="text-emerald-400 font-semibold">Gemma 4</span> open weights (gemma-4-26b-a4b-it · gemma-4-31b-it · gemma4:e4b)</span>
-    <span class="ml-auto font-mono" id="footerRoot"></span>
+    <span>Powered by Google <span class="text-ink font-semibold">Gemma 4</span> open weights</span>
+    <span class="ml-auto font-mono text-[11.5px]" id="footerRoot"></span>
   </div>
 </footer>
 
 <!-- modal -->
-<div id="modal" class="fixed inset-0 z-50 hidden modal-bg items-center justify-center p-3 sm:p-6">
-  <div class="card w-full max-w-[1400px] max-h-[92vh] flex flex-col shadow-2xl shadow-black/60">
-    <div class="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-slate-800">
-      <h3 id="modalTitle" class="text-sm font-bold text-slate-100 mr-auto">Preview</h3>
-      <div id="modalTabs" class="flex flex-wrap gap-1"></div>
-      <div id="modalViewToggle" class="flex gap-1"></div>
-      <button id="modalClose" class="btn btn-ghost !py-1 !px-2" aria-label="Close">✕</button>
+<div id="modal" class="fixed inset-0 z-50 hidden modal-bg items-center justify-center p-3 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="panel w-full max-w-[1400px] max-h-[92vh] flex flex-col">
+    <div class="panel-head">
+      <h3 id="modalTitle" class="panel-title mr-auto">Preview</h3>
+      <div id="modalTabs" class="flex flex-wrap gap-1.5"></div>
+      <div id="modalViewToggle" class="flex gap-1.5"></div>
+      <button id="modalClose" class="btn btn-quiet !px-2" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
     </div>
     <div id="modalBody" class="overflow-auto flex-1"></div>
-    <div id="modalFoot" class="px-4 py-3 border-t border-slate-800 flex flex-wrap gap-2 justify-end"></div>
+    <div id="modalFoot" class="px-4 py-3 border-t border-line flex flex-wrap gap-2.5 justify-end"></div>
   </div>
 </div>
 
-<div id="toasts" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 w-[min(420px,calc(100vw-2rem))]"></div>
+<div id="toasts" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2.5 w-[min(420px,calc(100vw-2rem))]" aria-live="polite"></div>
 
 <script>
 'use strict';
@@ -579,13 +779,18 @@ const store = {
   set(k, v) { try { localStorage.setItem('bg.' + k, JSON.stringify(v)); } catch (e) {} },
 };
 const params = new URLSearchParams(location.search);
+const ICON = {
+  warn: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" class="flex-none mt-[2px]"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>',
+  link: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7l-1.7 1.7M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7l1.7-1.7"/></svg>',
+  chev: '<svg class="chev text-muted" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+};
+const warnBox = (w) => `<div class="mt-1.5 flex gap-2 items-start text-[12px] rounded-lg border border-[#EFDDA6] bg-[#FBF3DB] text-[#956400] px-2.5 py-1.5">${ICON.warn}<span>${esc(w)}</span></div>`;
 
 function toast(msg, kind = 'info', ms = 4200) {
-  const colors = { info: 'border-teal-500/50 text-teal-100', ok: 'border-emerald-500/60 text-emerald-100', err: 'border-rose-500/60 text-rose-100', warn: 'border-amber-500/60 text-amber-100' };
-  const icon = { info: 'ℹ', ok: '✓', err: '✕', warn: '!' }[kind] || 'ℹ';
+  const mark = { info: ['i', '#1F6C9F'], ok: ['✓', '#346538'], err: ['×', '#C8432B'], warn: ['!', '#B07A0C'] }[kind] || ['i', '#1F6C9F'];
   const el = document.createElement('div');
-  el.className = `toast card !rounded-xl px-4 py-3 text-[13px] flex gap-3 items-start shadow-xl shadow-black/50 ${colors[kind] || colors.info}`;
-  el.innerHTML = `<span class="font-bold">${icon}</span><div class="flex-1 min-w-0 break-words">${typeof msg === 'string' ? esc(msg) : ''}</div><button class="text-slate-500 hover:text-slate-200">✕</button>`;
+  el.className = 'toast px-3.5 py-3 text-[13px] flex gap-3 items-start';
+  el.innerHTML = `<span class="mark" style="background:${mark[1]}">${mark[0]}</span><div class="flex-1 min-w-0 break-words pt-[1px]">${typeof msg === 'string' ? esc(msg) : ''}</div><button class="text-muted hover:text-ink px-1" aria-label="Dismiss">×</button>`;
   if (typeof msg !== 'string') el.querySelector('div').appendChild(msg);
   el.querySelector('button').onclick = () => el.remove();
   $('#toasts').appendChild(el);
@@ -624,10 +829,10 @@ const thinkerName = (mode) => offline() ? 'Offline heuristic engine' : (ENGINE_T
 /** Overlay a skeleton loader with an elapsed-seconds counter. Returns stop(). */
 function thinking(container, label, rows = 4) {
   const ov = document.createElement('div');
-  ov.className = 'absolute inset-0 z-10 bg-[#0b1222]/92 backdrop-blur-[2px] p-4 flex flex-col gap-3 thinking-glow rounded-b-[14px]';
-  ov.innerHTML = `<div class="flex items-center gap-3"><div class="spinner"></div><div class="text-sm font-semibold text-emerald-200">${esc(label)} is thinking… <span class="tabular-nums text-emerald-400 el">0s</span></div></div>
-    <div class="text-[11px] text-slate-500 font-mono hint">${offline() ? 'deterministic regex + heuristic pass' : 'indexing → retrieving cross-file chunks → reasoning (10–60s on cloud)'}</div>
-    ${Array.from({length: rows}, (_, i) => `<div class="skel h-${i % 2 ? 16 : 20}" style="opacity:${1 - i * .15}"></div>`).join('')}`;
+  ov.className = 'thinking';
+  ov.innerHTML = `<div class="flex items-center gap-3"><div class="spinner"></div><div class="text-[14px] font-semibold">${esc(label)} is thinking <span class="tabular-nums text-accent el">0s</span></div></div>
+    <div class="text-[12px] text-muted font-mono hint">${offline() ? 'deterministic regex + heuristic pass' : 'indexing → retrieving cross-file chunks → reasoning (10–60s on cloud)'}</div>
+    ${Array.from({length: rows}, (_, i) => `<div class="skel h-${i % 2 ? 14 : 20}" style="opacity:${1 - i * .14}"></div>`).join('')}`;
   container.style.position = container.style.position || 'relative';
   container.appendChild(ov);
   const t0 = Date.now();
@@ -637,7 +842,7 @@ function thinking(container, label, rows = 4) {
 
 function setBusy(btn, busy, text) {
   if (!btn) return;
-  if (busy) { btn.dataset.html = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="spinner !w-4 !h-4"></span> ${esc(text || 'Working…')}`; }
+  if (busy) { btn.dataset.html = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="spinner sm"></span> ${esc(text || 'Working…')}`; }
   else { if (btn.dataset.html) btn.innerHTML = btn.dataset.html; btn.disabled = false; }
 }
 
@@ -667,6 +872,8 @@ function splitHtmlLines(html) {
   lines.push(cur + '</span>'.repeat(stack.length));
   return lines;
 }
+const codeLines = (code, file, start = 1) => splitHtmlLines(highlight(code, langFor(file)))
+  .map((h, j) => `<div class="cl"><span class="ln">${start + j}</span><span class="lc">${h || ' '}</span></div>`).join('');
 
 /* ====================================================================== status */
 let STATUS = null;
@@ -685,8 +892,8 @@ async function loadStatus() {
 function setDot(sel, on) {
   const el = $(sel);
   el.querySelector('.pulse-dot').className = 'pulse-dot ' + (on ? 'on' : 'off');
-  const mk = el.querySelector('.mark'); mk.textContent = on ? '✓' : '✗';
-  mk.className = 'mark ' + (on ? 'text-emerald-400' : 'text-rose-400');
+  const mk = el.querySelector('.mark'); mk.textContent = on ? '✓' : '×';
+  mk.className = 'mark font-semibold ' + (on ? 'text-good' : 'text-faint');
 }
 function setIndex(ix) {
   if (!ix) return;
@@ -694,16 +901,16 @@ function setIndex(ix) {
 }
 function syncOffline() {
   store.set('offline', offline());
-  const pill = $('#statusPill');
-  pill.classList.toggle('!border-amber-500/40', offline());
+  $('#statusPill').classList.toggle('is-offline', offline());
 }
 
 /* ======================================================================== tabs */
 function showTab(id) {
-  $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  $$('.tab-btn').forEach(b => { const on = b.dataset.tab === id; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
   $$('.tab-panel').forEach(p => p.classList.toggle('active', p.id === id));
   store.set('tab', id);
   if (id === 'tab-image' && !IMG.listLoaded) loadImages();
+  if (id === 'tab-image' && IMG.img) requestAnimationFrame(drawCanvas);
   if (id === 'tab-policy' && !POLICY.loaded) { loadPolicy(); loadLastBench(); }
 }
 
@@ -716,7 +923,7 @@ const BUG_ACTIONS = [['code_patch', '✓ Apply Bug Fix Patch'], ['whitelist', 'K
 const isBug = f => f.category === 'logical_bug';
 
 async function runScenario(name) {
-  $$('.scenario-btn').forEach(b => b.classList.toggle('!border-emerald-500', b.dataset.scenario === name));
+  $$('.scenario-btn').forEach(b => b.classList.toggle('is-active', b.dataset.scenario === name));
   const stop = thinking($('#findingsWrap'), thinkerName(), 5);
   disableScanButtons(true);
   try {
@@ -761,7 +968,7 @@ function renderFiles(files, active, title) {
   const keys = Object.keys(files);
   SCAN.activeFile = keys.includes(active) ? active : keys[0];
   const tabs = $('#fileTabs');
-  tabs.innerHTML = keys.map(k => `<button class="file-tab px-2.5 py-1 rounded-md text-[11.5px] font-mono border ${k === SCAN.activeFile ? 'border-emerald-500/60 text-emerald-200 bg-emerald-500/10' : 'border-slate-700 text-slate-400 hover:text-slate-200'}" data-file="${esc(k)}">${esc(k)}<span class="cnt"></span></button>`).join('');
+  tabs.innerHTML = keys.map(k => `<button class="file-tab ${k === SCAN.activeFile ? 'on' : ''}" data-file="${esc(k)}">${esc(k)}<span class="cnt"></span></button>`).join('');
   $$('.file-tab', tabs).forEach(b => b.onclick = () => { SCAN.activeFile = b.dataset.file; renderFiles(SCAN.files, b.dataset.file, title); });
   $('#codeTitle').textContent = title || '';
   renderCode();
@@ -794,7 +1001,7 @@ function renderCode() {
   // counts on file tabs
   $$('.file-tab').forEach(b => {
     const c = findings.filter(f => fileOfFinding(f) === b.dataset.file).length;
-    b.querySelector('.cnt').innerHTML = c ? ` <span class="ml-1 px-1.5 rounded bg-rose-500/20 text-rose-300">${c}</span>` : '';
+    b.querySelector('.cnt').innerHTML = c ? `<span class="count">${c}</span>` : '';
   });
 }
 
@@ -809,6 +1016,12 @@ function jumpTo(f) {
   }
 }
 
+function setStamp(el, v) {
+  el.className = 'stamp ' + (v === 'BLOCK' ? 'block' : v === 'WARN' ? 'warn' : 'pass');
+  el.textContent = v;
+  void el.offsetWidth; el.classList.add('hit');
+}
+
 function renderScan() {
   const d = SCAN.data; if (!d) return;
   renderFiles(d.files || {}, (d.target_files || [])[0], d.scenario ? (d.scenario + ' · ' + (d.kind || '')) : d.kind);
@@ -821,24 +1034,21 @@ function renderScan() {
   $('#gemmaLine').textContent = `BarakaGate (Gemma 4): ${total} Caught (Leaks + PII + Cross-File Logical Bugs)`;
   $('#regexNum').textContent = regex; $('#gemmaNum').textContent = total;
   const max = Math.max(total, regex, 1);
-  requestAnimationFrame(() => { $('#regexBar').style.width = (regex / max * 100) + '%'; $('#gemmaBar').style.width = (total / max * 100) + '%'; });
+  requestAnimationFrame(() => { $('#regexBar').style.setProperty('--w', regex / max); $('#gemmaBar').style.setProperty('--w', total / max); });
   const cnt = c => findings.filter(f => f.category === c).length;
   const xf = findings.filter(f => f.cross_file_context_used).length;
   const only = total - regex;
   $('#breakdown').innerHTML = [
-    `<span class="chip chip-leak">🔴 ${cnt('security_leak')} secret leaks</span>`,
-    `<span class="chip chip-leak">🪪 ${cnt('privacy_pii')} PII</span>`,
-    `<span class="chip chip-bug">🟣 ${cnt('logical_bug')} logical bugs</span>`,
-    `<span class="chip chip-cyan">🔗 ${xf} cross-file proofs</span>`,
-    only > 0 ? `<span class="chip chip-pass">+${only} only Gemma 4 caught</span>` : '',
+    `<span class="chip chip-red"><span class="dot"></span>${cnt('security_leak')} secret leaks</span>`,
+    `<span class="chip chip-red"><span class="dot"></span>${cnt('privacy_pii')} PII</span>`,
+    `<span class="chip chip-bug"><span class="dot"></span>${cnt('logical_bug')} logical bugs</span>`,
+    `<span class="chip chip-blue">${ICON.link}${xf} cross-file proofs</span>`,
+    only > 0 ? `<span class="chip chip-green">+${only} only Gemma 4 caught</span>` : '',
   ].join('');
-  const v = d.verdict || 'PASS';
-  const vb = $('#verdictBadge');
-  vb.className = 'chip text-sm !px-3 !py-1 ' + (v === 'BLOCK' ? 'sev-CRITICAL' : v === 'WARN' ? 'chip-warn' : 'chip-pass');
-  vb.textContent = (v === 'BLOCK' ? '⛔ ' : v === 'WARN' ? '⚠ ' : '✓ ') + v;
+  setStamp($('#verdictBadge'), d.verdict || 'PASS');
   $('#scanMeta').textContent = `engine: ${d.engine_used} · preset: ${d.preset_used} · ${d.indexed_chunks_count || 0} chunks indexed · ${(d.context || []).length} retrieved · ${d.elapsed_s ?? '?'}s`;
   $('#scanSummary').textContent = d.summary || '';
-  $('#scanWarnings').innerHTML = (d.warnings || []).map(w => `<div class="mt-1 text-[11px] rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-200 px-2 py-1">⚠ ${esc(w)}</div>`).join('');
+  $('#scanWarnings').innerHTML = (d.warnings || []).map(warnBox).join('');
   // thinking
   const tt = d.thinking_trace || '';
   $('#thinkTrace').textContent = tt || 'No reasoning trace returned by this engine (offline heuristic / cache).';
@@ -851,19 +1061,17 @@ function renderScan() {
 
 function renderContext(ctx) {
   $('#ctxCount').textContent = `${ctx.length} chunk${ctx.length === 1 ? '' : 's'}`;
-  if (!ctx.length) { $('#ctxList').innerHTML = '<p class="text-xs text-slate-500">No cross-file chunks were retrieved for this target.</p>'; return; }
+  if (!ctx.length) { $('#ctxList').innerHTML = '<p class="text-[13px] text-muted">No cross-file chunks were retrieved for this target.</p>'; return; }
   $('#ctxList').innerHTML = ctx.map((c, i) => {
     const base = (c.file_path || '').split('/').pop();
-    const lines = splitHtmlLines(highlight(c.code || '', langFor(c.file_path)));
-    const body = lines.map((h, j) => `<div class="cl"><span class="ln">${(c.start_line || 1) + j}</span><span class="lc">${h || ' '}</span></div>`).join('');
-    return `<details class="rounded-lg border border-slate-800 bg-[#060c1a] overflow-hidden" ${i < 2 ? 'open' : ''}>
-      <summary class="flex items-center gap-2 px-3 py-2 text-[12px] font-mono hover:bg-slate-900/60">
-        <span class="chev text-slate-600">▶</span>
-        <span class="text-teal-300 font-semibold">${esc(base)}:${esc(c.symbol_name)}</span>
-        <span class="text-slate-500">L${esc(c.start_line)}-${esc(c.end_line)}</span>
-        <span class="ml-auto chip chip-mute !text-[10px]">${esc(c.chunk_type || 'chunk')}</span>
+    return `<details class="rounded-xl border border-line bg-white overflow-hidden" ${i < 2 ? 'open' : ''}>
+      <summary class="flex items-center gap-2 px-3 py-2.5 text-[12px] font-mono hover:bg-[#FCFBF8]">
+        ${ICON.chev}
+        <span class="font-semibold text-ink">${esc(base)}<span class="text-accent">:</span>${esc(c.symbol_name)}</span>
+        <span class="text-muted">L${esc(c.start_line)}–${esc(c.end_line)}</span>
+        <span class="ml-auto chip chip-grey !text-[10px]">${esc(c.chunk_type || 'chunk')}</span>
       </summary>
-      <div class="codebox overflow-auto max-h-64 py-2 border-t border-slate-800 hljs">${body}</div></details>`;
+      <div class="codebox overflow-auto max-h-64 py-2 border-t border-line hljs">${codeLines(c.code || '', c.file_path, c.start_line || 1)}</div></details>`;
   }).join('');
 }
 
@@ -874,7 +1082,8 @@ function renderFindings() {
   list = list.slice().sort((a, b) => (sevRank[a.severity] - sevRank[b.severity]) || ((a.line_start || 0) - (b.line_start || 0)));
   if (SCAN.filter !== 'all') list = list.filter(f => f.category === SCAN.filter);
   if (!list.length) {
-    wrap.innerHTML = `<div class="py-12 text-center text-sm ${d && d.verdict === 'PASS' ? 'text-emerald-300' : 'text-slate-500'}">${d ? (d.findings.length ? 'No findings in this filter.' : '✓ Clean — nothing to fix.') : 'No scan yet.'}</div>`;
+    const clean = d && !d.findings.length;
+    wrap.innerHTML = `<div class="py-12 text-center"><p class="font-display text-[16px] font-bold ${clean ? 'text-good' : ''}">${d ? (clean ? 'Clean. Nothing to fix.' : 'No findings in this filter.') : 'No scan yet.'}</p></div>`;
     return;
   }
   wrap.innerHTML = list.map(cardHtml).join('');
@@ -889,29 +1098,29 @@ function renderFindings() {
 
 function cardHtml(f) {
   const bug = isBug(f);
-  const cat = bug ? '<span class="chip chip-bug">🟣 LOGICAL / SECURITY BUG</span>' : '<span class="chip chip-leak">🔴 PRIVACY / SECRET LEAK</span>';
-  const sub = f.category === 'privacy_pii' ? '<span class="chip chip-mute">PII</span>' : (f.category === 'security_leak' ? '<span class="chip chip-mute">SECRET</span>' : '');
+  const cat = bug ? '<span class="chip chip-bug"><span class="dot"></span>Logical / security bug</span>' : '<span class="chip chip-red"><span class="dot"></span>Privacy / secret leak</span>';
+  const sub = f.category === 'privacy_pii' ? '<span class="chip chip-grey">PII</span>' : (f.category === 'security_leak' ? '<span class="chip chip-grey">Secret</span>' : '');
   const file = fileOfFinding(f) || f.file_path;
   const loc = `${file}${f.line_start ? ':' + f.line_start + (f.line_end && f.line_end !== f.line_start ? '-' + f.line_end : '') : ''}`;
-  const proof = f.cross_file_context_used ? `<span class="chip chip-cyan" title="Indexed symbol that proved this finding">🔗 Cross-File Proof: ${esc(f.cross_file_context_used)}</span>` : '';
-  const who = f.caught_by_regex_baseline ? '<span class="chip chip-mute">Regex also caught</span>' : '<span class="chip chip-pass">★ Only Gemma 4 caught</span>';
+  const proof = f.cross_file_context_used ? `<span class="chip chip-blue" title="Indexed symbol that proved this finding">${ICON.link}Cross-file proof: ${esc(f.cross_file_context_used)}</span>` : '';
+  const who = f.caught_by_regex_baseline ? '<span class="chip chip-grey">Regex also caught</span>' : '<span class="chip chip-green">Only Gemma 4 caught</span>';
   const off = f.offending_snippet ? f.offending_snippet.split('\n').map(l => `<div class="diff-line diff-del">- ${esc(l)}</div>`).join('') : '';
   let rep = '';
   if (f.replacement_snippet) rep = f.replacement_snippet.split('\n').map(l => `<div class="diff-line diff-add">+ ${esc(l)}</div>`).join('');
   const envNote = f.env_var_name ? `<div class="diff-line diff-meta"># .env ← ${esc(f.env_var_name)}=•••</div>` : '';
-  const diff = (off || rep) ? `<div class="mt-2 rounded-lg border border-slate-800 bg-[#060c1a] py-1.5 overflow-auto max-h-48"><div class="diff-line diff-meta"># Proposed fix</div>${off}${rep}${envNote}</div>` : '';
+  const diff = (off || rep) ? `<div class="diffbox mt-3 py-1.5 overflow-auto max-h-48"><div class="diff-line diff-meta"># proposed fix</div>${off}${rep}${envNote}</div>` : '';
   const acts = actionsFor(f);
   const cur = SCAN.decisions[f.id] || defaultAction(f);
-  const radios = acts.map(([v, label]) => `<label><input type="radio" name="dec-${esc(f.id)}" value="${v}" ${cur === v ? 'checked' : ''}><span class="${v === 'whitelist' ? 'keep' : ''}">${esc(label)}${v === f.recommended_action ? ' <span class="opacity-60">· rec</span>' : ''}</span></label>`).join('');
-  return `<article class="finding card !rounded-xl p-3 ${bug ? 'bug' : 'leak'} ${cur === 'whitelist' ? 'ignored' : ''}" data-id="${esc(f.id)}">
+  const radios = acts.map(([v, label]) => `<label><input type="radio" name="dec-${esc(f.id)}" value="${v}" ${cur === v ? 'checked' : ''}><span class="${v === 'whitelist' ? 'keep' : ''}">${esc(label)}${v === f.recommended_action ? '<span class="ml-1.5 opacity-60 text-[10.5px]">rec</span>' : ''}</span></label>`).join('');
+  return `<article class="finding ${bug ? 'bug' : 'leak'} ${cur === 'whitelist' ? 'ignored' : ''}" data-id="${esc(f.id)}">
     <div class="flex flex-wrap items-center gap-1.5">${cat}${sub}<span class="chip sev-${esc(f.severity)}">${esc(f.severity)}</span>
-      <span class="text-[11px] text-slate-500 ml-auto tabular-nums">conf ${Math.round((f.confidence || 0) * 100)}%</span></div>
-    <h4 class="mt-2 text-[13.5px] font-bold text-slate-100 leading-snug">${esc(f.title)}</h4>
-    <button class="jump mt-1 text-[11.5px] font-mono text-teal-300 hover:text-teal-200 hover:underline" title="Show in code viewer">${esc(loc)} ↗</button>
-    <div class="mt-1.5 flex flex-wrap gap-1.5">${proof}${who}<span class="chip chip-mute font-mono !font-medium">${esc(f.rule_id)}</span></div>
-    <p class="mt-2 text-[12.5px] text-slate-300 leading-relaxed">${esc(f.reason)}</p>
+      <span class="text-[11.5px] text-muted ml-auto tabular-nums">${Math.round((f.confidence || 0) * 100)}% conf.</span></div>
+    <h4 class="f-title mt-2.5">${esc(f.title)}</h4>
+    <button class="jump mt-1" title="Show in code viewer">${esc(loc)} ↗</button>
+    <div class="mt-2 flex flex-wrap gap-1.5">${proof}${who}<span class="chip chip-grey font-mono !font-medium">${esc(f.rule_id)}</span></div>
+    <p class="mt-2.5 text-[13px] text-ink2 leading-relaxed">${esc(f.reason)}</p>
     ${diff}
-    <div class="seg mt-3" role="radiogroup" aria-label="Decision">${radios}</div>
+    <div class="seg mt-3.5" role="radiogroup" aria-label="Decision">${radios}</div>
   </article>`;
 }
 
@@ -929,8 +1138,8 @@ async function previewPatch() {
 }
 
 function diffHtml(diff) {
-  if (!diff) return '<div class="p-4 text-slate-500 text-sm">No changes.</div>';
-  return '<div class="py-2">' + diff.split('\n').map(l => {
+  if (!diff) return '<div class="p-4 text-muted text-[13px]">No changes.</div>';
+  return '<div class="py-2 codebox">' + diff.split('\n').map(l => {
     let cls = '';
     if (l.startsWith('+++') || l.startsWith('---')) cls = 'diff-meta';
     else if (l.startsWith('+')) cls = 'diff-add'; else if (l.startsWith('-')) cls = 'diff-del'; else if (l.startsWith('@@')) cls = 'diff-hunk';
@@ -938,30 +1147,30 @@ function diffHtml(diff) {
   }).join('') + '</div>';
 }
 function sideBySide(orig, patched, file) {
-  const col = (txt, title, accent) => `<div class="min-w-0 border border-slate-800 rounded-lg overflow-hidden"><div class="px-3 py-1.5 text-[11px] font-bold ${accent} bg-slate-900/70 border-b border-slate-800">${title}</div>
-    <div class="codebox overflow-auto max-h-[70vh] py-2 hljs">${splitHtmlLines(highlight(txt, langFor(file))).map((h, i) => `<div class="cl"><span class="ln">${i + 1}</span><span class="lc">${h || ' '}</span></div>`).join('')}</div></div>`;
-  return `<div class="grid grid-cols-1 lg:grid-cols-2 gap-3 p-3">${col(orig, 'ORIGINAL', 'text-rose-300')}${col(patched, 'PATCHED', 'text-emerald-300')}</div>`;
+  const col = (txt, title, cls) => `<div class="min-w-0 border border-line rounded-xl overflow-hidden"><div class="px-3 py-2 text-[11.5px] font-semibold eyebrow ${cls} bg-[#F5F3EE] border-b border-line">${title}</div>
+    <div class="codebox overflow-auto max-h-[70vh] py-2 hljs">${codeLines(txt, file)}</div></div>`;
+  return `<div class="grid grid-cols-1 lg:grid-cols-2 gap-3 p-4">${col(orig, 'Original', '!text-accent')}${col(patched, 'Patched', '!text-good')}</div>`;
 }
 function openPreviewModal(files, warnings) {
   const keys = Object.keys(files); let active = keys[0]; let view = 'unified';
-  $('#modalTitle').textContent = 'Preview Combined Patched File';
+  $('#modalTitle').textContent = 'Preview combined patched file';
   const draw = () => {
-    $('#modalTabs').innerHTML = keys.map(k => `<button class="px-2.5 py-1 rounded-md text-[11.5px] font-mono border ${k === active ? 'border-emerald-500/60 text-emerald-200 bg-emerald-500/10' : 'border-slate-700 text-slate-400'}" data-k="${esc(k)}">${esc(k)}</button>`).join('');
+    $('#modalTabs').innerHTML = keys.map(k => `<button class="file-tab ${k === active ? 'on' : ''}" data-k="${esc(k)}">${esc(k)}</button>`).join('');
     $$('#modalTabs button').forEach(b => b.onclick = () => { active = b.dataset.k; draw(); });
-    $('#modalViewToggle').innerHTML = ['unified', 'side-by-side'].map(v => `<button class="px-2.5 py-1 rounded-md text-[11.5px] border ${v === view ? 'border-teal-500/60 text-teal-200 bg-teal-500/10' : 'border-slate-700 text-slate-400'}" data-v="${v}">${v}</button>`).join('');
+    $('#modalViewToggle').innerHTML = ['unified', 'side-by-side'].map(v => `<button class="filter-chip ${v === view ? 'active' : ''}" data-v="${v}">${v}</button>`).join('');
     $$('#modalViewToggle button').forEach(b => b.onclick = () => { view = b.dataset.v; draw(); });
     const f = files[active];
-    $('#modalBody').innerHTML = (warnings.length ? warnings.map(w => `<div class="mx-3 mt-3 text-[11px] rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-200 px-2 py-1">⚠ ${esc(w)}</div>`).join('') : '')
+    $('#modalBody').innerHTML = (warnings.length ? `<div class="px-4 pt-3">${warnings.map(warnBox).join('')}</div>` : '')
       + (view === 'unified' ? diffHtml(f.diff) : sideBySide(f.original, f.patched, active));
   };
   $('#modalFoot').innerHTML = '';
-  const apply = document.createElement('button'); apply.className = 'btn btn-brand'; apply.textContent = '✓ Apply Selected Fixes to Disk';
+  const apply = document.createElement('button'); apply.className = 'btn btn-primary'; apply.textContent = '✓ Apply Selected Fixes to Disk';
   apply.onclick = () => { closeModal(); applyFixes(); };
-  const close = document.createElement('button'); close.className = 'btn btn-ghost'; close.textContent = 'Close'; close.onclick = closeModal;
+  const close = document.createElement('button'); close.className = 'btn btn-secondary'; close.textContent = 'Close'; close.onclick = closeModal;
   $('#modalFoot').append(close, apply);
   draw(); openModal();
 }
-function openModal() { const m = $('#modal'); m.classList.remove('hidden'); m.classList.add('flex'); }
+function openModal() { const m = $('#modal'); m.classList.remove('hidden'); m.classList.add('flex'); $('#modalClose').focus(); }
 function closeModal() { const m = $('#modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
 
 async function applyFixes() {
@@ -972,8 +1181,8 @@ async function applyFixes() {
     const w = r.written || [];
     if (!w.length) { toast('Nothing written (all findings kept / whitelisted).' + ((r.warnings || []).length ? ' ' + r.warnings.join('; ') : ''), 'warn'); return; }
     const box = document.createElement('div');
-    box.innerHTML = `<div class="font-semibold mb-1">Patched ${w.length} file${w.length > 1 ? 's' : ''}${w.some(x => !x.in_place) ? ' (sample fixtures untouched — safe copy)' : ''}</div>` +
-      w.map(x => `<div class="font-mono text-[11px] text-emerald-200 break-all">→ ${esc(x.rel_path || x.path)}</div>${x.env_path ? `<div class="font-mono text-[11px] text-amber-200 break-all">.env → ${esc(x.env_path)}</div>` : ''}`).join('');
+    box.innerHTML = `<div class="font-semibold mb-1">Patched ${w.length} file${w.length > 1 ? 's' : ''}${w.some(x => !x.in_place) ? ' (sample fixtures untouched, safe copy)' : ''}</div>` +
+      w.map(x => `<div class="font-mono text-[11.5px] text-good break-all">→ ${esc(x.rel_path || x.path)}</div>${x.env_path ? `<div class="font-mono text-[11.5px] text-warnc break-all">.env → ${esc(x.env_path)}</div>` : ''}`).join('');
     toast(box, 'ok', 9000);
     (r.warnings || []).forEach(m => toast(m, 'warn'));
   } catch (e) { toast('Apply failed: ' + e.message, 'err'); }
@@ -982,27 +1191,28 @@ async function applyFixes() {
 
 /* ==================================================================== TAB 2 */
 const IMG = { listLoaded: false, current: null, img: null, boxes: [], scale: 1, drag: null, scanId: null };
-const BOX_COLORS = { security_leak: '#f43f5e', privacy_pii: '#fb923c', logical_bug: '#8b5cf6', manual: '#22d3ee' };
+const BOX_COLORS = { security_leak: '#C8432B', privacy_pii: '#D9822B', logical_bug: '#4B3FA6', manual: '#1F6C9F' };
 
 async function loadImages() {
   IMG.listLoaded = true;
   try {
     const items = await api('/api/images');
     const list = $('#imageList');
-    if (!items.length) { list.innerHTML = '<p class="text-xs text-slate-500">No sample images yet (samples/screenshots/). Drop one below.</p>'; return; }
-    list.innerHTML = items.map((it, i) => `<button class="img-item w-full flex items-center gap-3 p-2 rounded-xl border border-slate-800 hover:border-emerald-500/60 bg-slate-900/40 text-left transition" data-i="${i}">
-      <img src="${esc(it.url)}" alt="" class="w-16 h-11 object-cover rounded-md border border-slate-700 flex-none" loading="lazy">
-      <div class="min-w-0"><div class="text-[12px] font-semibold text-slate-200 leading-tight">${esc(it.label)}</div>
-      <div class="text-[10.5px] text-slate-500 font-mono truncate">${esc(it.name)} · ${esc(it.width)}×${esc(it.height)} · ${esc(it.source)}</div></div></button>`).join('');
+    if (!items.length) { list.innerHTML = '<p class="text-[13px] text-muted p-1">No sample images yet (samples/screenshots/). Drop one below.</p>'; return; }
+    list.innerHTML = items.map((it, i) => `<button class="img-item" data-i="${i}">
+      <img src="${esc(it.url)}" alt="${esc(it.label)}" class="w-16 h-11 object-cover rounded-md border border-line flex-none" loading="lazy">
+      <div class="min-w-0"><div class="text-[12.5px] font-semibold leading-tight">${esc(it.label)}</div>
+      <div class="text-[10.5px] text-muted font-mono truncate mt-0.5">${esc(it.name)} · ${esc(it.width)}×${esc(it.height)}</div></div></button>`).join('');
     $$('.img-item', list).forEach(b => b.onclick = () => selectImage(items[+b.dataset.i]));
-    if (!IMG.current) selectImage(items[0]);
     IMG.items = items;
+    if (!IMG.current) selectImage(items[0]);
+    else $$('.img-item').forEach(b => b.classList.toggle('is-active', items[+b.dataset.i] && items[+b.dataset.i].path === IMG.current.path));
   } catch (e) { toast('Could not list images: ' + e.message, 'err'); }
 }
 
 function selectImage(it) {
   IMG.current = it; IMG.boxes = []; IMG.scanId = null;
-  $$('.img-item').forEach(b => b.classList.toggle('!border-emerald-500', IMG.items && IMG.items[+b.dataset.i] === it));
+  $$('.img-item').forEach(b => b.classList.toggle('is-active', IMG.items && IMG.items[+b.dataset.i] === it));
   const im = new Image();
   im.onload = () => { IMG.img = im; $('#canvasEmpty').classList.add('hidden'); $('#imgCanvas').classList.remove('hidden'); drawCanvas(); renderBoxList(); };
   im.onerror = () => toast('Image failed to load', 'err');
@@ -1015,6 +1225,7 @@ function selectImage(it) {
 function drawCanvas() {
   const im = IMG.img; if (!im) return;
   const cv = $('#imgCanvas'); const wrap = $('#canvasWrap');
+  if (!wrap.clientWidth) return;
   const maxW = wrap.clientWidth - 2; const maxH = Math.max(360, window.innerHeight * 0.68);
   const scale = Math.min(maxW / im.naturalWidth, maxH / im.naturalHeight, 1.5);
   IMG.scale = scale;
@@ -1027,23 +1238,23 @@ function drawCanvas() {
   const style = $('#blurStyle').value;
   IMG.boxes.forEach((b, i) => {
     const [ymin, xmin, ymax, xmax] = b.bbox; const x = xmin / 1000 * W, y = ymin / 1000 * H, w = (xmax - xmin) / 1000 * W, h = (ymax - ymin) / 1000 * H;
-    const color = BOX_COLORS[b.manual ? 'manual' : b.category] || '#f43f5e';
+    const color = BOX_COLORS[b.manual ? 'manual' : b.category] || '#C8432B';
     if (b.redact) {
       ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-      if (style === 'solid_mask') { ctx.fillStyle = '#050a14'; ctx.fillRect(x, y, w, h); ctx.fillStyle = color; ctx.font = '700 10px JetBrains Mono, monospace'; ctx.fillText('█ REDACTED', x + 4, y + Math.min(h - 3, 13)); }
-      else { try { ctx.filter = 'blur(7px)'; } catch (e) {} ctx.drawImage(im, 0, 0, W, H); ctx.filter = 'none'; ctx.fillStyle = color + '22'; ctx.fillRect(x, y, w, h); }
+      if (style === 'solid_mask') { ctx.fillStyle = '#16150F'; ctx.fillRect(x, y, w, h); ctx.fillStyle = '#FAF9F6'; ctx.font = '600 10px "Geist Mono", monospace'; ctx.fillText('REDACTED', x + 5, y + Math.min(h - 3, 13)); }
+      else { try { ctx.filter = 'blur(7px)'; } catch (e) {} ctx.drawImage(im, 0, 0, W, H); ctx.filter = 'none'; ctx.fillStyle = color + '1f'; ctx.fillRect(x, y, w, h); }
       ctx.restore();
     }
     ctx.save(); ctx.lineWidth = 2; ctx.strokeStyle = color; ctx.setLineDash(b.redact ? [] : [6, 4]);
     ctx.strokeRect(x, y, w, h);
     const label = `${i + 1} ${b.label}${b.redact ? '' : ' (kept)'}`.slice(0, 48);
-    ctx.font = '600 11px Inter, sans-serif'; const tw = ctx.measureText(label).width + 8;
-    const ly = y - 17 < 0 ? y + h + 1 : y - 17;
-    ctx.fillStyle = b.redact ? color : '#334155'; ctx.fillRect(x, ly, tw, 16);
-    ctx.fillStyle = '#fff'; ctx.fillText(label, x + 4, ly + 12); ctx.restore();
+    ctx.font = '600 11px Geist, sans-serif'; const tw = ctx.measureText(label).width + 10;
+    const ly = y - 18 < 0 ? y + h + 2 : y - 18;
+    ctx.fillStyle = b.redact ? color : '#77756E'; ctx.fillRect(x, ly, tw, 16);
+    ctx.fillStyle = '#fff'; ctx.fillText(label, x + 5, ly + 12); ctx.restore();
   });
   if (IMG.drag && IMG.drag.moved) {
-    const d = IMG.drag; ctx.save(); ctx.strokeStyle = '#22d3ee'; ctx.setLineDash([4, 3]); ctx.lineWidth = 2;
+    const d = IMG.drag; ctx.save(); ctx.strokeStyle = '#1F6C9F'; ctx.setLineDash([4, 3]); ctx.lineWidth = 2;
     ctx.strokeRect(Math.min(d.x0, d.x1), Math.min(d.y0, d.y1), Math.abs(d.x1 - d.x0), Math.abs(d.y1 - d.y0)); ctx.restore();
   }
 }
@@ -1074,17 +1285,17 @@ function initCanvas() {
 
 function renderBoxList() {
   const list = $('#boxList'); $('#boxCount').textContent = IMG.boxes.length;
-  if (!IMG.boxes.length) { list.innerHTML = '<p class="text-xs text-slate-500">No regions yet. Run a vision scan or drag on the image to draw one.</p>'; return; }
+  if (!IMG.boxes.length) { list.innerHTML = '<p class="text-[13px] text-muted p-1">No regions yet. Run a vision scan or drag on the image to draw one.</p>'; return; }
   list.innerHTML = IMG.boxes.map((b, i) => {
-    const color = BOX_COLORS[b.manual ? 'manual' : b.category] || '#f43f5e';
-    return `<div class="rounded-xl border border-slate-800 bg-slate-900/40 p-2.5 ${b.redact ? '' : 'opacity-60'}">
-      <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm flex-none" style="background:${color}"></span>
-        <span class="text-[12px] font-semibold text-slate-200 truncate">${i + 1}. ${esc(b.label)}</span>
-        <label class="ml-auto flex items-center gap-1.5 cursor-pointer"><input type="checkbox" class="sr-only bx" data-i="${i}" ${b.redact ? 'checked' : ''}><span class="toggle"></span></label></div>
-      <div class="mt-1 flex flex-wrap gap-1 items-center">${b.manual ? '<span class="chip chip-cyan">manual</span>' : `<span class="chip sev-${esc(b.severity)}">${esc(b.severity)}</span>`}
-        <span class="text-[10.5px] font-mono text-slate-500">[${b.bbox.join(', ')}]</span>
-        ${b.manual ? `<button class="rm ml-auto text-[11px] text-rose-300 hover:underline" data-i="${i}">remove</button>` : ''}</div>
-      ${b.reason ? `<p class="mt-1 text-[11px] text-slate-400 leading-snug">${esc(b.reason)}</p>` : ''}</div>`;
+    const color = BOX_COLORS[b.manual ? 'manual' : b.category] || '#C8432B';
+    return `<div class="region ${b.redact ? '' : 'opacity-55'}">
+      <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-[3px] flex-none" style="background:${color}"></span>
+        <span class="text-[12.5px] font-semibold truncate">${i + 1}. ${esc(b.label)}</span>
+        <label class="ml-auto flex items-center gap-1.5 cursor-pointer" title="${b.redact ? 'Will be redacted' : 'Kept as is'}"><input type="checkbox" class="sr-only bx" data-i="${i}" ${b.redact ? 'checked' : ''} aria-label="Redact region ${i + 1}"><span class="toggle"></span></label></div>
+      <div class="mt-1.5 flex flex-wrap gap-1.5 items-center">${b.manual ? '<span class="chip chip-blue">manual</span>' : `<span class="chip sev-${esc(b.severity)}">${esc(b.severity)}</span>`}
+        <span class="text-[10.5px] font-mono text-muted">[${b.bbox.join(', ')}]</span>
+        ${b.manual ? `<button class="rm ml-auto text-[11.5px] text-accent hover:underline" data-i="${i}">remove</button>` : ''}</div>
+      ${b.reason ? `<p class="mt-1.5 text-[12px] text-ink2 leading-snug">${esc(b.reason)}</p>` : ''}</div>`;
   }).join('');
   $$('.bx', list).forEach(c => c.onchange = () => { IMG.boxes[+c.dataset.i].redact = c.checked; drawCanvas(); renderBoxList(); });
   $$('.rm', list).forEach(c => c.onclick = () => { IMG.boxes.splice(+c.dataset.i, 1); drawCanvas(); renderBoxList(); });
@@ -1096,15 +1307,15 @@ function applyImageResult(r) {
     id: f.id, bbox: f.bbox_2d.map(Number), label: f.title, category: f.category, severity: f.severity, reason: f.reason, redact: f.recommended_action !== 'whitelist', manual: false,
   })));
   const v = r.verdict || 'PASS';
-  $('#imgVerdict').innerHTML = `<div class="flex flex-wrap gap-1.5 items-center"><span class="chip ${v === 'BLOCK' ? 'sev-CRITICAL' : v === 'WARN' ? 'chip-warn' : 'chip-pass'}">${esc(v)}</span><span class="text-[10.5px] font-mono text-slate-500">${esc(r.engine_used)} · ${esc(r.elapsed_s)}s</span></div>
-    ${r.summary ? `<p class="text-[11px] text-slate-400 mt-1">${esc(r.summary)}</p>` : ''}${(r.warnings || []).map(w => `<p class="text-[11px] text-amber-300 mt-1">⚠ ${esc(w)}</p>`).join('')}`;
+  $('#imgVerdict').innerHTML = `<div class="flex flex-wrap gap-2 items-center"><span class="chip ${v === 'BLOCK' ? 'sev-CRITICAL' : v === 'WARN' ? 'chip-yellow' : 'chip-green'}">${esc(v)}</span><span class="text-[11px] font-mono text-muted">${esc(r.engine_used)} · ${esc(r.elapsed_s)}s</span></div>
+    ${r.summary ? `<p class="text-[12px] text-ink2 mt-1.5">${esc(r.summary)}</p>` : ''}${(r.warnings || []).map(warnBox).join('')}`;
   drawCanvas(); renderBoxList();
 }
 
 async function visionScan() {
   if (!IMG.current) return;
   const btn = $('#visionScanBtn'); setBusy(btn, true, 'Scanning…');
-  const stop = thinking($('#canvasWrap'), thinkerName() + ' Vision', 3);
+  const stop = thinking($('#canvasWrap'), thinkerName() + ' vision', 3);
   try {
     const r = await api('/api/image/scan', { body: { path: IMG.current.path, mode: engineMode(), preset: preset(), offline: offline() } });
     applyImageResult(r);
@@ -1117,7 +1328,7 @@ async function uploadImage(file) {
   if (!file) return;
   if (!/^image\//.test(file.type)) { toast('Please drop an image file', 'warn'); return; }
   const fd = new FormData(); fd.append('file', file); fd.append('mode', engineMode()); fd.append('preset', preset()); fd.append('offline', String(offline()));
-  const stop = thinking($('#canvasWrap'), thinkerName() + ' Vision', 3);
+  const stop = thinking($('#canvasWrap'), thinkerName() + ' vision', 3);
   try {
     const r = await api('/api/image/scan', { body: fd });
     const it = { ...r.image, label: 'Uploaded: ' + r.image.name, source: 'upload' };
@@ -1133,7 +1344,7 @@ async function loadImagesQuiet() { const cur = IMG.current; IMG.listLoaded = fal
 async function redactDownload() {
   if (!IMG.current) return;
   const boxes = IMG.boxes.filter(b => b.redact).map(b => b.bbox);
-  if (!boxes.length) { toast('No boxes selected for redaction — toggle at least one region.', 'warn'); return; }
+  if (!boxes.length) { toast('No boxes selected for redaction. Toggle at least one region.', 'warn'); return; }
   const btn = $('#redactBtn'); setBusy(btn, true, 'Redacting…');
   try {
     const res = await api('/api/image/redact', { body: { path: IMG.current.path, boxes, style: $('#blurStyle').value }, raw: true });
@@ -1155,7 +1366,7 @@ function syncCompare() {
 
 /* ==================================================================== TAB 3 */
 const FW = { vault: {}, sanitized: '' };
-const DEFAULT_PROMPT = `salam khouya, 3andi mochkil f checkout dyal Atlas Pay 😩
+const DEFAULT_PROMPT = `salam khouya, 3andi mochkil f checkout dyal Atlas Pay
 Le client Youssef El Amrani (CIN BE847291, tel +212661234567) kaykhlles b RIB 230780123456789012345678
 w la réconciliation katla3 b 1 centime de différence chaque soir. Le stagiaire (CNE R139482710) a testé
 contre https://hpc-staging.internal.um6p.ma/api/v1 avec HPC_TOKEN = "hpc_tok_7f3a9b2c1d4e5f60718293a4"
@@ -1185,9 +1396,9 @@ function renderVault() {
   const tb = $('#vaultTable'); const reveal = $('#revealVault').checked;
   const ents = Object.entries(FW.vault);
   $('#entCount').textContent = ents.length;
-  if (!ents.length) { tb.innerHTML = '<tr><td colspan="2" class="px-2 py-3 text-slate-500 text-center">empty</td></tr>'; return; }
+  if (!ents.length) { tb.innerHTML = '<tr><td colspan="2" class="px-2.5 py-3 text-muted text-center">empty</td></tr>'; return; }
   const mask = v => reveal ? v : (v.length <= 4 ? '••••' : v.slice(0, 2) + '•'.repeat(Math.min(v.length - 4, 18)) + v.slice(-2));
-  tb.innerHTML = ents.map(([k, v]) => `<tr class="border-t border-slate-800"><td class="px-2 py-1.5"><span class="tok">${esc(k)}</span></td><td class="px-2 py-1.5 font-mono text-amber-100 break-all">${esc(mask(String(v)))}</td></tr>`).join('');
+  tb.innerHTML = ents.map(([k, v]) => `<tr class="border-t border-line"><td class="px-2.5 py-1.5"><span class="tok">${esc(k)}</span></td><td class="px-2.5 py-1.5 font-mono text-ink2 break-all">${esc(mask(String(v)))}</td></tr>`).join('');
 }
 
 async function sanitizePrompt() {
@@ -1220,17 +1431,17 @@ async function askCloud() {
     $('#fwEngine').textContent = r.engine + ' · ' + r.elapsed_s + 's';
     const restoredCode = rehydrateText(r.raw_fixed_code || '', FW.vault);
     out.innerHTML = `
-      ${(r.warnings || []).map(w => `<div class="text-[11px] rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-200 px-2 py-1">⚠ ${esc(w)}</div>`).join('')}
-      <details class="rounded-lg border border-slate-800 bg-[#060c1a]"><summary class="px-3 py-2 text-[12px] font-semibold text-slate-300 flex items-center gap-2"><span class="chev text-slate-600">▶</span> ⬆ What was sent to the cloud <span class="ml-auto chip chip-pass">0 raw PII</span></summary>
-        <div class="px-3 pb-3 font-mono text-[11.5px] text-slate-300 pre-wrap max-h-56 overflow-auto">${tokenChips(r.sent_prompt || '')}</div></details>
-      <div class="rounded-lg border border-slate-800 bg-[#060c1a] p-3">
-        <div class="text-[11px] font-bold text-teal-300 mb-1.5 uppercase tracking-wide">⬇ Cloud answer (tokens only)</div>
-        <div class="text-[12.5px] text-slate-300 pre-wrap leading-relaxed">${tokenChips(r.raw_answer || '')}</div></div>
-      <div class="rounded-lg border border-emerald-500/40 bg-emerald-500/[.06] p-3">
-        <div class="text-[11px] font-bold text-emerald-300 mb-1.5 uppercase tracking-wide">✓ Rehydrated locally</div>
-        <div class="text-[12.5px] text-slate-100 pre-wrap leading-relaxed">${rehydrateHtml(r.raw_answer || '', FW.vault)}</div></div>
-      ${restoredCode ? `<div class="rounded-lg border border-slate-800 overflow-hidden"><div class="px-3 py-1.5 text-[11px] font-bold text-violet-300 bg-slate-900/70 border-b border-slate-800">Suggested fix</div>
-        <div class="codebox overflow-auto max-h-72 py-2 hljs">${splitHtmlLines(highlight(restoredCode, 'python')).map((h, i) => `<div class="cl"><span class="ln">${i + 1}</span><span class="lc">${h || ' '}</span></div>`).join('')}</div></div>` : ''}`;
+      ${(r.warnings || []).map(warnBox).join('')}
+      <details class="rounded-xl border border-line bg-white"><summary class="px-3 py-2.5 text-[12.5px] font-medium flex items-center gap-2">${ICON.chev} What was sent to the cloud <span class="ml-auto chip chip-green">0 raw PII</span></summary>
+        <div class="px-3 pb-3 font-mono text-[12px] text-ink2 pre-wrap max-h-56 overflow-auto">${tokenChips(r.sent_prompt || '')}</div></details>
+      <div class="rounded-xl border border-line bg-[#FCFBF8] p-3.5">
+        <div class="eyebrow mb-2">Cloud answer · tokens only</div>
+        <div class="text-[13px] text-ink2 pre-wrap leading-relaxed">${tokenChips(r.raw_answer || '')}</div></div>
+      <div class="rounded-xl border-[1.5px] border-ink bg-white p-3.5" style="box-shadow:2px 2px 0 #346538">
+        <div class="eyebrow !text-good mb-2">Rehydrated locally</div>
+        <div class="text-[13px] text-ink pre-wrap leading-relaxed">${rehydrateHtml(r.raw_answer || '', FW.vault)}</div></div>
+      ${restoredCode ? `<div class="rounded-xl border border-line overflow-hidden"><div class="px-3 py-2 eyebrow bg-[#F5F3EE] border-b border-line">Suggested fix</div>
+        <div class="codebox overflow-auto max-h-72 py-2 hljs">${codeLines(restoredCode, 'fix.py')}</div></div>` : ''}`;
     toast('Answer received and rehydrated locally', 'ok');
   } catch (e) {
     toast('Firewall: ' + e.message, 'err');
@@ -1254,25 +1465,25 @@ async function loadPolicy() {
 function policyStats() {
   const t = $('#yamlEditor').value;
   const rr = (t.match(/^\s*-\s*id:/gm) || []).length; const nl = (t.match(/nl_rules:/g) || []).length;
-  $('#policyStats').textContent = `${t.split('\n').length} lines · ${rr} regex rules · ${nl} NL rule packs`;
+  $('#policyStats').textContent = `${t.split('\n').length} lines · ${rr} regex rules · ${nl} NL packs`;
 }
 function policyMsg(html, kind) {
   const el = $('#policyMsg'); el.classList.remove('hidden');
-  el.className = 'mx-4 mt-3 text-[12px] rounded-lg px-3 py-2 border ' + (kind === 'ok' ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200' : 'border-rose-500/40 bg-rose-500/10 text-rose-200 font-mono pre-wrap');
+  el.className = 'mx-4 mt-3 text-[12.5px] rounded-lg px-3 py-2 border ' + (kind === 'ok' ? 'border-[#CFE0CC] bg-[#EDF3EC] text-[#346538]' : 'border-[#F3C9C4] bg-[#FDEBEC] text-[#9F2F2D] font-mono pre-wrap');
   el.innerHTML = html;
 }
 async function savePolicy() {
   const btn = $('#savePolicyBtn'); setBusy(btn, true, 'Validating…');
   try {
     const r = await api('/api/policy', { method: 'PUT', body: { yaml: $('#yamlEditor').value } });
-    policyMsg(`✓ Saved to <span class="font-mono">${esc(r.path)}</span> — ${esc(r.presets.length)} presets, ${esc(r.regex_rules)} regex rules, ${esc(r.nl_rules)} NL rules. Scanner cache reset.`, 'ok');
-    toast('Policy saved & validated', 'ok');
-  } catch (e) { policyMsg('✕ ' + esc(e.message), 'err'); toast('Policy invalid — not saved', 'err'); }
+    policyMsg(`Saved to <span class="font-mono">${esc(r.path)}</span>: ${esc(r.presets.length)} presets, ${esc(r.regex_rules)} regex rules, ${esc(r.nl_rules)} NL rules. Scanner cache reset.`, 'ok');
+    toast('Policy saved and validated', 'ok');
+  } catch (e) { policyMsg(esc(e.message), 'err'); toast('Policy invalid, not saved', 'err'); }
   finally { setBusy(btn, false); }
 }
 
 function renderMarkdown(md) {
-  if (!md) return '<p class="text-xs text-slate-500">No markdown returned.</p>';
+  if (!md) return '<p class="text-[13px] text-muted">No markdown returned.</p>';
   if (window.marked) {
     try {
       const html = marked.parse(md, { mangle: false, headerIds: false });
@@ -1282,7 +1493,7 @@ function renderMarkdown(md) {
       return tpl.innerHTML;
     } catch (e) {}
   }
-  return `<pre class="pre-wrap text-xs">${esc(md)}</pre>`;
+  return `<pre class="pre-wrap text-[12px]">${esc(md)}</pre>`;
 }
 
 /** Find recall per engine in the benchmark result / markdown. */
@@ -1321,22 +1532,22 @@ function renderBench(payload) {
   $('#benchMd').innerHTML = renderMarkdown(payload.markdown);
   const rec = extractRecall(payload);
   const chart = $('#benchChart');
-  if (!rec.length) chart.innerHTML = '<p class="text-xs text-slate-500">No recall metric found in result.</p>';
+  if (!rec.length) chart.innerHTML = '<p class="text-[13px] text-muted">No recall metric found in result.</p>';
   else chart.innerHTML = rec.map(o => {
     const regex = /regex|gitleaks|baseline/i.test(o.engine);
-    return `<div><div class="flex justify-between text-[12px] mb-1"><span class="font-semibold ${regex ? 'text-slate-400' : 'text-emerald-200'}">${esc(o.engine)}</span><span class="font-mono tabular-nums ${regex ? 'text-slate-400' : 'text-emerald-300'}">${o.recall.toFixed(0)}% recall</span></div>
-      <div class="h-3 rounded-full bg-slate-800 overflow-hidden"><div class="bar h-full ${regex ? 'bg-slate-500' : 'bg-gradient-to-r from-emerald-500 to-teal-400'}" style="width:0%" data-w="${Math.max(0, Math.min(100, o.recall))}"></div></div></div>`;
+    return `<div><div class="flex justify-between items-baseline text-[13px] mb-1.5"><span class="font-medium ${regex ? 'text-muted' : 'text-ink'}">${esc(o.engine)}</span><span class="font-display font-extrabold text-[18px] tabular-nums ${regex ? 'text-muted' : 'text-accent'}">${o.recall.toFixed(0)}%</span></div>
+      <div class="track !h-[10px]"><div class="bar ${regex ? 'grey' : 'red'}" style="--w:0" data-w="${Math.max(0, Math.min(100, o.recall)) / 100}"></div></div></div>`;
   }).join('');
-  requestAnimationFrame(() => $$('#benchChart .bar').forEach(b => b.style.width = b.dataset.w + '%'));
+  requestAnimationFrame(() => $$('#benchChart .bar').forEach(b => b.style.setProperty('--w', b.dataset.w)));
   const meta = [];
   if (payload.elapsed_s !== undefined) meta.push(`ran in ${payload.elapsed_s}s`);
   if (payload.ts) meta.push(new Date(payload.ts * 1000).toLocaleString());
-  (payload.warnings || []).forEach(w => meta.push('⚠ ' + w));
+  (payload.warnings || []).forEach(w => meta.push('! ' + w));
   $('#benchMeta').textContent = meta.join(' · ');
 }
 async function runBench() {
   const btn = $('#benchBtn'); setBusy(btn, true, 'Running benchmark…');
-  const card = $('#benchMd').parentElement;
+  const card = $('#benchMd');
   const stop = thinking(card, $('#benchOffline').checked ? 'Benchmark (offline)' : 'Benchmark: Regex vs Gemma 4', 6);
   try {
     const r = await api('/api/benchmark', { body: { offline: $('#benchOffline').checked } });
@@ -1385,8 +1596,8 @@ function init() {
   $('#blurStyle').onchange = drawCanvas;
   $('#compareRange').oninput = syncCompare; $('#afterImg').onload = syncCompare;
   const dz = $('#dropzone');
-  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('!border-emerald-500'); }));
-  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('!border-emerald-500'); }));
+  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
   dz.addEventListener('drop', e => uploadImage(e.dataTransfer.files[0]));
   $('#fileInput').onchange = e => uploadImage(e.target.files[0]);
   // tab 3
