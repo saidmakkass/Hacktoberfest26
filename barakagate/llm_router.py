@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
 
-from barakagate.config import load_dotenv
+from barakagate.config import PROJECT_ROOT, load_dotenv
 from barakagate.models import EngineMode
 
 try:  # Strictly the new SDK (pitfall #1) — never `google.generativeai`.
@@ -31,7 +31,7 @@ except ImportError:  # pragma: no cover - exercised only without the SDK install
 CLOUD_FAST_MODEL = "gemma-4-26b-a4b-it"
 CLOUD_DEEP_MODEL = "gemma-4-31b-it"
 LOCAL_MODEL = "gemma4:e4b"
-CACHE_PATH = Path(".barakagate") / "demo_cache.json"
+CACHE_PATH = Path(os.environ.get("BARAKAGATE_CACHE", PROJECT_ROOT / ".barakagate" / "demo_cache.json"))
 
 
 class AllEnginesFailed(RuntimeError):
@@ -329,8 +329,18 @@ class GemmaRouter:
         """
         sanitized, vault = sanitize_fn(prompt)
         data, label = self.analyze(EngineMode.HYBRID_SMART, sanitized, system_instruction, response_schema, cache_tag=cache_tag)
-        data = json.loads(rehydrate_fn(json.dumps(data, ensure_ascii=False), vault))
+        data = _map_strings(data, lambda s: rehydrate_fn(s, vault))  # per-string: values may hold quotes/newlines
         return data, f"hybrid:local-redact->{label}", vault
+
+
+def _map_strings(obj: Any, fn) -> Any:
+    if isinstance(obj, str):
+        return fn(obj)
+    if isinstance(obj, list):
+        return [_map_strings(v, fn) for v in obj]
+    if isinstance(obj, dict):
+        return {k: _map_strings(v, fn) for k, v in obj.items()}
+    return obj
 
 
 def _is_config_rejection(e: Exception) -> bool:
