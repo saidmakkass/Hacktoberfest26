@@ -8,7 +8,7 @@
 ## Held-out protocol (set 2)
 
 1. **Fixtures are realistic and natural.** There are no `# BUG` hint comments, and the code shapes deliberately differ from `samples/`: Flask with `%`-formatting, TypeScript/Prisma, cross-module ML pipelines, Slurm scripts, Arabic and French support tickets, and notebook output cells.
-2. **Ground truth was frozen first.** `realworld/labels.json` and all fixtures were committed in `8e0758d` *before* any engine was run on them. The BarakaGate detectors and prompts have not been modified based on these results; `git log -- barakagate/` shows this.
+2. **Ground truth was frozen first.** `benchmarks/realworld/labels.json` and all fixtures were committed in `8e0758d` *before* any engine was run on them. The BarakaGate detectors and prompts have not been modified based on these results; `git log -- barakagate/` shows this.
 3. **Labels point at text, not line numbers.** Each issue is identified by a unique `anchor` substring, which the runner resolves to a line, so labels can't drift silently. `until` extends a label to a range, and `alt` accepts an equivalent location in another file (e.g. the ML leakage can be reported at the call site or inside the helper).
 4. **Matching is one-to-one.** A finding can satisfy at most one label. It must sit on the labelled lines (±2 for code, ±1 for notebooks, exact for CSV/JSON records) and agree on class (leak vs. bug) or name the issue kind.
 5. **Penalties.**
@@ -30,4 +30,4 @@ python3 benchmarks/run_realworld.py --engines local_edge               # needs `
 python3 benchmarks/run_realworld.py --report                           # merge results/raw/*.json → report
 ```
 
-Outputs: `results/raw/<engine>.json` (every finding), `results/realworld.md` / `.json` (scores), and the README section between the `REALWORLD_BENCH` markers.
+Outputs: `benchmarks/results/raw/<engine>.json` (every finding), `benchmarks/results/realworld.md` / `.json` (scores), and the README section between the `REALWORLD_BENCH` markers.

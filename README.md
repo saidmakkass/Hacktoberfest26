@@ -104,7 +104,7 @@ A separate set of realistic mini-projects that BarakaGate's detectors and prompt
 
 It's full of edge cases: secrets split across string concatenation, RIBs in 4-digit groups, Arabic-script tickets, `%`-formatted SQLi, `===` HMAC compares, partial seeding and cross-module ML leakage. It also contains **19 false-positive traps**, such as env-read secrets, `compare_digest`, parameterized `%s`, CIN-shaped SKUs and `.env.example` placeholders.
 
-**Protocol** (full details in [`benchmarks/README.md`](benchmarks/README.md)):
+**Protocol** (full details in [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)):
 - **Labels committed first:** ground-truth labels were committed **before any engine ran** (commit `8e0758d`); the detector code is unchanged since.
 - **One-to-one matching:** each finding can satisfy at most one label, and must be on the labelled line.
 - **Strict precision:** any finding that matches no label counts against precision.

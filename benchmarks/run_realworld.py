@@ -1,4 +1,4 @@
-"""Held-out real-world benchmark runner (see benchmarks/README.md for the protocol).
+"""Held-out real-world benchmark runner (see docs/BENCHMARKS.md for the protocol).
 
     python3 benchmarks/run_realworld.py --engines regex,offline            # instant, no network
     python3 benchmarks/run_realworld.py --engines cloud_fast               # live Gemma 4 26B
